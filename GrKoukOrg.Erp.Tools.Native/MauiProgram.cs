@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace GrKoukOrg.Erp.Tools.Native
@@ -13,6 +14,7 @@ namespace GrKoukOrg.Erp.Tools.Native
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
                 .ConfigureSyncfusionToolkit()
+                .ConfigureSyncfusionCore()
                 .ConfigureMauiHandlers(handlers =>
                 {
                 })
