@@ -13,7 +13,12 @@
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="main" />
-
+<ShellContent
+    Title="Settings"
+    Icon="{StaticResource IconDashboard}"
+    ContentTemplate="{DataTemplate pages:SettingsPage}"
+    Route="settings"/>
+    
     <ShellContent
         Title="Projects"
         Icon="{StaticResource IconProjects}"
