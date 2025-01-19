@@ -27,7 +27,7 @@
 		<ApplicationTitle>GrKoukOrg.Erp.Tools.Native</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.grkoukorg.erp.tools.native</ApplicationId>
+		<ApplicationId>com.grkoukorg.erp.tools</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
