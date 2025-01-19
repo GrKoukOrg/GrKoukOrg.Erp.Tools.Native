@@ -1,3 +1,5 @@
+using GrKoukOrg.Erp.Tools.Native.Models;
+
 namespace GrKoukOrg.Erp.Tools.Native.Services;
 using Microsoft.Maui.Storage;
 
@@ -21,4 +23,22 @@ public class SettingsMemoryDataService : ISettingsDataService
         Preferences.Set("apiUrl",url);
         return Task.FromResult(0);
     }
+}
+
+public interface IBusinessDataService
+{
+    Task<ItemListDto> GetItems();
+}
+
+public class BusinessDbDataService : IBusinessDataService
+{
+    public BusinessDbDataService()
+    {
+        
+    }
+    public Task<ItemListDto> GetItems()
+    {
+        throw new NotImplementedException();
+    }
+    
 }
