@@ -11,6 +11,7 @@ public partial class SettingsPageModel:ObservableObject
     [ObservableProperty]
     private string _apiUrl = string.Empty;
    
+    // ReSharper disable once ConvertToPrimaryConstructor
     public SettingsPageModel(ISettingsDataService settingsDataService)
     {
         _settingsDataService = settingsDataService;
