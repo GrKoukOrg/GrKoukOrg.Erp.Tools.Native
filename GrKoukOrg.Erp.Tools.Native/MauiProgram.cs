@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
+using ZXing.Net.Maui.Controls;
 
 namespace GrKoukOrg.Erp.Tools.Native
 {
@@ -13,6 +14,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .UseBarcodeReader()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureSyncfusionCore()
                 .ConfigureMauiHandlers(handlers =>
