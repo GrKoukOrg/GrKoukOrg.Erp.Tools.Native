@@ -26,10 +26,10 @@ public class ServerHttpDataAccess : IServerDataAccess
         try
         {
             // Create HTTP client
-            var client = _httpClientFactory.CreateClient("ServerHttpDataAccess");
+            var client = _httpClientFactory.CreateClient("BusinessServerApi");
 
             // Send GET request
-            using var response = await client.GetAsync("api/erpapi/getitems");
+            using var response = await client.GetAsync("/api/erpapi/getitems");
             response.EnsureSuccessStatusCode();
 
             // Read response content as JSON
@@ -41,10 +41,12 @@ public class ServerHttpDataAccess : IServerDataAccess
             // Return the items (or an empty list if deserialization fails)
             return items ?? new List<ItemListDto>();
         }
+        
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in GetServerItemsListAsync");
-            throw; // Rethrow the exception for the calling code to handle
+           //throw; // Rethrow the exception for the calling code to handle
+           return new List<ItemListDto>();
         }
 
     }
