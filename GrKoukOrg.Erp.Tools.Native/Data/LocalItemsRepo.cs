@@ -4,18 +4,18 @@ using Microsoft.Data.Sqlite;
 
 namespace GrKoukOrg.Erp.Tools.Native.Data;
 /// <summary>
-/// Repository class for managing Items (Warehouse Items) in the database.
+/// Repository class for managing Local Items (Warehouse Items) in the database.
 /// </summary>
-public class ItemsRepo
+public class LocalItemsRepo
 {
     private bool _hasBeenInitialized = false;
     private readonly ILogger _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ItemListDtoRepository"/> class.
+    /// Initializes a new instance of the <see cref="LocalItemsRepo"/> class.
     /// </summary>
     /// <param name="logger">The logger instance.</param>
-    public ItemsRepo(ILogger<ItemsRepo> logger)
+    public LocalItemsRepo(ILogger<LocalItemsRepo> logger)
     {
         _logger = logger;
     }

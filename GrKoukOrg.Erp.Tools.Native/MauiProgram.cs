@@ -14,6 +14,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                
                 .UseBarcodeReader()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureSyncfusionCore()
@@ -32,11 +33,17 @@ namespace GrKoukOrg.Erp.Tools.Native
     		builder.Logging.AddDebug();
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
-
+            builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
+            {
+                var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();
+                var apiUrl = settingsDataService.GetApiUrl();
+                client.BaseAddress = new Uri(apiUrl);
+            });
             builder.Services.AddSingleton<ProjectRepository>();
             builder.Services.AddSingleton<TaskRepository>();
             builder.Services.AddSingleton<CategoryRepository>();
             builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
+            builder.Services.AddSingleton<IServerDataAccess, ServerHttpDataAccess>();
             
             builder.Services.AddSingleton<TagRepository>();
             builder.Services.AddSingleton<SeedDataService>();
@@ -49,6 +56,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
             builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
+            builder.Services.AddTransientWithShellRoute<SyncItemsPage,SyncItemsPageModel>("syncitems");
 
             return builder.Build();
         }

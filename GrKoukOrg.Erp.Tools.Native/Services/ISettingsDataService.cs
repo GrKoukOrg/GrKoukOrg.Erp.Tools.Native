@@ -5,20 +5,27 @@ using Microsoft.Maui.Storage;
 
 public interface ISettingsDataService
 {
-    Task<string> GetApiUrl();
-    Task<int> SetApiUrl(string url);
+    Task<string> GetApiUrlAsync();
+    Task<int> SetApiUrlAsync(string url);
+    string GetApiUrl();
 }
 
 public class SettingsMemoryDataService : ISettingsDataService
 {
-    public async Task<string> GetApiUrl()
+    private const string apiBaseDefaultUrl= "http://192.168.20.38:1234";
+    public async Task<string> GetApiUrlAsync()
     {
-        string url = Preferences.Get("apiUrl", "http://192.168.90.100:1234");
+        string url = Preferences.Get("apiUrl",apiBaseDefaultUrl );
         
         return await Task.FromResult( url);
     }
 
-    public Task<int> SetApiUrl(string url)
+    public string GetApiUrl()
+    {
+        string url = Preferences.Get("apiUrl", apiBaseDefaultUrl);
+        return url;
+    }
+    public Task<int> SetApiUrlAsync(string url)
     {
         Preferences.Set("apiUrl",url);
         return Task.FromResult(0);

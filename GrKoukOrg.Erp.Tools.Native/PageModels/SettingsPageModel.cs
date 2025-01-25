@@ -20,7 +20,7 @@ public partial class SettingsPageModel:ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        ApiUrl = await _settingsDataService.GetApiUrl();
+        ApiUrl = await _settingsDataService.GetApiUrlAsync();
     }
     
 }       
