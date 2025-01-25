@@ -41,6 +41,7 @@
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" />
+        <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <Grid ColumnSpacing="{StaticResource LayoutSpacing}" ColumnDefinitions="1*,3*">

@@ -230,7 +230,68 @@ public class LocalItemsRepo
             return item.Id;
         }
 
-      
+       /// <summary>
+        /// Adds a ItemListDto to the database. 
+        /// </summary>
+        /// <param name="item">The ItemListDto to Add.</param>
+        
+        public async Task<int> AddItemAsync(ItemListDto item)
+        {
+            await Init();
+            await using var connection = new SqliteConnection(Constants.DatabasePath);
+            await connection.OpenAsync();
+
+            var saveCmd = connection.CreateCommand();
+
+            saveCmd.CommandText = @"
+                INSERT INTO Items (
+                                      Id,
+                                      Code,
+                                      Name,
+                                      MeasureUnitId,
+                                      MeasureUnitName,
+                                      FpaCategoryId,
+                                      FpaCategoryName,
+                                      Apothema,
+                                      TimiAgoras,
+                                      TimiAgorasFpa,
+                                      TimiPolisisLian,
+                                      TimiPolisisLianFpa
+                                  )
+                 VALUES (
+                                      @Id,
+                                      @Code,
+                                      @Name,
+                                      @MeasureUnitId,
+                                      @MeasureUnitName,
+                                      @FpaCategoryId,
+                                      @FpaCategoryName,
+                                      @Apothema,
+                                      @TimiAgoras,
+                                      @TimiAgorasFpa,
+                                      @TimiPolisisLian,
+                                      @TimiPolisisLianFpa
+                                  );
+                ";
+           
+            saveCmd.Parameters.AddWithValue("@Id", item.Id);
+            saveCmd.Parameters.AddWithValue("@Code", item.Code);
+            saveCmd.Parameters.AddWithValue("@Name", item.Name);
+            saveCmd.Parameters.AddWithValue("@MeasureUnitId", item.MeasureUnitId);
+            saveCmd.Parameters.AddWithValue("@MeasureUnitName", item.MeasureUnitName);
+            saveCmd.Parameters.AddWithValue("@FpaCategoryId", item.FpaCategoryId);
+            saveCmd.Parameters.AddWithValue("@FpaCategoryName", item.FpaCategoryName);
+            saveCmd.Parameters.AddWithValue("@Apothema", item.Apothema);
+            saveCmd.Parameters.AddWithValue("@TimiAgoras", item.TimiAgoras);
+            saveCmd.Parameters.AddWithValue("@TimiAgorasFpa", item.TimiAgorasFpa);
+            saveCmd.Parameters.AddWithValue("@TimiPolisisLian", item.TimiPolisisLian);
+            saveCmd.Parameters.AddWithValue("@TimiPolisisLianFpa", item.TimiPolisisLianFpa);
+
+
+            var result = await saveCmd.ExecuteScalarAsync();
+           
+            return item.Id;
+        }
 
         /// <summary>
         /// Deletes a ItemListDto from the database.

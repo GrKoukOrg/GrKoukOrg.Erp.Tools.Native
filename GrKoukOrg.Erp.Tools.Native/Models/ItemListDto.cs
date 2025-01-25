@@ -1,19 +1,38 @@
+using System.Text.Json.Serialization;
+
 namespace GrKoukOrg.Erp.Tools.Native.Models;
 
 public class ItemListDto
 {
+    [JsonPropertyName("id")]
     public int Id { get; set; }
+    [JsonPropertyName("code")]
     public string Code { get; set; }
+    [JsonPropertyName("name")]
     public string Name { get; set; }
+    [JsonPropertyName("measureUnitId")]
     public int? MeasureUnitId { get; set; }
+    [JsonPropertyName("measureUnitName")]
     public string? MeasureUnitName { get; set; }
+    [JsonPropertyName("category")]
+    public int? CategoryId { get; set; }
+    [JsonPropertyName("categoryName")]
+    public string? CategoryName { get; set; }
+    [JsonPropertyName("fpaCategoryId")]
     public int? FpaCategoryId { get; set; }
+    [JsonPropertyName("fpaCategoryName")]
     public string? FpaCategoryName { get; set; }
+    [JsonPropertyName("barcodes")]
     public string? Barcodes { get; set; }
+    [JsonPropertyName("apothema")]
     public decimal? Apothema{ get; set; }
+    [JsonPropertyName("timiAgoras")]
     public decimal? TimiAgoras { get; set; }
+    [JsonPropertyName("timiAgorasFpa")]
     public decimal? TimiAgorasFpa { get; set; }
+    [JsonPropertyName("timiPolisisLian")]
     public decimal? TimiPolisisLian { get; set; }
+    [JsonPropertyName("timiPolisisLianFpa")]
     public decimal? TimiPolisisLianFpa { get; set; }
     
 }
