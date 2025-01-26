@@ -45,8 +45,8 @@ public class ServerHttpDataAccess : IServerDataAccess
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in GetServerItemsListAsync");
-           //throw; // Rethrow the exception for the calling code to handle
-           return new List<ItemListDto>();
+           throw; // Rethrow the exception for the calling code to handle
+          // return new List<ItemListDto>();
         }
 
     }

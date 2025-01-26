@@ -289,8 +289,18 @@ public class LocalItemsRepo
 
 
             var result = await saveCmd.ExecuteScalarAsync();
-           
-            return item.Id;
+            if (result != null)
+            {
+                _logger.LogDebug($"Item with Id {item.Id.ToString()} has been added to the database");
+                return 1;
+            }
+            else
+            {
+                _logger.LogDebug(
+                    $"Item with id {item.Id.ToString()} and name {item.Name} returned a null value result");
+                return 0;
+            }
+            
         }
 
         /// <summary>
