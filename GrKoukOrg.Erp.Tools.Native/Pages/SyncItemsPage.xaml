@@ -4,6 +4,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              x:DataType="pageModels:SyncItemsPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncItemsPage">
     
@@ -47,14 +49,28 @@
       
        
     <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}" Padding="{StaticResource LayoutPadding}">
-        <Grid ColumnSpacing="{StaticResource LayoutSpacing}" ColumnDefinitions="1*,3*" RowDefinitions="1*,Auto">
+        <Grid ColumnSpacing="{StaticResource LayoutSpacing}" ColumnDefinitions="1*,*" RowDefinitions="1*,*,1*">
             <Label Text="Items Count" Grid.Column="0" Grid.Row="0"/>
             <Label Text="{Binding ItemCount}" Grid.Column="1" Grid.Row="0"/>
-            <Label Text="Database Operation Log" FontSize="18" FontAttributes="Bold" Grid.Column="0" Grid.Row="1"/>
-            <Editor Text="{Binding LogMessages}"
-                    IsReadOnly="True"
-                    VerticalOptions="Fill"
-                    Grid.Column="1" Grid.Row="1"/>
+            <Label Text="Database Operation Log"  Grid.Column="0" Grid.Row="1"/>
+            
+            <syncfusion:SfDataGrid x:Name="LogDataGrid"
+                                   Grid.Column="1" Grid.Row="1"
+                                   ItemsSource="{Binding LogEntries}"
+                                   AutoGenerateColumnsMode="None"
+                                   >
+                <syncfusion:SfDataGrid.Columns>
+                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" />
+                    <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" />
+                </syncfusion:SfDataGrid.Columns>
+            </syncfusion:SfDataGrid>
+            <progressBar:SfLinearProgressBar x:Name="ProgressBar"
+                                          Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                                          Progress="{Binding OperationProgress}"
+                                          Minimum="0"
+                                          Maximum="{Binding ItemCount}"
+                                          HeightRequest="10"
+                                          />
         </Grid>
         
     </VerticalStackLayout>
