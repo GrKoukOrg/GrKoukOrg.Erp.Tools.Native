@@ -1,6 +1,8 @@
+using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
+
 using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
@@ -11,6 +13,20 @@ public partial class SyncItemsPageModel: ObservableObject
     private readonly IServerDataAccess _serverDataAccess;
     private readonly ILogger<SyncItemsPageModel> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+
+    private readonly StringBuilder _logMessages = new();
+    [ObservableProperty]
+    private string logMessages = string.Empty;
+
+    private void AddLog(string message)
+    {
+        _logMessages.AppendLine($"{DateTime.Now}: {message}");
+    }
+
+    private void UpdateLog()
+    {
+         LogMessages = _logMessages.ToString();
+    }
 
     [ObservableProperty]
     private bool _isConnected = false;
@@ -38,17 +54,20 @@ public partial class SyncItemsPageModel: ObservableObject
     [RelayCommand]
     private async Task GetItems()
     {
+        AddLog("Getting items from server");
         try
         {
             Items = await _serverDataAccess.GetServerItemsListAsync();
             ItemCount = Items.Count;
-            await AppShell.DisplayToastAsync("Connected and retrieved items");
+            AddLog($"Connected and retrieved {ItemCount} items");
+            UpdateLog();
+           // await AppShell.DisplayToastAsync("Connected and retrieved items");
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Error in GetItems");
-            await AppShell.DisplayToastAsync($"There was an error: {e.Message}");
-            
+            AddLog($"Error in GetItems: {e.Message}");
+            UpdateLog();
         }
        
        
@@ -57,13 +76,29 @@ public partial class SyncItemsPageModel: ObservableObject
     [RelayCommand]
     private async Task AddItemsToLocalDatabase()
     {
-       
+        AddLog("Adding items to local database");
+        UpdateLog();
         foreach (var (item, index) in Items.Select((item, index) => (item, index)))
         {
-            var result = await _localItemsRepo.AddItemAsync(item);
-            _logger.LogDebug($"Index: {index}, Id: {item.Id}, Name: {item.Name} result returned {result}");
+            //Check if item with Id already exists in the database
+            if (await _localItemsRepo.ItemExist(item.Id))
+            {
+                var result = await _localItemsRepo.UpdateItemAsync(item);
+                AddLog($"Index: {index}, Id: {item.Id}, Name: {item.Name} Update item result returned {result}");
+            }
+            else
+            {
+                var result = await _localItemsRepo.AddItemAsync(item);
+                AddLog($"Index: {index}, Id: {item.Id}, Name: {item.Name} Add item result returned {result}");
+            }
+
+            if (index % 10 == 0)
+            {
+                UpdateLog();
+            }
             
         }
-        await AppShell.DisplayToastAsync("Items added to local database");
+        UpdateLog();
+        await AppShell.DisplayToastAsync("Items added and updated to local database");
     }
 }

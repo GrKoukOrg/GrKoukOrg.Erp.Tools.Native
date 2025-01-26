@@ -43,10 +43,20 @@
         <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" />
         <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}"/>
     </ContentPage.ToolbarItems>
-    <ContentPage.Content>
-        <Grid ColumnSpacing="{StaticResource LayoutSpacing}" ColumnDefinitions="1*,3*">
-            <Label Text="Items Count" Grid.Column="0"/>
-            <Label Text="{Binding ItemCount}" Grid.Column="1"/>
+   
+      
+       
+    <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}" Padding="{StaticResource LayoutPadding}">
+        <Grid ColumnSpacing="{StaticResource LayoutSpacing}" ColumnDefinitions="1*,3*" RowDefinitions="1*,Auto">
+            <Label Text="Items Count" Grid.Column="0" Grid.Row="0"/>
+            <Label Text="{Binding ItemCount}" Grid.Column="1" Grid.Row="0"/>
+            <Label Text="Database Operation Log" FontSize="18" FontAttributes="Bold" Grid.Column="0" Grid.Row="1"/>
+            <Editor Text="{Binding LogMessages}"
+                    IsReadOnly="True"
+                    VerticalOptions="Fill"
+                    Grid.Column="1" Grid.Row="1"/>
         </Grid>
-    </ContentPage.Content>
+        
+    </VerticalStackLayout>
+    
 </ContentPage>

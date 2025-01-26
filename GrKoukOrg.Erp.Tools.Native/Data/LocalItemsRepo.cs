@@ -99,7 +99,29 @@ public class LocalItemsRepo
             return ItemListDtos;
         }
 
-      
+        /// <summary>
+        /// Checks if a specific Item with Id exists in the database.
+        /// </summary>
+        /// <param name="id">The ID of the ItemListDto.</param>
+        /// <returns>A boolean true if exist false if not exist  </returns>
+        public async Task<bool> ItemExist(int id)
+        {
+            await Init();
+            await using var connection = new SqliteConnection(Constants.DatabasePath);
+            await connection.OpenAsync();
+
+            var selectCmd = connection.CreateCommand();
+            selectCmd.CommandText = "SELECT Id FROM Items WHERE ID = @id";
+            selectCmd.Parameters.AddWithValue("@id", id);
+
+            await using var reader = await selectCmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Retrieves a specific ItemListDto by its ID.
@@ -140,6 +162,64 @@ public class LocalItemsRepo
         }
 
         /// <summary>
+        /// Updates ItemListDto to the database. 
+        /// </summary>
+        /// <param name="item">The ItemListDto to save.</param>
+        
+        public async Task<int> UpdateItemAsync(ItemListDto item)
+        {
+            await Init();
+            await using var connection = new SqliteConnection(Constants.DatabasePath);
+            await connection.OpenAsync();
+
+            var saveCmd = connection.CreateCommand();
+           
+            saveCmd.CommandText = @"
+                    UPDATE Items SET 
+                      Code = @Code,
+                       Name = @Name,
+                       MeasureUnitId = @MeasureUnitId,
+                       MeasureUnitName = @MeasureUnitName,
+                       FpaCategoryId = @FpaCategoryId,
+                       FpaCategoryName = @FpaCategoryName,
+                       Apothema = @Apothema,
+                       TimiAgoras = @TimiAgoras,
+                       TimiAgorasFpa = @TimiAgorasFpa,
+                       TimiPolisisLian = @TimiPolisisLian,
+                       TimiPolisisLianFpa = @TimiPolisisLianFpa
+                    
+                     WHERE ID = @Id
+            ";
+            saveCmd.Parameters.AddWithValue("@Id", item.Id);
+            saveCmd.Parameters.AddWithValue("@Code", item.Code);
+            saveCmd.Parameters.AddWithValue("@Name", item.Name);
+            saveCmd.Parameters.AddWithValue("@MeasureUnitId", item.MeasureUnitId);
+            saveCmd.Parameters.AddWithValue("@MeasureUnitName", item.MeasureUnitName);
+            saveCmd.Parameters.AddWithValue("@FpaCategoryId", item.FpaCategoryId);
+            saveCmd.Parameters.AddWithValue("@FpaCategoryName", item.FpaCategoryName);
+            saveCmd.Parameters.AddWithValue("@Apothema", item.Apothema);
+            saveCmd.Parameters.AddWithValue("@TimiAgoras", item.TimiAgoras);
+            saveCmd.Parameters.AddWithValue("@TimiAgorasFpa", item.TimiAgorasFpa);
+            saveCmd.Parameters.AddWithValue("@TimiPolisisLian", item.TimiPolisisLian);
+            saveCmd.Parameters.AddWithValue("@TimiPolisisLianFpa", item.TimiPolisisLianFpa);
+
+
+            var result = await saveCmd.ExecuteScalarAsync();
+            if (result != null)
+            {
+                _logger.LogDebug($"Item with Id {item.Id.ToString()} has been updated");
+                return 1;
+            }
+            else
+            {
+                _logger.LogDebug(
+                    $"Item with id {item.Id.ToString()} and name {item.Name} returned a null value result");
+                return 0;
+            }
+
+            return item.Id;
+        }
+ /// <summary>
         /// Saves a ItemListDto to the database. If the ItemListDto ID is 0, a new ItemListDto is created; otherwise, the existing ItemListDto is updated.
         /// </summary>
         /// <param name="item">The ItemListDto to save.</param>
@@ -229,7 +309,6 @@ public class LocalItemsRepo
 
             return item.Id;
         }
-
        /// <summary>
         /// Adds a ItemListDto to the database. 
         /// </summary>
