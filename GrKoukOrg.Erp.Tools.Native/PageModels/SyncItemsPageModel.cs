@@ -14,7 +14,7 @@ public partial class SyncItemsPageModel : ObservableObject
     private readonly ILogger<SyncItemsPageModel> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
-
+    [ObservableProperty] private bool _isProgressBarVisible = false;
     [ObservableProperty] private int _operationProgress = 0;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddItemsToLocalDatabaseCommand))]
@@ -47,6 +47,8 @@ public partial class SyncItemsPageModel : ObservableObject
     private async Task Appearing()
     {
         //Projects = await _projectRepository.ListAsync();
+        //OperationProgress = 50;
+        IsProgressBarVisible = false;
     }
 
     [RelayCommand]
