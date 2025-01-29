@@ -71,11 +71,14 @@
                                    Grid.ColumnSpan="2"
                                    ItemsSource="{Binding LogEntries}"
                                    AutoGenerateColumnsMode="None"
+                                   AllowResizingColumns="True"
+                                   VerticalScrollBarVisibility="Always"
                                    BackgroundColor="Chartreuse"
+                                   
                                    >
                 <syncfusion:SfDataGrid.Columns>
-                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" />
-                    <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" />
+                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"  ColumnWidthMode="Auto"/>
+                    <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill"/>
                 </syncfusion:SfDataGrid.Columns>
             </syncfusion:SfDataGrid>
             <progressBar:SfLinearProgressBar x:Name="ProgressBar"
