@@ -40,6 +40,13 @@
                 </VisualStateGroupList>
             </Setter>
         </Style>
+        <Style TargetType="syncfusion:DataGridCell">
+            <Setter Property="TextColor" Value="White"/>
+        </Style>
+        <Style TargetType="syncfusion:DataGridHeaderCell">
+            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+        </Style>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" />
@@ -72,10 +79,8 @@
                                    ItemsSource="{Binding LogEntries}"
                                    AutoGenerateColumnsMode="None"
                                    AllowResizingColumns="True"
-                                   VerticalScrollBarVisibility="Always"
-                                   BackgroundColor="Chartreuse"
                                    
-                                   >
+                                   VerticalScrollBarVisibility="Always">
                 <syncfusion:SfDataGrid.Columns>
                     <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"  ColumnWidthMode="Auto"/>
                     <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill"/>

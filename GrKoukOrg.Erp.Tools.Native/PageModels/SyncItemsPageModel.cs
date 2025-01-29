@@ -43,6 +43,7 @@ public partial class SyncItemsPageModel : ObservableObject
         CanSyncItems = value > 0;
     }
 
+   
     [RelayCommand]
     private async Task Appearing()
     {
@@ -73,8 +74,15 @@ public partial class SyncItemsPageModel : ObservableObject
     private async Task AddItemsToLocalDatabase()
     {
         AddLog("Adding items to local database");
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
 
-        foreach (var (item, index) in Items.Select((item, index) => (item, index)))
+        foreach (var item in Items)
         {
             //Check if item with Id already exists in the database
             if (await _localItemsRepo.ItemExist(item.Id))
@@ -88,7 +96,20 @@ public partial class SyncItemsPageModel : ObservableObject
                 var result = await _localItemsRepo.AddItemAsync(item);
                 AddLog($"Index: {index}, Id: {item.Id}, Name: {item.Name} Add item result returned {result}");
             }
-            OperationProgress=index;
+            ((IProgress<int>)progress).Report(++index);
+
+            // Ensure that LogEntries are updated immediately
+            await MainThread.InvokeOnMainThreadAsync(() =>
+            {
+                OnPropertyChanged(nameof(LogEntries));
+            });
+
+            // OperationProgress=index;
+            // await MainThread.InvokeOnMainThreadAsync(() =>
+            // {
+            //     OnPropertyChanged(nameof(OperationProgress));
+            //     OnPropertyChanged(nameof(LogEntries));
+            // });
         }
 
         await AppShell.DisplayToastAsync("Items added and updated to local database");
