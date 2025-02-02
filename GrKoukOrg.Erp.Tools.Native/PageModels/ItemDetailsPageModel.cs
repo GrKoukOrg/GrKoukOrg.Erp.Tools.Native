@@ -19,10 +19,16 @@ public partial class ItemDetailsPageModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SelectionChange(object? sender, SelectionChangedEventArgs e)
+    private async Task SelectionChanged(object selectedItem)
     {
-        
+        if (selectedItem is SearchItem selectedSearchItem)
+        {
+           // Optionally find and set _selectedItem
+           SelectedItem = Items.FirstOrDefault(item => item.Id == selectedSearchItem.Id);
+        }
     }
+
+    
     [RelayCommand]
     private async Task Appearing()
     {

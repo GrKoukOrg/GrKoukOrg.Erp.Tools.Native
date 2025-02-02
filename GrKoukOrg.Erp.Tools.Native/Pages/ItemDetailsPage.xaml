@@ -19,26 +19,9 @@
         </Style>
 
         <Style TargetType="editors:SfAutocomplete">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
-            <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="FontFamily" Value="OpenSansRegular"/>
-            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=24}" />
-            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-            <Setter Property="MinimumHeightRequest" Value="44"/>
-            <Setter Property="MinimumWidthRequest" Value="44"/>
             <Setter Property="HighlightedTextColor" Value="Red"/>
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal" />
-                        <VisualState x:Name="Disabled">
-                            <VisualState.Setters>
-                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
+            <Setter Property="TextHighlightMode" Value="MultipleOccurrence"/>
+            
         </Style>
        
     </ContentPage.Resources>
@@ -54,15 +37,31 @@
                        DisplayMemberPath="SearchText"
                        TextSearchMode="Contains"
                        TextMemberPath="SearchText"
-                       TextHighlightMode="MultipleOccurrence"
-                       HighlightedTextFontAttributes="Bold"
-                       SelectionChanged="DropDownListBase_OnSelectionChanged"
                        ItemsSource="{Binding SearchItems}">
-                       
+                       <editors:SfAutocomplete.Behaviors>
+                           <toolkit:EventToCommandBehavior EventName="SelectionChanged"
+                                                           Command="{Binding SelectionChangedCommand}"
+                                                           EventArgsConverter="{StaticResource AutoCompleteSelectionConverter}" />
+                       </editors:SfAutocomplete.Behaviors>
                    </editors:SfAutocomplete>
                 </inputLayout:SfTextInputLayout>
                
-           
+           <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
+                 RowSpacing="{StaticResource LayoutSpacing}"
+                 >
+               <Grid.ColumnDefinitions>
+                   <ColumnDefinition Width="Auto"/>
+                   <ColumnDefinition Width="*"/>
+               </Grid.ColumnDefinitions>
+               <Grid.RowDefinitions>
+                   <RowDefinition Height="Auto"/>
+                   <RowDefinition Height="Auto"/>
+               </Grid.RowDefinitions>
+               <Label Text="Code" Grid.Column="0" Grid.Row="0"/>
+               <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0"/>
+               <Label Text="Name" Grid.Column="0" Grid.Row="1"/>
+               <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1"/>
+           </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>

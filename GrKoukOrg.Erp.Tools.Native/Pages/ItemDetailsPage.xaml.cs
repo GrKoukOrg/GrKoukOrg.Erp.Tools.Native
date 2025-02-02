@@ -15,8 +15,5 @@ public partial class ItemDetailsPage : ContentPage
         InitializeComponent();
     }
 
-    private void DropDownListBase_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
+   
 }
