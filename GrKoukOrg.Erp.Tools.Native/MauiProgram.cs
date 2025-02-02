@@ -53,6 +53,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
             builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
             builder.Services.AddTransientWithShellRoute<SyncItemsPage,SyncItemsPageModel>("syncitems");
+            builder.Services.AddTransientWithShellRoute<ItemDetailsPage, ItemDetailsPageModel>("itemdetails");
             builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
             {
                 var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();

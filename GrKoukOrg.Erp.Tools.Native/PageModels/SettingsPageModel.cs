@@ -22,5 +22,18 @@ public partial class SettingsPageModel:ObservableObject
     {
         ApiUrl = await _settingsDataService.GetApiUrlAsync();
     }
-    
+
+    [RelayCommand]
+    private async Task Save()
+    {
+        try
+        {
+            await _settingsDataService.SetApiUrlAsync(ApiUrl);
+            await AppShell.DisplayToastAsync("Settings saved");
+        }
+        catch (Exception e)
+        {
+            await AppShell.DisplayToastAsync($"Error: {e.Message}");
+        }
+    }
 }       

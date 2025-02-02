@@ -8,11 +8,12 @@ public interface ISettingsDataService
     Task<string> GetApiUrlAsync();
     Task<int> SetApiUrlAsync(string url);
     string GetApiUrl();
+    int SetApiUrl(string url);
 }
 
 public class SettingsMemoryDataService : ISettingsDataService
 {
-    private const string apiBaseDefaultUrl= "http://192.168.20.38:1234";
+    private const string apiBaseDefaultUrl= "http://192.168.20.168:1234";
     public async Task<string> GetApiUrlAsync()
     {
         string url = Preferences.Get("apiUrl",apiBaseDefaultUrl );
@@ -29,6 +30,11 @@ public class SettingsMemoryDataService : ISettingsDataService
     {
         Preferences.Set("apiUrl",url);
         return Task.FromResult(0);
+    }
+    public int SetApiUrl(string url)
+    {
+        Preferences.Set("apiUrl",url);
+        return 0;
     }
 }
 

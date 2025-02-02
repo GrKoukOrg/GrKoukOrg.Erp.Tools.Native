@@ -46,7 +46,8 @@ public class LocalItemsRepo
                 TimiAgoras         NUMERIC,
                 TimiAgorasFpa      NUMERIC,
                 TimiPolisisLian    NUMERIC,
-                TimiPolisisLianFpa NUMERIC
+                TimiPolisisLianFpa NUMERIC,
+                Barcodes           TEXT (1000)
             );";
                 await createTableCmd.ExecuteNonQueryAsync();
 
@@ -92,7 +93,7 @@ public class LocalItemsRepo
                     TimiAgorasFpa = reader.GetDecimal(9),
                     TimiPolisisLian = reader.GetDecimal(10),
                     TimiPolisisLianFpa = reader.GetDecimal(11),
-                  
+                    Barcodes = reader.GetString(12),
                 });
             }
 
@@ -155,6 +156,7 @@ public class LocalItemsRepo
                     TimiAgorasFpa = reader.GetDecimal(9),
                     TimiPolisisLian = reader.GetDecimal(10),
                     TimiPolisisLianFpa = reader.GetDecimal(11),
+                    Barcodes = reader.GetString(12),
                 };
             }
 
@@ -186,8 +188,9 @@ public class LocalItemsRepo
                        TimiAgoras = @TimiAgoras,
                        TimiAgorasFpa = @TimiAgorasFpa,
                        TimiPolisisLian = @TimiPolisisLian,
-                       TimiPolisisLianFpa = @TimiPolisisLianFpa
-                    
+                       TimiPolisisLianFpa = @TimiPolisisLianFpa,
+                       Barcodes = @Barcodes
+                                 
                      WHERE ID = @Id
             ";
             saveCmd.Parameters.AddWithValue("@Id", item.Id);
@@ -202,7 +205,7 @@ public class LocalItemsRepo
             saveCmd.Parameters.AddWithValue("@TimiAgorasFpa", item.TimiAgorasFpa);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLian", item.TimiPolisisLian);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLianFpa", item.TimiPolisisLianFpa);
-
+            saveCmd.Parameters.AddWithValue("@Barcodes", item.Barcodes);
 
             var result = await saveCmd.ExecuteScalarAsync();
             if (result != null)
@@ -246,7 +249,8 @@ public class LocalItemsRepo
                                       TimiAgoras,
                                       TimiAgorasFpa,
                                       TimiPolisisLian,
-                                      TimiPolisisLianFpa
+                                      TimiPolisisLianFpa,
+                                      Barcodes
                                   )
                  VALUES (
                                       @Id,
@@ -260,7 +264,8 @@ public class LocalItemsRepo
                                       @TimiAgoras,
                                       @TimiAgorasFpa,
                                       @TimiPolisisLian,
-                                      @TimiPolisisLianFpa
+                                      @TimiPolisisLianFpa,
+                                      @Barcodes  
                                   );
 
                   SELECT last_insert_rowid();";
@@ -279,8 +284,9 @@ public class LocalItemsRepo
                        TimiAgoras = @TimiAgoras,
                        TimiAgorasFpa = @TimiAgorasFpa,
                        TimiPolisisLian = @TimiPolisisLian,
-                       TimiPolisisLianFpa = @TimiPolisisLianFpa
-                    
+                       TimiPolisisLianFpa = @TimiPolisisLianFpa,
+                       Barcodes = @Barcodes
+                                 
                      WHERE ID = @Id
             ";
                 
@@ -299,7 +305,7 @@ public class LocalItemsRepo
             saveCmd.Parameters.AddWithValue("@TimiAgorasFpa", item.TimiAgorasFpa);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLian", item.TimiPolisisLian);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLianFpa", item.TimiPolisisLianFpa);
-
+            saveCmd.Parameters.AddWithValue("@Barcodes", item.Barcodes);
 
             var result = await saveCmd.ExecuteScalarAsync();
             if (item.Id == 0)
@@ -335,7 +341,8 @@ public class LocalItemsRepo
                                       TimiAgoras,
                                       TimiAgorasFpa,
                                       TimiPolisisLian,
-                                      TimiPolisisLianFpa
+                                      TimiPolisisLianFpa,
+                                      Barcodes
                                   )
                  VALUES (
                                       @Id,
@@ -349,7 +356,8 @@ public class LocalItemsRepo
                                       @TimiAgoras,
                                       @TimiAgorasFpa,
                                       @TimiPolisisLian,
-                                      @TimiPolisisLianFpa
+                                      @TimiPolisisLianFpa,
+                                      @Barcodes
                                   );
                 ";
            
@@ -365,7 +373,7 @@ public class LocalItemsRepo
             saveCmd.Parameters.AddWithValue("@TimiAgorasFpa", item.TimiAgorasFpa);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLian", item.TimiPolisisLian);
             saveCmd.Parameters.AddWithValue("@TimiPolisisLianFpa", item.TimiPolisisLianFpa);
-
+            saveCmd.Parameters.AddWithValue("@Barcodes", item.Barcodes);
 
             var result = await saveCmd.ExecuteScalarAsync();
             if (result != null)
