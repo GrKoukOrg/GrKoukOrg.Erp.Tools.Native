@@ -56,11 +56,21 @@
                <Grid.RowDefinitions>
                    <RowDefinition Height="Auto"/>
                    <RowDefinition Height="Auto"/>
+                   <RowDefinition Height="Auto"/>
+                   <RowDefinition Height="Auto"/>
+                   <RowDefinition Height="Auto"/>
                </Grid.RowDefinitions>
-               <Label Text="Code" Grid.Column="0" Grid.Row="0"/>
+               <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0"/>
                <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0"/>
-               <Label Text="Name" Grid.Column="0" Grid.Row="1"/>
+               <Label Text="Περιγραφή" Grid.Column="0" Grid.Row="1"/>
                <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1"/>
+               <Label Text="Απόθεμα" Grid.Column="0" Grid.Row="2"/>
+               <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2"/>
+               <Label Text="Τιμή Αγοράς" Grid.Column="0" Grid.Row="3"/>
+               <Label Text="{Binding SelectedItem.TimiAgoras}" Grid.Column="1" Grid.Row="3"/>
+               <Label Text="Τιμή Αγοράς ΦΠΑ" Grid.Column="0" Grid.Row="4"/>
+               <Label Text="{Binding SelectedItem.TimiAgorasFpa}" Grid.Column="1" Grid.Row="4"/>
+
            </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>
