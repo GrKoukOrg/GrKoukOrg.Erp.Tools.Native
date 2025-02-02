@@ -8,70 +8,86 @@
              xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
              x:DataType="pageModels:ItemDetailsPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ItemDetailsPage">
-     <ContentPage.Behaviors>
+    <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            EventName="Appearing"                
+            EventName="Appearing"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.Resources>
         <Style x:Key="InvalidEntryStyle" TargetType="Entry">
             <Setter Property="TextColor" Value="Red" />
-        </Style>
 
-        <Style TargetType="editors:SfAutocomplete">
-            <Setter Property="HighlightedTextColor" Value="Red"/>
-            <Setter Property="TextHighlightMode" Value="MultipleOccurrence"/>
+        </Style>
+        <Style TargetType="inputLayout:SfTextInputLayout">
+            <Setter Property="ContainerType" Value="Outlined" />
+            <Setter Property="FocusedStrokeThickness" Value="2"/>
+            <Setter Property="UnfocusedStrokeThickness" Value="1"/>
+            
+                
             
         </Style>
        
+        <Style TargetType="editors:SfAutocomplete">
+            <Setter Property="HighlightedTextColor" Value="Red" />
+            <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="FontSize" Value="{OnIdiom 16, Desktop=24}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+           
+            <!-- <Setter Property="BackgroundColor" Value="Black" /> -->
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+
     </ContentPage.Resources>
     <ContentPage.Content>
         <VerticalStackLayout
             Spacing="{StaticResource LayoutSpacing}"
             Padding="{StaticResource LayoutPadding}">
-           
-                      
-                <inputLayout:SfTextInputLayout 
-                    Hint="Αναζήτηση">
-                   <editors:SfAutocomplete 
-                       DisplayMemberPath="SearchText"
-                       TextSearchMode="Contains"
-                       TextMemberPath="SearchText"
-                       ItemsSource="{Binding SearchItems}">
-                       <editors:SfAutocomplete.Behaviors>
-                           <toolkit:EventToCommandBehavior EventName="SelectionChanged"
-                                                           Command="{Binding SelectionChangedCommand}"
-                                                           EventArgsConverter="{StaticResource AutoCompleteSelectionConverter}" />
-                       </editors:SfAutocomplete.Behaviors>
-                   </editors:SfAutocomplete>
-                </inputLayout:SfTextInputLayout>
-               
-           <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
-                 RowSpacing="{StaticResource LayoutSpacing}"
-                 >
-               <Grid.ColumnDefinitions>
-                   <ColumnDefinition Width="Auto"/>
-                   <ColumnDefinition Width="*"/>
-               </Grid.ColumnDefinitions>
-               <Grid.RowDefinitions>
-                   <RowDefinition Height="Auto"/>
-                   <RowDefinition Height="Auto"/>
-                   <RowDefinition Height="Auto"/>
-                   <RowDefinition Height="Auto"/>
-                   <RowDefinition Height="Auto"/>
-               </Grid.RowDefinitions>
-               <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0"/>
-               <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0"/>
-               <Label Text="Περιγραφή" Grid.Column="0" Grid.Row="1"/>
-               <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1"/>
-               <Label Text="Απόθεμα" Grid.Column="0" Grid.Row="2"/>
-               <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2"/>
-               <Label Text="Τιμή Αγοράς" Grid.Column="0" Grid.Row="3"/>
-               <Label Text="{Binding SelectedItem.TimiAgoras}" Grid.Column="1" Grid.Row="3"/>
-               <Label Text="Τιμή Αγοράς ΦΠΑ" Grid.Column="0" Grid.Row="4"/>
-               <Label Text="{Binding SelectedItem.TimiAgorasFpa}" Grid.Column="1" Grid.Row="4"/>
 
-           </Grid>
+
+            <inputLayout:SfTextInputLayout
+                Hint="Αναζήτηση">
+                <editors:SfAutocomplete
+                    DisplayMemberPath="SearchText"
+                    TextSearchMode="Contains"
+                    TextMemberPath="SearchText"
+                    MaximumSuggestion="10"
+                    LoadMoreText="Φόρτωση..."
+                    ItemsSource="{Binding SearchItems}">
+                    <editors:SfAutocomplete.Behaviors>
+                        <toolkit:EventToCommandBehavior EventName="SelectionChanged"
+                                                        Command="{Binding SelectionChangedCommand}"
+                                                        EventArgsConverter="{StaticResource AutoCompleteSelectionConverter}" />
+                    </editors:SfAutocomplete.Behaviors>
+                </editors:SfAutocomplete>
+            </inputLayout:SfTextInputLayout>
+
+            <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
+                  RowSpacing="{StaticResource LayoutSpacing}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
+                <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" />
+                <Label Text="Περιγραφή" Grid.Column="0" Grid.Row="1" />
+                <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1" />
+                <Label Text="Απόθεμα" Grid.Column="0" Grid.Row="2" />
+                <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2" />
+                <Label Text="Τιμή Αγοράς" Grid.Column="0" Grid.Row="3" />
+                <Label Text="{Binding SelectedItem.TimiAgoras, StringFormat='{0:F2}€'}" Grid.Column="1" Grid.Row="3" />
+                <Label Text="Τιμή Αγοράς ΦΠΑ" Grid.Column="0" Grid.Row="4" />
+                <Label Text="{Binding SelectedItem.TimiAgorasFpa,StringFormat='{0:F2}€' }" Grid.Column="1" Grid.Row="4" />
+
+            </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>
 </ContentPage>
