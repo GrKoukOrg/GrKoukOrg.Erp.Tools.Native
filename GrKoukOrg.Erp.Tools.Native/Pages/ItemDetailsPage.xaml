@@ -62,7 +62,7 @@
                     </editors:SfAutocomplete.Behaviors>
                 </editors:SfAutocomplete>
             </inputLayout:SfTextInputLayout>
-
+            <Button Padding="{StaticResource LayoutPadding}" Text="Scan Barcode" Clicked="Button_OnClicked"></Button>
             <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
                   RowSpacing="{StaticResource LayoutSpacing}">
                 <Grid.ColumnDefinitions>
