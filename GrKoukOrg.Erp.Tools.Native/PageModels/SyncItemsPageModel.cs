@@ -74,6 +74,9 @@ public partial class SyncItemsPageModel : ObservableObject
     private async Task AddItemsToLocalDatabase()
     {
         AddLog("Adding items to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
         // Create progress reporter to handle UI updates
         var progress = new Progress<int>(value =>
         {
@@ -81,37 +84,51 @@ public partial class SyncItemsPageModel : ObservableObject
             OnPropertyChanged(nameof(OperationProgress));
         });
         int index = 0;
-
+        int totalCount = Items.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
         foreach (var item in Items)
         {
-            //Check if item with Id already exists in the database
-            if (await _localItemsRepo.ItemExist(item.Id))
+            try
             {
-                var result = await _localItemsRepo.UpdateItemAsync(item);
-                AddLog($"Index: {index}, Id: {item.Id}, Name: {item.Name} Update item result returned {result}");
+                //Check if item with Id already exists in the database
+                if (await _localItemsRepo.ItemExist(item.Id))
+                {
+                    var result = await _localItemsRepo.UpdateItemAsync(item);
+                    AddLog($"Index: {index + 1} / {totalCount}. Update item->Id: {item.Id}, Name: {item.Name}  result returned {result}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localItemsRepo.AddItemAsync(item);
+                    AddLog($"Index: {index + 1}/{totalCount}. Add item->Id: {item.Id}, Name: {item.Name} result returned {result}");
+                    addedCount++;
+                }
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 10 == 0)
+                {
+                    await Task.Delay(20); // Introduce a small delay for smoother progress visualization    
+                }
+                
+
+                // // Ensure that LogEntries are updated immediately *** This code did not work *** 
+                // await MainThread.InvokeOnMainThreadAsync(() =>
+                // {
+                //     OnPropertyChanged(nameof(LogEntries));
+                // });
                 
             }
-            else
+            catch (Exception ex)
             {
-                var result = await _localItemsRepo.AddItemAsync(item);
-                AddLog($"Index: {index}, Id: {item.Id}, Name: {item.Name} Add item result returned {result}");
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
             }
-            ((IProgress<int>)progress).Report(++index);
-
-            // Ensure that LogEntries are updated immediately
-            await MainThread.InvokeOnMainThreadAsync(() =>
-            {
-                OnPropertyChanged(nameof(LogEntries));
-            });
-
-            // OperationProgress=index;
-            // await MainThread.InvokeOnMainThreadAsync(() =>
-            // {
-            //     OnPropertyChanged(nameof(OperationProgress));
-            //     OnPropertyChanged(nameof(LogEntries));
-            // });
         }
+        AddLog("All items have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
 
-        await AppShell.DisplayToastAsync("Items added and updated to local database");
+        await AppShell.DisplayToastAsync("Finished updating local database");
     }
 }

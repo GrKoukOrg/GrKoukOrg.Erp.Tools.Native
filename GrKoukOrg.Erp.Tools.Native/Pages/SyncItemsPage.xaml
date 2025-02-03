@@ -91,7 +91,7 @@
                                           Progress="{Binding OperationProgress}"
                                           Minimum="0"
                                           Maximum="{Binding ItemCount}"
-                                          IsVisible="True"
+                                          IsVisible="{Binding IsProgressBarVisible}"
                                           />
         </Grid>
         
