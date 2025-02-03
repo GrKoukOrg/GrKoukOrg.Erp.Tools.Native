@@ -54,6 +54,7 @@
                     TextMemberPath="SearchText"
                     MaximumSuggestion="10"
                     LoadMoreText="Φόρτωση..."
+                    Text="{Binding SearchText, Mode=TwoWay}"
                     ItemsSource="{Binding SearchItems}">
                     <editors:SfAutocomplete.Behaviors>
                         <toolkit:EventToCommandBehavior EventName="SelectionChanged"
@@ -62,7 +63,7 @@
                     </editors:SfAutocomplete.Behaviors>
                 </editors:SfAutocomplete>
             </inputLayout:SfTextInputLayout>
-            <Button Padding="{StaticResource LayoutPadding}" Text="Scan Barcode" Clicked="Button_OnClicked"></Button>
+            <Button Padding="{StaticResource LayoutPadding}" Text="Scan Barcode" Command="{Binding ScanBarcodeCommand}"></Button>
             <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
                   RowSpacing="{StaticResource LayoutSpacing}">
                 <Grid.ColumnDefinitions>

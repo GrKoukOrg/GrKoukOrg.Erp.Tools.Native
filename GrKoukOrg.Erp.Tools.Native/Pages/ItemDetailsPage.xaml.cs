@@ -17,9 +17,5 @@ public partial class ItemDetailsPage : ContentPage
     }
 
 
-    private async void Button_OnClicked(object? sender, EventArgs e)
-    {
-        var barcodeScannerPopupPage = new BarCodeScannerPopupPage();
-        var result = await this.ShowPopupAsync(barcodeScannerPopupPage, CancellationToken.None);
-    }
+   
 }
