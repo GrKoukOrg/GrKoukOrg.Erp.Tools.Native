@@ -4,15 +4,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:localBehaviors="clr-namespace:GrKoukOrg.Erp.Tools.Native.Behaviors"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              x:DataType="pageModels:SyncItemsPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncItemsPage">
-    
+
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            EventName="Appearing"                
+            EventName="Appearing"
             Command="{Binding AppearingCommand}" />
+       
     </ContentPage.Behaviors>
     <ContentPage.Resources>
         <Style x:Key="InvalidEntryStyle" TargetType="Entry">
@@ -20,20 +23,23 @@
         </Style>
 
         <Style TargetType="Entry">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
             <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="FontFamily" Value="OpenSansRegular"/>
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
             <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=24}" />
-            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-            <Setter Property="MinimumHeightRequest" Value="44"/>
-            <Setter Property="MinimumWidthRequest" Value="44"/>
+            <Setter Property="PlaceholderColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
             <Setter Property="VisualStateManager.VisualStateGroups">
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="CommonStates">
                         <VisualState x:Name="Normal" />
                         <VisualState x:Name="Disabled">
                             <VisualState.Setters>
-                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -41,60 +47,59 @@
             </Setter>
         </Style>
         <Style TargetType="syncfusion:DataGridCell">
-            <Setter Property="TextColor" Value="White"/>
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         </Style>
         <Style TargetType="syncfusion:DataGridHeaderCell">
-            <Setter Property="TextColor" Value="White"/>
-            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="FontAttributes" Value="Bold" />
         </Style>
     </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" />
-        <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}"/>
+        <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}" />
     </ContentPage.ToolbarItems>
-   
-      
-       
-    
-        <Grid  Padding="{StaticResource LayoutPadding}"
-              RowSpacing="{StaticResource LayoutSpacing}" 
-              ColumnSpacing="{StaticResource LayoutSpacing}"> 
-               
-             <Grid.ColumnDefinitions>
-                 <ColumnDefinition Width="Auto"/>
-                 <ColumnDefinition Width="*"/>
-                 </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Label Text="Items Count" Grid.Column="0" Grid.Row="0"/>
-            <Label Text="{Binding ItemCount}" Grid.Column="1" Grid.Row="0"/>
-            
-            
-            <syncfusion:SfDataGrid x:Name="LogDataGrid"
-                                   Grid.Column="0" Grid.Row="1"
-                                   Grid.ColumnSpan="2"
-                                   ItemsSource="{Binding LogEntries}"
-                                   AutoGenerateColumnsMode="None"
-                                   AllowResizingColumns="True"
-                                   
-                                   VerticalScrollBarVisibility="Always">
-                <syncfusion:SfDataGrid.Columns>
-                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"  ColumnWidthMode="Auto"/>
-                    <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill"/>
-                </syncfusion:SfDataGrid.Columns>
-            </syncfusion:SfDataGrid>
-            <progressBar:SfLinearProgressBar x:Name="ProgressBar"
-                                          Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                                          Progress="{Binding OperationProgress}"
-                                          Minimum="0"
-                                          Maximum="{Binding ItemCount}"
-                                          IsVisible="{Binding IsProgressBarVisible}"
-                                          />
-        </Grid>
-        
-    
-    
+
+
+    <Grid Padding="{StaticResource LayoutPadding}"
+          RowSpacing="{StaticResource LayoutSpacing}"
+          ColumnSpacing="{StaticResource LayoutSpacing}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Text="Items Count" Grid.Column="0" Grid.Row="0" />
+        <Label Text="{Binding ItemCount}" Grid.Column="1" Grid.Row="0" />
+
+
+        <syncfusion:SfDataGrid x:Name="LogDataGrid"
+                               Grid.Column="0" Grid.Row="1"
+                               Grid.ColumnSpan="2"
+                               ItemsSource="{Binding LogEntries}"
+                               AutoGenerateColumnsMode="None"
+                               AllowResizingColumns="True"
+
+                               VerticalScrollBarVisibility="Always">
+            <syncfusion:SfDataGrid.Columns>
+                <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" ColumnWidthMode="Auto" />
+                <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill" />
+            </syncfusion:SfDataGrid.Columns>
+           
+        </syncfusion:SfDataGrid>
+        <progressBar:SfLinearProgressBar x:Name="ProgressBar"
+                                         Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                                         Progress="{Binding OperationProgress}"
+                                         Minimum="0"
+                                         Maximum="{Binding ItemCount}"
+                                         IsVisible="{Binding IsProgressBarVisible}" />
+    </Grid>
+
+
 </ContentPage>

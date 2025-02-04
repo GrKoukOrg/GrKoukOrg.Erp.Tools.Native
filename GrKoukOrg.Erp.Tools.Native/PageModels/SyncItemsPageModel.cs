@@ -24,6 +24,8 @@ public partial class SyncItemsPageModel : ObservableObject
 
     [ObservableProperty] private int _itemCount = 0;
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
+    [ObservableProperty]
+    private int _lastLogEntryIndex;
 
     private void AddLog(string message)
     {
@@ -67,6 +69,7 @@ public partial class SyncItemsPageModel : ObservableObject
         {
             _logger.LogError(e, "Error in GetItems");
             AddLog($"Error in GetItems: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetItems: {e.Message}");
         }
     }
 
@@ -87,6 +90,7 @@ public partial class SyncItemsPageModel : ObservableObject
         int totalCount = Items.Count;
         int updatedCount = 0;
         int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
         foreach (var item in Items)
         {
             try
@@ -108,6 +112,7 @@ public partial class SyncItemsPageModel : ObservableObject
                 // Allow time for UI to update after each iteration
                 if (index % 10 == 0)
                 {
+                    LastLogEntryIndex = index;
                     await Task.Delay(20); // Introduce a small delay for smoother progress visualization    
                 }
                 
@@ -128,7 +133,7 @@ public partial class SyncItemsPageModel : ObservableObject
         AddLog("All items have been processed.");
         AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
         IsProgressBarVisible = false; // Hide the progress bar after completing the operation
-
+        Preferences.Default.Set("last_synced", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 }

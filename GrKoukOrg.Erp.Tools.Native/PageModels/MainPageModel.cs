@@ -8,23 +8,19 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
     {
         private bool _isNavigatedTo;
         private bool _dataLoaded;
-       
+
         private readonly ModalErrorHandler _errorHandler;
         private readonly SeedDataService _seedDataService;
 
-        [ObservableProperty]
-        bool _isBusy;
+        [ObservableProperty] bool _isBusy;
 
-        [ObservableProperty]
-        bool _isRefreshing;
+        [ObservableProperty] bool _isRefreshing;
 
-        [ObservableProperty]
-        private string _today = DateTime.Now.ToString("dddd, MMM d");
+        [ObservableProperty] private string _today = DateTime.Now.ToString("dddd, MMM d");
+        [ObservableProperty] private string _lastSynced = string.Empty;
 
-      
-        public MainPageModel(SeedDataService seedDataService,  ModalErrorHandler errorHandler)
+        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler)
         {
-           
             _errorHandler = errorHandler;
             _seedDataService = seedDataService;
         }
@@ -34,15 +30,11 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsBusy = true;
-
-               
-
-               
+                LastSynced=Preferences.Default.Get("last_synced", string.Empty);
             }
             finally
             {
                 IsBusy = false;
-               
             }
         }
 
@@ -52,7 +44,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
 
             if (!isSeeded)
             {
-                await seedDataService.LoadSeedDataAsync();
+                //await seedDataService.LoadSeedDataAsync();
             }
 
             Preferences.Default.Set("is_seeded", true);
@@ -65,7 +57,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsRefreshing = true;
-                await LoadData();
+                // await LoadData();
             }
             catch (Exception e)
             {
@@ -100,11 +92,5 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
                 await Refresh();
             }
         }
-
-       
-
-       
-       
-       
     }
 }
