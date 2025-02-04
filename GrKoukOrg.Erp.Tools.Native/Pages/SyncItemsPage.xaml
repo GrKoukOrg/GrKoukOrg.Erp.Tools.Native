@@ -7,6 +7,7 @@
              xmlns:localBehaviors="clr-namespace:GrKoukOrg.Erp.Tools.Native.Behaviors"
              xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              x:DataType="pageModels:SyncItemsPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncItemsPage">
@@ -61,45 +62,59 @@
         <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}" />
     </ContentPage.ToolbarItems>
 
-
-    <Grid Padding="{StaticResource LayoutPadding}"
-          RowSpacing="{StaticResource LayoutSpacing}"
+<Grid>
+    <!-- Main Content -->
+    <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    
+    <!-- The actual content of the page -->
+    <Grid Padding="{StaticResource LayoutPadding}" 
+          RowSpacing="{StaticResource LayoutSpacing}" 
           ColumnSpacing="{StaticResource LayoutSpacing}">
-
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        
+        <!-- Your Content -->
         <Label Text="Items Count" Grid.Column="0" Grid.Row="0" />
         <Label Text="{Binding ItemCount}" Grid.Column="1" Grid.Row="0" />
-
-
+        
         <syncfusion:SfDataGrid x:Name="LogDataGrid"
                                Grid.Column="0" Grid.Row="1"
                                Grid.ColumnSpan="2"
                                ItemsSource="{Binding LogEntries}"
                                AutoGenerateColumnsMode="None"
                                AllowResizingColumns="True"
-
                                VerticalScrollBarVisibility="Always">
             <syncfusion:SfDataGrid.Columns>
                 <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" ColumnWidthMode="Auto" />
                 <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill" />
             </syncfusion:SfDataGrid.Columns>
-           
         </syncfusion:SfDataGrid>
-        <progressBar:SfLinearProgressBar x:Name="ProgressBar"
-                                         Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                                         Progress="{Binding OperationProgress}"
-                                         Minimum="0"
-                                         Maximum="{Binding ItemCount}"
-                                         IsVisible="{Binding IsProgressBarVisible}" />
     </Grid>
-
+    
+    <!-- Busy Indicator Overlay -->
+    <Grid IsVisible="{Binding IsWaitingForResponse}" BackgroundColor="Black" Opacity="0.5">
+        <!-- Overlay -->
+        <Grid RowDefinitions="Auto,*">
+            <core:SfBusyIndicator
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                IsRunning="{Binding IsWaitingForResponse}"
+                AnimationType="CircularMaterial"
+                HeightRequest="100" 
+                WidthRequest="100"/>
+        </Grid>
+    </Grid>
+</Grid>
 
 </ContentPage>

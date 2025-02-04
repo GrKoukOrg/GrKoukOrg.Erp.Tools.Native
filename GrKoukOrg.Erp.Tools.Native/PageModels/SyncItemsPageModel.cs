@@ -16,7 +16,7 @@ public partial class SyncItemsPageModel : ObservableObject
 
     [ObservableProperty] private bool _isProgressBarVisible = false;
     [ObservableProperty] private int _operationProgress = 0;
-
+    [ObservableProperty] private bool _isWaitingForResponse = false;
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddItemsToLocalDatabaseCommand))]
     private bool _canSyncItems = false;
 
@@ -29,7 +29,8 @@ public partial class SyncItemsPageModel : ObservableObject
 
     private void AddLog(string message)
     {
-        LogEntries.Add(new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
+        //LogEntries.Add(new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
+        LogEntries.Insert(0, new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
     }
 
     public SyncItemsPageModel(LocalItemsRepo localItemsRepo, IServerDataAccess serverDataAccess,
@@ -52,6 +53,7 @@ public partial class SyncItemsPageModel : ObservableObject
         //Projects = await _projectRepository.ListAsync();
         //OperationProgress = 50;
         IsProgressBarVisible = false;
+        IsWaitingForResponse = false;
     }
 
     [RelayCommand]
@@ -60,6 +62,7 @@ public partial class SyncItemsPageModel : ObservableObject
         AddLog("Getting items from server");
         try
         {
+            IsWaitingForResponse = true;
             Items = await _serverDataAccess.GetServerItemsListAsync();
             ItemCount = Items.Count;
             AddLog($"Connected and retrieved {ItemCount} items");
@@ -67,6 +70,7 @@ public partial class SyncItemsPageModel : ObservableObject
         }
         catch (Exception e)
         {
+            IsWaitingForResponse = false;
             _logger.LogError(e, "Error in GetItems");
             AddLog($"Error in GetItems: {e.Message}");
             await AppShell.DisplayToastAsync($"Error in GetItems: {e.Message}");
