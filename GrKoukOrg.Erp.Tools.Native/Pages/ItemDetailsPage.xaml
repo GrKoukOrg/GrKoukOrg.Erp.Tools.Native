@@ -69,6 +69,9 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -78,16 +81,19 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
-                <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" />
+                <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" />
                 <Label Text="Περιγραφή" Grid.Column="0" Grid.Row="1" />
-                <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1" />
+                <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" />
                 <Label Text="Απόθεμα" Grid.Column="0" Grid.Row="2" />
-                <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2" />
-                <Label Text="Τιμή Αγοράς" Grid.Column="0" Grid.Row="3" />
+                <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3"/>
+                <Label Text="Τιμή Αγ." Grid.Column="0" Grid.Row="3" />
                 <Label Text="{Binding SelectedItem.TimiAgoras, StringFormat='{0:F2}€'}" Grid.Column="1" Grid.Row="3" />
-                <Label Text="Τιμή Αγοράς ΦΠΑ" Grid.Column="0" Grid.Row="4" />
+                <Label Text="Τιμή Αγ. ΦΠΑ" Grid.Column="0" Grid.Row="4" />
                 <Label Text="{Binding SelectedItem.TimiAgorasFpa,StringFormat='{0:F2}€' }" Grid.Column="1" Grid.Row="4" />
-
+                <Label Text="Τιμή Πώλ." Grid.Column="2" Grid.Row="3" />
+                <Label Text="{Binding SelectedItem.TimiPolisisLian, StringFormat='{0:F2}€'}" Grid.Column="3" Grid.Row="3" />
+                <Label Text="Τιμή Πώλ. ΦΠΑ" Grid.Column="2" Grid.Row="4" />
+                <Label Text="{Binding SelectedItem.TimiPolisisLianFpa,StringFormat='{0:F2}€' }" Grid.Column="3" Grid.Row="4" />
             </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>
