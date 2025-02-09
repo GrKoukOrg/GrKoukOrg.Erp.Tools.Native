@@ -11,7 +11,7 @@ public class BuyDocLineListDto
     //public string? UnitOfMeasureCode { get; set; }
     public string? UnitOfMeasureName { get; set; }
     public double UnitFpaPerc { get; set; }
-    public double UnitQty { get; set; }
+    public decimal UnitQty { get; set; }
     public decimal UnitPrice { get; set; }
     public double UnitDiscountRate { get; set; }
     public decimal UnitDiscountAmount { get; set; }
