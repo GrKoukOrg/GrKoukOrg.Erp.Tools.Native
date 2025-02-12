@@ -21,7 +21,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [ObservableProperty] bool _isRefreshing;
 
         [ObservableProperty] private string _today = DateTime.Now.ToString("dddd, MMM d");
-        [ObservableProperty] private string _lastSynced = string.Empty;
+        [ObservableProperty] private DateTime _lastSynced;
 
         [ObservableProperty] private string _userName = string.Empty;
         [ObservableProperty] private string _password = string.Empty;
@@ -38,7 +38,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsBusy = true;
-                LastSynced=Preferences.Default.Get("last_synced", string.Empty);
+                LastSynced=Preferences.Default.Get("last_synced", DateTime.Today);
             }
             finally
             {
@@ -65,7 +65,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsRefreshing = true;
-                // await LoadData();
+                 await LoadData();
             }
             catch (Exception e)
             {
@@ -117,8 +117,8 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
                 var tokens = await _apiService.LoginAsync(UserName, Password);
                 if (tokens != null)
                 {
-                    await SecureStorage.SetAsync("AccessToken", tokens.AccessToken);
-                    await SecureStorage.SetAsync("RefreshToken", tokens.RefreshToken);
+                    Preferences.Default.Set("AccessToken", tokens.AccessToken);
+                    Preferences.Default.Set("RefreshToken", tokens.RefreshToken);
 
                     StatusMessage = "Login successful!";
                 }

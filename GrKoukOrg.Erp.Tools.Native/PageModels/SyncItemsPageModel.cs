@@ -161,7 +161,7 @@ public partial class SyncItemsPageModel : ObservableObject
         AddLog("All items have been processed.");
         AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
         IsProgressBarVisible = false; // Hide the progress bar after completing the operation
-        Preferences.Default.Set("last_synced", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        Preferences.Default.Set("last_synced", DateTime.Now);
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 }

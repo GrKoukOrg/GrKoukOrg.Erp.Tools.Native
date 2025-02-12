@@ -42,19 +42,11 @@
             <RowDefinition Height="Auto" />
            
         </Grid.RowDefinitions>
-        <pullToRefresh:SfPullToRefresh
-            
-            IsRefreshing="{Binding IsRefreshing}"
-            RefreshCommand="{Binding RefreshCommand}"
-            Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
-            <pullToRefresh:SfPullToRefresh.PullableContent>
-                <inputLayout:SfTextInputLayout
-                    Hint="Τελευταίος συγχρονισμός">
-                      <Label Text="{Binding LastSynced}" />
-                </inputLayout:SfTextInputLayout>
+        <Label Grid.Row="0" Grid.Column="0" Text="Τελευταίος Συγχρονισμός" />
+        <Label Grid.Row="0" Grid.Column="1" Text="{Binding LastSynced, StringFormat='{0:dd/MM/yyyy}'}" />
               
-            </pullToRefresh:SfPullToRefresh.PullableContent>
-        </pullToRefresh:SfPullToRefresh>
+              
+          
 
         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="20" Spacing="10">
             <Label Text="Username" />

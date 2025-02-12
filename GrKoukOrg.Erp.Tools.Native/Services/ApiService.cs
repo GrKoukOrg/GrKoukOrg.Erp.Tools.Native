@@ -124,5 +124,45 @@ public class ApiService
         var roles = await GetRolesFromAccessTokenAsync();
         return roles.Contains(roleName);
     }
+    private  async Task AddAuthorizationHeaderAsync()
+    {
+        
+        var accessToken =  Preferences.Default.Get("AccessToken",string.Empty);
+
+        if (!string.IsNullOrWhiteSpace(accessToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = 
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        }
+    }
+    public async Task<HttpResponseMessage> MakeAuthenticatedRequestAsync(HttpRequestMessage request)
+    {
+        await AddAuthorizationHeaderAsync();
+    
+        var response = await _httpClient.SendAsync(request);
+
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            // Try to refresh token
+            try
+            {
+                var newTokenModel = await RefreshTokenAsync();
+
+                // Save the new tokens
+                Preferences.Set("AccessToken", newTokenModel.AccessToken);
+                 Preferences.Set("RefreshToken", newTokenModel.RefreshToken);
+
+                // Retry the request with the new access token
+                await AddAuthorizationHeaderAsync();
+                response = await _httpClient.SendAsync(request);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to refresh token.", ex);
+            }
+        }
+
+        return response;
+    }
 
 }
