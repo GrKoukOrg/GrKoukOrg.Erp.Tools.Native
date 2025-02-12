@@ -4,23 +4,23 @@ using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.Services;
 
-public interface IServerDataAccess
+public interface IBusinessServerDataAccess
 {
-     Task<ICollection<ItemListDto>> GetServerItemsListAsync();
+     Task<ICollection<ItemListDto>> GetBusinessServerItemsListAsync();
      
 }
 
-public class ServerHttpDataAccess : IServerDataAccess
+public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<ServerHttpDataAccess> _logger;
+    private readonly ILogger<BusinessServerHttpDataAccess> _logger;
 
-    public ServerHttpDataAccess(IHttpClientFactory httpClientFactory,ILogger<ServerHttpDataAccess> logger)
+    public BusinessServerHttpDataAccess(IHttpClientFactory httpClientFactory,ILogger<BusinessServerHttpDataAccess> logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
     }
-    public async Task<ICollection<ItemListDto>> GetServerItemsListAsync()
+    public async Task<ICollection<ItemListDto>> GetBusinessServerItemsListAsync()
     {
         _logger.LogInformation("GetServerItemsListAsync");
         try

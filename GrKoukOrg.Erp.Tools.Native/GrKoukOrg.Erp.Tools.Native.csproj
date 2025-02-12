@@ -24,10 +24,11 @@
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
 		<!-- Display name -->
-		<ApplicationTitle>GrKoukOrg.Erp.Tools.Native</ApplicationTitle>
+		<ApplicationTitle>GrKoukOrg Erp Tools</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.grkoukorg.erp.tools</ApplicationId>
+		<ApplicationId>com.grkoukorg.erp.tools-native</ApplicationId>
+		<PackageId>com.grkoukorg.erp.tools-native</PackageId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

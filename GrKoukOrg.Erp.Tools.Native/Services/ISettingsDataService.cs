@@ -5,35 +5,63 @@ using Microsoft.Maui.Storage;
 
 public interface ISettingsDataService
 {
-    Task<string> GetApiUrlAsync();
-    Task<int> SetApiUrlAsync(string url);
-    string GetApiUrl();
-    int SetApiUrl(string url);
+    Task<string> GetBusinessApiUrlAsync();
+    Task<int> SetBusinessApiUrlAsync(string url);
+    string GetBusinessApiUrl();
+    int SetBusinessApiUrl(string url);
+    Task<string> GetErpApiUrlAsync();
+    Task<int> SetErpApiUrlAsync(string url);
+    string GetErpApiUrl();
+    int SetErpApiUrl(string url);
 }
 
 public class SettingsMemoryDataService : ISettingsDataService
 {
-    private const string apiBaseDefaultUrl= "http://192.168.20.168:1234";
-    public async Task<string> GetApiUrlAsync()
+    private const string businessApiBaseDefaultUrl= "http://192.168.20.38:1234";
+    private const string erpApiBaseDefaultUrl= "https://192.168.20.38:5001/";
+    public async Task<string> GetBusinessApiUrlAsync()
     {
-        string url = Preferences.Get("apiUrl",apiBaseDefaultUrl );
+        string url = Preferences.Get("businessApiUrl",businessApiBaseDefaultUrl );
         
         return await Task.FromResult( url);
     }
 
-    public string GetApiUrl()
+    public string GetBusinessApiUrl()
     {
-        string url = Preferences.Get("apiUrl", apiBaseDefaultUrl);
+        string url = Preferences.Get("businessApiUrl", businessApiBaseDefaultUrl);
         return url;
     }
-    public Task<int> SetApiUrlAsync(string url)
+    public Task<int> SetBusinessApiUrlAsync(string url)
     {
-        Preferences.Set("apiUrl",url);
+        Preferences.Set("businessApiUrl",url);
         return Task.FromResult(0);
     }
-    public int SetApiUrl(string url)
+    public int SetBusinessApiUrl(string url)
     {
-        Preferences.Set("apiUrl",url);
+        Preferences.Set("businessApiUrl",url);
+        return 0;
+    }
+    
+    public async Task<string> GetErpApiUrlAsync()
+    {
+        string url = Preferences.Get("erpApiUrl",erpApiBaseDefaultUrl );
+        
+        return await Task.FromResult( url);
+    }
+
+    public string GetErpApiUrl()
+    {
+        string url = Preferences.Get("erpApiUrl", erpApiBaseDefaultUrl);
+        return url;
+    }
+    public Task<int> SetErpApiUrlAsync(string url)
+    {
+        Preferences.Set("erpApiUrl",url);
+        return Task.FromResult(0);
+    }
+    public int SetErpApiUrl(string url)
+    {
+        Preferences.Set("erpApiUrl",url);
         return 0;
     }
 }

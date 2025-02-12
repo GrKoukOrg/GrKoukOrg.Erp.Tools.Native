@@ -53,9 +53,14 @@
           <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}">
                       
               <sf:SfTextInputLayout 
-                  Hint="Api Url">
+                  Hint="Business Api Url">
                   <Entry
-                      Text="{Binding ApiUrl}" />
+                      Text="{Binding BusinessApiUrl}" />
+              </sf:SfTextInputLayout>
+              <sf:SfTextInputLayout 
+                  Hint="Erp Api Url">
+                  <Entry
+                      Text="{Binding ErpApiUrl}" />
               </sf:SfTextInputLayout>
               <Button 
                   HeightRequest="{OnIdiom 44, Desktop=60}"

@@ -4,12 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.Data;
 
-public class LocalBuyDocumentsRepository
+public class LocalBuyDocumentsRepo
 {
     private bool _hasBeenInitialized = false;
     private readonly ILogger _logger;
 
-    public LocalBuyDocumentsRepository(ILogger<LocalBuyDocumentsRepository> logger)
+    public LocalBuyDocumentsRepo(ILogger<LocalBuyDocumentsRepo> logger)
     {
         _logger = logger;
     }

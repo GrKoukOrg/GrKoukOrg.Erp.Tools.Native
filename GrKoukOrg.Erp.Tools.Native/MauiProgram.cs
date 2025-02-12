@@ -37,8 +37,9 @@ namespace GrKoukOrg.Erp.Tools.Native
             
            
             builder.Services.AddSingleton<LocalItemsRepo>();
+            builder.Services.AddSingleton<LocalBuyDocumentsRepo>();
             builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
-            builder.Services.AddSingleton<IServerDataAccess, ServerHttpDataAccess>();
+            builder.Services.AddSingleton<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
             
            
             builder.Services.AddSingleton<SeedDataService>();
@@ -54,7 +55,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
             {
                 var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();
-                var apiUrl = settingsDataService.GetApiUrl();
+                var apiUrl = settingsDataService.GetBusinessApiUrl();
                 client.BaseAddress = new Uri(apiUrl);
             });
             return builder.Build();

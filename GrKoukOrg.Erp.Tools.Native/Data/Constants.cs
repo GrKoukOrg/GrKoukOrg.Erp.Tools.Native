@@ -1,10 +1,19 @@
+using Microsoft.Maui.Storage;
 namespace GrKoukOrg.Erp.Tools.Native.Data
 {
     public static class Constants
     {
         public const string DatabaseFilename = "ErpToolsNativeSQLite.db3";
 
-        public static string DatabasePath =>
-            $"Data Source={Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename)}";
+        public static string DatabasePath
+        {
+            get
+            {
+                var databasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename); 
+                return $"Data Source={databasePath}";
+            }
+        }
+
+          
     }
 }

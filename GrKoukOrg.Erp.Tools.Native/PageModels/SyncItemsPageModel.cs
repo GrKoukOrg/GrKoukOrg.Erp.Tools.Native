@@ -10,19 +10,30 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 public partial class SyncItemsPageModel : ObservableObject
 {
     private readonly LocalItemsRepo _localItemsRepo;
-    private readonly IServerDataAccess _serverDataAccess;
+    private readonly LocalBuyDocumentsRepo _localBuyDocsRepo;
+    private readonly IBusinessServerDataAccess _businessServerDataAccess;
     private readonly ILogger<SyncItemsPageModel> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
     [ObservableProperty] private bool _isProgressBarVisible = false;
     [ObservableProperty] private int _operationProgress = 0;
     [ObservableProperty] private bool _isWaitingForResponse = false;
+   
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddItemsToLocalDatabaseCommand))]
     private bool _canSyncItems = false;
 
     [ObservableProperty] private ICollection<ItemListDto> _items = new List<ItemListDto>();
-
     [ObservableProperty] private int _itemCount = 0;
+    
+    [ObservableProperty] private ICollection<SupplierListDto> _suppliers = new List<SupplierListDto>();
+    [ObservableProperty] private int _supplierCount = 0;
+
+    [ObservableProperty] private ICollection<BuyDocListDto> _buyDocs = new List<BuyDocListDto>();
+    [ObservableProperty] private int _buyDocsCount = 0;
+
+    [ObservableProperty] private ICollection<BuyDocLineListDto> _buyDocLines = new List<BuyDocLineListDto>();
+    [ObservableProperty] private int _buyDocLinesCount = 0;
+
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
     [ObservableProperty]
     private int _lastLogEntryIndex;
@@ -33,11 +44,12 @@ public partial class SyncItemsPageModel : ObservableObject
         LogEntries.Insert(0, new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
     }
 
-    public SyncItemsPageModel(LocalItemsRepo localItemsRepo, IServerDataAccess serverDataAccess,
+    public SyncItemsPageModel(LocalItemsRepo localItemsRepo,LocalBuyDocumentsRepo localBuyDocsRepo ,IBusinessServerDataAccess businessServerDataAccess,
         ILogger<SyncItemsPageModel> logger)
     {
         _localItemsRepo = localItemsRepo;
-        _serverDataAccess = serverDataAccess;
+        _localBuyDocsRepo = localBuyDocsRepo;
+        _businessServerDataAccess = businessServerDataAccess;
         _logger = logger;
     }
 
@@ -59,26 +71,40 @@ public partial class SyncItemsPageModel : ObservableObject
     [RelayCommand]
     private async Task GetItems()
     {
+        await GetItemsProcessAsync();
+    }
+
+    private async Task GetItemsProcessAsync()
+    {
         AddLog("Getting items from server");
         try
         {
             IsWaitingForResponse = true;
-            Items = await _serverDataAccess.GetServerItemsListAsync();
+            Items = await _businessServerDataAccess.GetBusinessServerItemsListAsync();
             ItemCount = Items.Count;
             AddLog($"Connected and retrieved {ItemCount} items");
             // await AppShell.DisplayToastAsync("Connected and retrieved items");
         }
         catch (Exception e)
         {
-            IsWaitingForResponse = false;
+            
             _logger.LogError(e, "Error in GetItems");
             AddLog($"Error in GetItems: {e.Message}");
             await AppShell.DisplayToastAsync($"Error in GetItems: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
         }
     }
 
     [RelayCommand(CanExecute = nameof(CanSyncItems))]
     private async Task AddItemsToLocalDatabase()
+    {
+        await AddOrUpdateItemsToLocalDatabaseProcess();
+    }
+
+    private async Task AddOrUpdateItemsToLocalDatabaseProcess()
     {
         AddLog("Adding items to local database");
         // Make the progress bar visible at the start
@@ -119,14 +145,7 @@ public partial class SyncItemsPageModel : ObservableObject
                     LastLogEntryIndex = index;
                     await Task.Delay(20); // Introduce a small delay for smoother progress visualization    
                 }
-                
-
-                // // Ensure that LogEntries are updated immediately *** This code did not work *** 
-                // await MainThread.InvokeOnMainThreadAsync(() =>
-                // {
-                //     OnPropertyChanged(nameof(LogEntries));
-                // });
-                
+              
             }
             catch (Exception ex)
             {
