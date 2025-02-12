@@ -1,4 +1,6 @@
-﻿namespace GrKoukOrg.Erp.Tools.Native.Models;
+﻿using System;
+
+namespace GrKoukOrg.Erp.Tools.Native.Models;
 
 public class BuyDocLineListDto
 {

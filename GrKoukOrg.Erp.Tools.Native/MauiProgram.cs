@@ -40,8 +40,8 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddSingleton<LocalBuyDocumentsRepo>();
             builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
             builder.Services.AddSingleton<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
-            
-           
+
+            builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
             builder.Services.AddSingleton<MainPageModel>();

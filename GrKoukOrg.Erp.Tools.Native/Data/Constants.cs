@@ -1,3 +1,4 @@
+using System.IO;
 using Microsoft.Maui.Storage;
 namespace GrKoukOrg.Erp.Tools.Native.Data
 {

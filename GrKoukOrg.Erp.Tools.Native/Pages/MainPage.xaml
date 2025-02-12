@@ -39,9 +39,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
            
         </Grid.RowDefinitions>
         <pullToRefresh:SfPullToRefresh
+            
             IsRefreshing="{Binding IsRefreshing}"
             RefreshCommand="{Binding RefreshCommand}"
             Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
@@ -54,6 +56,19 @@
             </pullToRefresh:SfPullToRefresh.PullableContent>
         </pullToRefresh:SfPullToRefresh>
 
+        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="20" Spacing="10">
+            <Label Text="Username" />
+            <Entry Text="{Binding UserName}" Placeholder="Enter username" />
+
+            <Label Text="Password" />
+            <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Enter password" />
+
+            <Button Text="Login" Command="{Binding LoginCommand}" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
+
+            <Label Text="{Binding StatusMessage}" TextColor="Red" FontAttributes="Italic" />
+        </VerticalStackLayout>
 
     </Grid>
 </ContentPage>

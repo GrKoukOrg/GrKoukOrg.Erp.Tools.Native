@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Storage;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
@@ -129,13 +134,13 @@ public partial class SyncItemsPageModel : ObservableObject
                 if (await _localItemsRepo.ItemExist(item.Id))
                 {
                     var result = await _localItemsRepo.UpdateItemAsync(item);
-                    AddLog($"Index: {index + 1} / {totalCount}. Update item->Id: {item.Id}, Name: {item.Name}  result returned {result}");
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.Name} returned {result.ToString()}");
                     updatedCount++;
                 }
                 else
                 {
                     var result = await _localItemsRepo.AddItemAsync(item);
-                    AddLog($"Index: {index + 1}/{totalCount}. Add item->Id: {item.Id}, Name: {item.Name} result returned {result}");
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.Name} returned {result}");
                     addedCount++;
                 }
                 ((IProgress<int>)progress).Report(++index);
@@ -143,7 +148,7 @@ public partial class SyncItemsPageModel : ObservableObject
                 if (index % 10 == 0)
                 {
                     LastLogEntryIndex = index;
-                    await Task.Delay(20); // Introduce a small delay for smoother progress visualization    
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
                 }
               
             }
