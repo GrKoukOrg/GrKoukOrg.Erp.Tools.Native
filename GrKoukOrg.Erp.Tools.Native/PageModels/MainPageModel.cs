@@ -14,6 +14,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
 
         private readonly ModalErrorHandler _errorHandler;
         private readonly ApiService _apiService;
+        private readonly ISettingsDataService _settingsDataService;
         private readonly SeedDataService _seedDataService;
 
         [ObservableProperty] bool _isBusy;
@@ -26,10 +27,11 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [ObservableProperty] private string _userName = string.Empty;
         [ObservableProperty] private string _password = string.Empty;
         [ObservableProperty] private string _statusMessage = string.Empty;
-        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService)
+        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService, ISettingsDataService settingsDataService)
         {
             _errorHandler = errorHandler;
             _apiService = apiService;
+            _settingsDataService = settingsDataService;
             _seedDataService = seedDataService;
         }
 
@@ -98,6 +100,25 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             else if (!_isNavigatedTo)
             {
                 await Refresh();
+            }
+        }
+
+        [RelayCommand]
+        private async Task Test()
+        {
+            var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
+            var uri = new Uri(apiBaseUrl + "/erpapi/GetTest1");
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                StatusMessage=result.ToString();
+                Console.WriteLine(result);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error: {ex.Message}";
+                Console.WriteLine(ex);
             }
         }
         [RelayCommand]

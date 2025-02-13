@@ -14,18 +14,21 @@ namespace GrKoukOrg.Erp.Tools.Native.Services;
 
 public class ApiService
 {
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ISettingsDataService _settingsDataService;
 
     private readonly HttpClient _httpClient;
 
-    public ApiService(ISettingsDataService settingsDataService)
+    public ApiService(IHttpClientFactory httpClientFactory,ISettingsDataService settingsDataService)
     {
+        _httpClientFactory = httpClientFactory;
         _settingsDataService = settingsDataService;
         var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
         _httpClient = new HttpClient
         {
           //BaseAddress = new Uri(apiBaseUrl),
-          Timeout = TimeSpan.FromSeconds(10)
+          //Timeout = TimeSpan.FromSeconds(10)
+              
         };
     }
 
@@ -34,6 +37,7 @@ public class ApiService
     {
         var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
         var url = new Uri(apiBaseUrl + "/auth/login");
+        
         var loginData = new
         {
             Username = username,
@@ -74,22 +78,32 @@ public class ApiService
     // Refresh token logic
     public async Task<TokenModel> RefreshTokenAsync()
     {
-        var accessToken = await SecureStorage.GetAsync("AccessToken");
-        var refreshToken = await SecureStorage.GetAsync("RefreshToken");
+        var accessToken =  Preferences.Default.Get("AccessToken",string.Empty);
+        var refreshToken =  Preferences.Default.Get("RefreshToken",string.Empty);
 
         var refreshData = new
         {
             Token = accessToken,
             RefreshToken = refreshToken
         };
+        var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
+        var url = new Uri(apiBaseUrl + "/auth/refresh");
 
-        var response = await _httpClient.PostAsync("/auth/refresh",
-            new StringContent(JsonSerializer.Serialize(refreshData), Encoding.UTF8, "application/json"));
-
-        if (response.IsSuccessStatusCode)
+        try
         {
-            var jsonResponse = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<TokenModel>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var response = await _httpClient.PostAsync(url,
+                new StringContent(JsonSerializer.Serialize(refreshData), Encoding.UTF8, "application/json"));
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<TokenModel>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
 
         throw new Exception("Token refresh failed.");
@@ -150,7 +164,7 @@ public class ApiService
 
                 // Save the new tokens
                 Preferences.Set("AccessToken", newTokenModel.AccessToken);
-                 Preferences.Set("RefreshToken", newTokenModel.RefreshToken);
+                Preferences.Set("RefreshToken", newTokenModel.RefreshToken);
 
                 // Retry the request with the new access token
                 await AddAuthorizationHeaderAsync();
