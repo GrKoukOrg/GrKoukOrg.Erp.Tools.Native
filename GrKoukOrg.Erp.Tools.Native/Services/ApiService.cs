@@ -97,7 +97,29 @@ public class ApiService
             if (response.IsSuccessStatusCode)
             {
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<TokenModel>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                try
+                {
+                    var retTokenModel = JsonSerializer.Deserialize<TokenModel>(jsonResponse, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (retTokenModel == null)
+                    {
+                        return new TokenModel()
+                        {
+                            AccessToken = String.Empty,
+                            RefreshToken = string.Empty
+                        };
+                    }
+                    return retTokenModel;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return new TokenModel()
+                    {
+                        AccessToken = String.Empty,
+                        RefreshToken = string.Empty
+                    };
+                    
+                }
             }
         }
         catch (Exception e)
@@ -167,8 +189,10 @@ public class ApiService
                 Preferences.Set("RefreshToken", newTokenModel.RefreshToken);
 
                 // Retry the request with the new access token
+                var newRequest = CloneHttpRequestMessage(request); 
+
                 await AddAuthorizationHeaderAsync();
-                response = await _httpClient.SendAsync(request);
+                response = await _httpClient.SendAsync(newRequest);
             }
             catch (Exception ex)
             {
@@ -177,6 +201,29 @@ public class ApiService
         }
 
         return response;
+    }
+// Helper method to clone an HttpRequestMessage
+    private HttpRequestMessage CloneHttpRequestMessage(HttpRequestMessage request)
+    {
+        var newRequest = new HttpRequestMessage(request.Method, request.RequestUri);
+
+        // Copy headers
+        foreach (var header in request.Headers)
+        {
+            newRequest.Headers.TryAddWithoutValidation(header.Key, header.Value);
+        }
+
+        // Copy content, if any
+        if (request.Content != null)
+        {
+            newRequest.Content = new StreamContent(request.Content.ReadAsStream());
+            foreach (var header in request.Content.Headers)
+            {
+                newRequest.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+        }
+
+        return newRequest;
     }
 
 }
