@@ -19,17 +19,17 @@
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:ItemDetailsPage}"
         Route="itemdetails" />
-    <ShellContent
-        Title="Settings"
-        Icon="{StaticResource IconDashboard}"
-        ContentTemplate="{DataTemplate pages:SettingsPage}"
-        Route="settings" />
+   
     <ShellContent
         Title="Sync Items"
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:SyncItemsPage}"
         Route="syncitems" />
-    
+    <ShellContent
+        Title="Settings"
+        Icon="{StaticResource IconDashboard}"
+        ContentTemplate="{DataTemplate pages:SettingsPage}"
+        Route="settings" />
 
    
 
