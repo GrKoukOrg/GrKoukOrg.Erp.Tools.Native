@@ -26,7 +26,16 @@ public partial class SyncItemsPageModel : ObservableObject
    
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddItemsToLocalDatabaseCommand))]
     private bool _canSyncItems = false;
-
+    
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddSuppliersToLocalDatabaseCommand))]
+    private bool _canSyncSuppliers = false;
+ 
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddBuyDocsToLocalDatabaseCommand))]
+    private bool _canSyncBuyDocs = false;
+    
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddBuyDocLinesToLocalDatabaseCommand))]
+    private bool _canSyncBuyDocLines = false;
+    
     [ObservableProperty] private ICollection<ItemListDto> _items = new List<ItemListDto>();
     [ObservableProperty] private int _itemCount = 0;
     
@@ -63,7 +72,20 @@ public partial class SyncItemsPageModel : ObservableObject
         CanSyncItems = value > 0;
     }
 
-   
+    partial void OnSupplierCountChanged(int value)
+    {
+        CanSyncSuppliers = value > 0;
+    }
+
+    partial void OnBuyDocsCountChanged(int value)
+    {
+        CanSyncBuyDocs = value > 0;
+    }
+
+    partial void OnBuyDocLinesCountChanged(int value)
+    {
+        CanSyncBuyDocLines = value > 0;
+    }
     [RelayCommand]
     private async Task Appearing()
     {
@@ -78,7 +100,21 @@ public partial class SyncItemsPageModel : ObservableObject
     {
         await GetItemsProcessAsync();
     }
-
+    [RelayCommand]
+    private async Task GetSuppliers()
+    {
+        await GetSuppliersProcessAsync();
+    }
+    [RelayCommand]
+    private async Task GetBuyDocs()
+    {
+        await GetBuyDocumentsProcessAsync();
+    }
+    [RelayCommand]
+    private async Task GetBuyDocLines()
+    {
+        await GetBuyDocLinesProcessAsync();
+    }
     private async Task GetItemsProcessAsync()
     {
         AddLog("Getting items from server");
@@ -93,7 +129,7 @@ public partial class SyncItemsPageModel : ObservableObject
         catch (Exception e)
         {
             
-            _logger.LogError(e, "Error in GetItems");
+            _logger.LogError(e, "Error in GetItemsProcessAsync");
             AddLog($"Error in GetItems: {e.Message}");
             await AppShell.DisplayToastAsync($"Error in GetItems: {e.Message}");
         }
@@ -102,14 +138,261 @@ public partial class SyncItemsPageModel : ObservableObject
             IsWaitingForResponse = false;
         }
     }
+    private async Task GetSuppliersProcessAsync()
+    {
+        AddLog("Getting Suppliers from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            Suppliers = await _businessServerDataAccess.GetBusinessServerSupplierListAsync();
+            SupplierCount = Suppliers.Count;
+            AddLog($"Connected and retrieved {SupplierCount} suppliers");
+        }
+        catch (Exception e)
+        {
+            
+            _logger.LogError(e, "Error in GetSuppliersProcessAsync");
+            AddLog($"Error in GetSuppliersProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetSuppliersProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
 
+    private async Task GetBuyDocumentsProcessAsync()
+    {
+        AddLog("Getting Buy Documents from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            BuyDocs = await _businessServerDataAccess.GetBusinessServerBuyDocListAsync();
+            BuyDocsCount = BuyDocs.Count;
+            AddLog($"Connected and retrieved {BuyDocsCount} Buy Documents");
+        }
+        catch (Exception e)
+        {
+            
+            _logger.LogError(e, "Error in GetBuyDocumentsProcessAsync");
+            AddLog($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
+    
+    private async Task GetBuyDocLinesProcessAsync()
+    {
+        AddLog("Getting Buy Doc Lines from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            BuyDocLines = await _businessServerDataAccess.GetBusinessServerBuyDocLineListAsync();
+            BuyDocLinesCount = BuyDocLines.Count;
+            AddLog($"Connected and retrieved {BuyDocLinesCount} Buy Documents");
+        }
+        catch (Exception e)
+        {
+            
+            _logger.LogError(e, "Error in GetBuyDocLinesProcessAsync");
+            AddLog($"Error in GetBuyDocLinesProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetBuyDocLinesProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
+    
     [RelayCommand(CanExecute = nameof(CanSyncItems))]
     private async Task AddItemsToLocalDatabase()
     {
         await AddOrUpdateItemsToLocalDatabaseProcess();
     }
-
+    [RelayCommand(CanExecute = nameof(CanSyncSuppliers))]
+    private async Task AddSuppliersToLocalDatabase()
+    {
+        await AddOrUpdateItemsToLocalDatabaseProcess();
+    }
+    [RelayCommand(CanExecute = nameof(CanSyncBuyDocs))]
+    private async Task AddBuyDocsToLocalDatabase()
+    {
+        await AddOrUpdateItemsToLocalDatabaseProcess();
+    }
+    [RelayCommand(CanExecute = nameof(CanSyncBuyDocLines))]
+    private async Task AddBuyDocLinesToLocalDatabase()
+    {
+        await AddOrUpdateItemsToLocalDatabaseProcess();
+    }
     private async Task AddOrUpdateItemsToLocalDatabaseProcess()
+    {
+        AddLog("Adding items to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        int totalCount = Items.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in Items)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localItemsRepo.ItemExist(item.Id))
+                {
+                    var result = await _localItemsRepo.UpdateItemAsync(item);
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.Name} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localItemsRepo.AddItemAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.Name} returned {result}");
+                    addedCount++;
+                }
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 10 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+        AddLog("All items have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+     private async Task AddOrUpdateSuppliersToLocalDatabaseProcess()
+    {
+        AddLog("Adding suppliers to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        int totalCount = Suppliers.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in Suppliers)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localItemsRepo.ItemExist(item.Id))
+                {
+                    var result = await _localItemsRepo.UpdateItemAsync(item);
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.Name} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localItemsRepo.AddItemAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.Name} returned {result}");
+                    addedCount++;
+                }
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 10 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+        AddLog("All items have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+      private async Task AddOrUpdateBuyDocsToLocalDatabaseProcess()
+    {
+        AddLog("Adding items to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        int totalCount = Items.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in Items)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localItemsRepo.ItemExist(item.Id))
+                {
+                    var result = await _localItemsRepo.UpdateItemAsync(item);
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.Name} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localItemsRepo.AddItemAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.Name} returned {result}");
+                    addedCount++;
+                }
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 10 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+              
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+        AddLog("All items have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+       private async Task AddOrUpdateBuyDocLinesToLocalDatabaseProcess()
     {
         AddLog("Adding items to local database");
         // Make the progress bar visible at the start

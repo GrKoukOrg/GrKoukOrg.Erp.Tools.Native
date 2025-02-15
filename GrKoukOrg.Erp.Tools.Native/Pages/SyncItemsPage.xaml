@@ -57,11 +57,11 @@
             <Setter Property="FontAttributes" Value="Bold" />
         </Style>
     </ContentPage.Resources>
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" />
-        <ToolbarItem Text="Get Suppliers" Command="{Binding GetItemsCommand}" />
-        <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}" />
-    </ContentPage.ToolbarItems>
+    <!-- <ContentPage.ToolbarItems> -->
+    <!--     <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" /> -->
+    <!--     <ToolbarItem Text="Get Suppliers" Command="{Binding GetItemsCommand}" /> -->
+    <!--     <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}" /> -->
+    <!-- </ContentPage.ToolbarItems> -->
 
     <Grid>
         <!-- Main Content -->
@@ -89,24 +89,35 @@
             <!-- Your Content -->
             <FlexLayout Grid.Row="0" Grid.Column="0" Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Start" HorizontalOptions="Fill">
                 <VerticalStackLayout>
-                    <Label Text="Items Count" />    
-                    <Label Text="{Binding ItemCount}"  />
+                    <Label Text="Items Count" Padding="{StaticResource LayoutPadding}" />    
+                    <Label Text="{Binding ItemCount}"  HorizontalTextAlignment="Center"/>
                     <Button  Text="Get Items"
-                             Command="{Binding GetItemsCommand}">
+                             Command="{Binding GetItemsCommand}"   >
+                    </Button>    
+                    <Button  Text="Update Items"
+                             Command="{Binding AddItemsToLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
-                    <Label Text="Suppliers Count"  />
-                    <Label Text="{Binding ItemCount}"  />
+                    <Label Text="Suppliers Count" Padding="{StaticResource LayoutPadding}" />
+                    <Label Text="{Binding SupplierCount}"  HorizontalTextAlignment="Center"/>
+                    <Button  Text="Get Suppliers"
+                             Command="{Binding GetSuppliersCommand}" >
+                    </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
-                    <Label Text="Buy Docs Count"  />
-                    <Label Text="{Binding ItemCount}"  />
+                    <Label Text="Buy Docs Count" Padding="{StaticResource LayoutPadding}" />
+                    <Label Text="{Binding BuyDocsCount}" HorizontalTextAlignment="Center" />
+                    <Button  Text="Get Buy Docs"
+                             Command="{Binding GetBuyDocsCommand}"  >
+                    </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
-                    <Label Text="Buy Doc Lines Count"  />
-                    <Label Text="{Binding ItemCount}"  />
-                       
+                    <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
+                    <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
+                    <Button  Text="Get Buy Doc Lines"
+                             Command="{Binding GetBuyDocLinesCommand}">
+                    </Button>    
                 </VerticalStackLayout>
             </FlexLayout>
             
