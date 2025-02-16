@@ -185,11 +185,12 @@ public class LocalBuyDocumentsRepo
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-        INSERT INTO BuyDocuments (TransDate, BuyDocDefId, BuyDocDefName, SupplierId, SupplierName, 
+        INSERT INTO BuyDocuments (Id,TransDate, BuyDocDefId, BuyDocDefName, SupplierId, SupplierName, 
                                    RefNumber, NetAmount, VatAmount, TotalAmount)
-        VALUES (@transDate, @buyDocDefId, @buyDocDefName, @supplierId, @supplierName, 
+        VALUES (@Id,@transDate, @buyDocDefId, @buyDocDefName, @supplierId, @supplierName, 
                 @refNumber, @netAmount, @vatAmount, @totalAmount);
     ";
+        command.Parameters.AddWithValue("@Id", buyDoc.Id);
         command.Parameters.AddWithValue("@transDate", buyDoc.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
         command.Parameters.AddWithValue("@buyDocDefId", buyDoc.BuyDocDefId);
         command.Parameters.AddWithValue("@buyDocDefName", buyDoc.BuyDocDefName ?? (object)DBNull.Value);

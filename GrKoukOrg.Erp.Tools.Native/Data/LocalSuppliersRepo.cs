@@ -159,9 +159,10 @@ public class LocalSuppliersRepo
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-        INSERT INTO Suppliers (Code, Name, Afm)
-        VALUES (@code, @name, @afm);
+        INSERT INTO Suppliers (Id,Code, Name, Afm)
+        VALUES (@id,@code, @name, @afm);
     ";
+        command.Parameters.AddWithValue("@id", supplier.Id);
         command.Parameters.AddWithValue("@code", supplier.Code);
         command.Parameters.AddWithValue("@name", supplier.Name);
         command.Parameters.AddWithValue("@afm", supplier.Afm);

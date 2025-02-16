@@ -194,13 +194,14 @@ public class LocalBuyDocLinesRepo
 
         var command = connection.CreateCommand();
         command.CommandText = @"
-        INSERT INTO BuyDocLines (TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
+        INSERT INTO BuyDocLines (Id,TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
                                     UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
                                     UnitNetAmount, UnitVatAmount, UnitTotalAmount)
-        VALUES (@transDate, @buyDocId, @itemId, @itemName, @itemCode, @unitOfMeasureName, 
+        VALUES (@id,@transDate, @buyDocId, @itemId, @itemName, @itemCode, @unitOfMeasureName, 
                 @unitFpaPerc, @unitQty, @unitPrice, @unitDiscountRate, @unitDiscountAmount, 
                 @unitNetAmount, @unitVatAmount, @unitTotalAmount);
     ";
+        command.Parameters.AddWithValue("@id", buyDocLine.Id);
         command.Parameters.AddWithValue("@transDate", buyDocLine.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
         command.Parameters.AddWithValue("@buyDocId", buyDocLine.BuyDocId);
         command.Parameters.AddWithValue("@itemId", buyDocLine.ItemId);

@@ -430,4 +430,15 @@ public class LocalItemsRepo
 
             _hasBeenInitialized = false;
         }
+
+        public async Task<ItemLocalStatisticsDto> GetLocalItemStatisticsAsync(int id)
+        {
+            await Init();
+            await using var connection = new SqliteConnection(Constants.DatabasePath);
+            await connection.OpenAsync();
+            var selectCmd = connection.CreateCommand();
+            selectCmd.CommandText = "SELECT * FROM Items WHERE ID = @id";
+            selectCmd.Parameters.AddWithValue("@id", id);
+            return new ItemLocalStatisticsDto();
+        }
 }

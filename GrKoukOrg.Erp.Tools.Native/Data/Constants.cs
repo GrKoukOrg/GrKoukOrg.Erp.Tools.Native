@@ -10,7 +10,9 @@ namespace GrKoukOrg.Erp.Tools.Native.Data
         {
             get
             {
-                var databasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename); 
+                var databasePath=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), DatabaseFilename);
+                Console.WriteLine($"*******Database full pathname {databasePath}");
+                //var databasePath = Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename); 
                 return $"Data Source={databasePath}";
             }
         }
