@@ -27,7 +27,7 @@ public class LocalSuppliersRepo
            
             var createSuppliersTableCmd = connection.CreateCommand();
             createSuppliersTableCmd.CommandText = @"
-                CREATE TABLE Suppliers (
+                CREATE TABLE IF NOT EXISTS Suppliers (
                     Id INTEGER PRIMARY KEY,
                     Code TEXT(30) NOT NULL,
                     Name TEXT(200) NOT NULL,

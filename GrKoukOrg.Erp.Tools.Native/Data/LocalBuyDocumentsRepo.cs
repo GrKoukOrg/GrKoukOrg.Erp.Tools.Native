@@ -29,7 +29,7 @@ public class LocalBuyDocumentsRepo
         {
             var createBuyDocTableCmd = connection.CreateCommand();
             createBuyDocTableCmd.CommandText = @"
-           CREATE TABLE BuyDocuments (
+           CREATE TABLE IF NOT EXISTS BuyDocuments (
                 Id INTEGER PRIMARY KEY NOT NULL,
                 TransDate TEXT NOT NULL, -- DateTime stored as TEXT in ISO-8601 format (YYYY-MM-DDTHH:MM:SS.SSS).
                 BuyDocDefId INTEGER NOT NULL,

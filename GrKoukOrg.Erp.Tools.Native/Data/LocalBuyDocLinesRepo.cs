@@ -26,7 +26,7 @@ public class LocalBuyDocLinesRepo
         {
             var createBuyDocLinesTableCmd = connection.CreateCommand();
             createBuyDocLinesTableCmd.CommandText = @"
-              CREATE TABLE BuyDocLines (
+              CREATE TABLE IF NOT EXISTS BuyDocLines (
                 Id INTEGER PRIMARY KEY,
                 TransDate TEXT NOT NULL, -- DateTime in C# maps to TEXT in SQLite in ISO 8601 format
                 BuyDocId INTEGER NOT NULL,

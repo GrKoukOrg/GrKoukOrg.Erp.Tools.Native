@@ -103,6 +103,9 @@
                     <Label Text="{Binding SupplierCount}"  HorizontalTextAlignment="Center"/>
                     <Button  Text="Get Suppliers"
                              Command="{Binding GetSuppliersCommand}" >
+                    </Button>  
+                    <Button  Text="Update Suppliers"
+                             Command="{Binding AddSuppliersToLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
@@ -111,12 +114,18 @@
                     <Button  Text="Get Buy Docs"
                              Command="{Binding GetBuyDocsCommand}"  >
                     </Button>    
+                    <Button  Text="Up Buy Docs"
+                             Command="{Binding AddBuyDocsToLocalDatabaseCommand}"   >
+                    </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
                     <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
                     <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
                     <Button  Text="Get Buy Doc Lines"
                              Command="{Binding GetBuyDocLinesCommand}">
+                    </Button>    
+                    <Button  Text="Up Buy Doc Lines"
+                             Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
             </FlexLayout>
