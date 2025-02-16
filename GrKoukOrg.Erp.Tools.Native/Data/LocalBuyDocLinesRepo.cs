@@ -296,4 +296,15 @@ public class LocalBuyDocLinesRepo
 
         return await deleteCmd.ExecuteNonQueryAsync();
     }
+    public async Task<int> DeleteAllBuyDocLineAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "DELETE FROM BuyDoclines";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
 }

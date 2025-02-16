@@ -411,7 +411,18 @@ public class LocalItemsRepo
             return await deleteCmd.ExecuteNonQueryAsync();
         }
 
-       
+        public async Task<int> DeleteAllItemsAsync()
+        {
+            await Init();
+            await using var connection = new SqliteConnection(Constants.DatabasePath);
+            await connection.OpenAsync();
+
+            var deleteCmd = connection.CreateCommand();
+            deleteCmd.CommandText = "DELETE FROM Items";
+           
+
+            return await deleteCmd.ExecuteNonQueryAsync();
+        }
 
         /// <summary>
         /// Drops the ItemListDto and ProjectsItemListDtos tables from the database.

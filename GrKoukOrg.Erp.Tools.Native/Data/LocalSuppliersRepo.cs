@@ -222,6 +222,16 @@ public class LocalSuppliersRepo
 
         return await deleteCmd.ExecuteNonQueryAsync();
     }
-    
+    public async Task<int> DeleteAllSuppliersAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "DELETE FROM Suppliers";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
   
 }

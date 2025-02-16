@@ -237,7 +237,34 @@ public partial class SyncItemsPageModel : ObservableObject
     {
         await AddOrUpdateBuyDocLinesToLocalDatabaseProcess();
     }
-
+    [RelayCommand]
+    private async Task DeleteAllItemsFromLocalDatabase()
+    {
+        AddLog("Delete all items from local database");
+        var result = await _localItemsRepo.DeleteAllItemsAsync();
+        AddLog($"Deleted {result.ToString()} items"  );
+    }
+    [RelayCommand]
+    private async Task DeleteAllSuppliersFromLocalDatabase()
+    {
+        AddLog("Delete all suppliers from local database");
+        var result = await _localSuppliersRepo.DeleteAllSuppliersAsync();
+        AddLog($"Deleted {result.ToString()} suppliers"  );
+    }
+    [RelayCommand]
+    private async Task DeleteAllBuyDocumentsFromLocalDatabase()
+    {
+        AddLog("Delete all Buy Documets from local database");
+        var result = await _localBuyDocsRepo.DeleteAllBuyDocumentAsync();
+        AddLog($"Deleted {result.ToString()} buy documents"  );
+    }
+    [RelayCommand]
+    private async Task DeleteAllBuyDocLinesFromLocalDatabase()
+    {
+        AddLog("Delete all Buy Doc Lines from local database");
+        var result = await _localBuyDocLinesRepo.DeleteAllBuyDocLineAsync();
+        AddLog($"Deleted {result.ToString()} buy doc lines"  );
+    }
     private async Task AddOrUpdateItemsToLocalDatabaseProcess()
     {
         AddLog("Adding items to local database");
@@ -275,7 +302,7 @@ public partial class SyncItemsPageModel : ObservableObject
 
                 ((IProgress<int>)progress).Report(++index);
                 // Allow time for UI to update after each iteration
-                if (index % 10 == 0)
+                if (index % 20 == 0)
                 {
                     LastLogEntryIndex = index;
                     await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
@@ -390,7 +417,7 @@ public partial class SyncItemsPageModel : ObservableObject
 
                 ((IProgress<int>)progress).Report(++index);
                 // Allow time for UI to update after each iteration
-                if (index % 10 == 0)
+                if (index % 20 == 0)
                 {
                     LastLogEntryIndex = index;
                     await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
@@ -447,7 +474,7 @@ public partial class SyncItemsPageModel : ObservableObject
 
                 ((IProgress<int>)progress).Report(++index);
                 // Allow time for UI to update after each iteration
-                if (index % 10 == 0)
+                if (index % 20 == 0)
                 {
                     LastLogEntryIndex = index;
                     await Task.Delay(50); // Introduce a small delay for smoother progress visualization    

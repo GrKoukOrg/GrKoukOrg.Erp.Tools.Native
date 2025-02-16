@@ -97,6 +97,9 @@
                     <Button  Text="Update Items"
                              Command="{Binding AddItemsToLocalDatabaseCommand}"   >
                     </Button>    
+                    <Button  Text="Delete Items"
+                             Command="{Binding DeleteAllItemsFromLocalDatabaseCommand}"   >
+                    </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
                     <Label Text="Suppliers Count" Padding="{StaticResource LayoutPadding}" />
@@ -106,6 +109,9 @@
                     </Button>  
                     <Button  Text="Update Suppliers"
                              Command="{Binding AddSuppliersToLocalDatabaseCommand}"   >
+                    </Button>  
+                    <Button  Text="Delete Suppliers"
+                             Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
@@ -114,8 +120,11 @@
                     <Button  Text="Get Buy Docs"
                              Command="{Binding GetBuyDocsCommand}"  >
                     </Button>    
-                    <Button  Text="Up Buy Docs"
+                    <Button  Text="Update Buy Docs"
                              Command="{Binding AddBuyDocsToLocalDatabaseCommand}"   >
+                    </Button>    
+                    <Button  Text="Delete Buy Docs"
+                             Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
                 <VerticalStackLayout>
@@ -124,8 +133,11 @@
                     <Button  Text="Get Buy Doc Lines"
                              Command="{Binding GetBuyDocLinesCommand}">
                     </Button>    
-                    <Button  Text="Up Buy Doc Lines"
+                    <Button  Text="Update Buy Doc Lines"
                              Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}"   >
+                    </Button>    
+                    <Button  Text="Delete Doc Lines"
+                             Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}"   >
                     </Button>    
                 </VerticalStackLayout>
             </FlexLayout>
