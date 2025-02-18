@@ -36,3 +36,12 @@ public class ItemListDto
     public decimal? TimiPolisisLianFpa { get; set; }
     
 }
+public class ItemStatisticsDto
+{
+    [JsonPropertyName("itemId")]
+    public int ItemId { get; set; }
+    [JsonPropertyName("meanPrice")]
+    public decimal MeanPrice { get; set; }
+    [JsonPropertyName("totalQuantityInWarehouse")]
+    public decimal TotalQuantityInWarehouse { get; set; }
+}
