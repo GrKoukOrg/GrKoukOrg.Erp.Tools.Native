@@ -79,6 +79,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
                 <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" />
@@ -94,6 +95,10 @@
                 <Label Text="{Binding SelectedItem.TimiPolisisLian, StringFormat='{0:F2}€'}" Grid.Column="3" Grid.Row="3" />
                 <Label Text="Τιμή Πώλ. ΦΠΑ" Grid.Column="2" Grid.Row="4" />
                 <Label Text="{Binding SelectedItem.TimiPolisisLianFpa,StringFormat='{0:F2}€' }" Grid.Column="3" Grid.Row="4" />
+                <Label Text="Συν.Αγορών" Grid.Column="0" Grid.Row="5" />
+                <Label Text="{Binding ItemStatistics.TotalQuantityInWarehouse, StringFormat='{0:F2}'}" Grid.Column="1" Grid.Row="5" />
+                <Label Text="Μέση Τιμή Αγοράς" Grid.Column="2" Grid.Row="5" />
+                <Label Text="{Binding ItemStatistics.MeanPrice,StringFormat='{0:F2}€' }" Grid.Column="3" Grid.Row="5" />
             </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>

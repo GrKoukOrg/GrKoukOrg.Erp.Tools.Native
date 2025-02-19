@@ -83,7 +83,19 @@ public partial class ItemDetailsPageModel : ObservableObject
         {
             // Optionally find and set _selectedItem
             SelectedItem = Items.FirstOrDefault(item => item.Id == selectedSearchItem.Id);
-            CalculateItemStatistics(SelectedItem.Id);
+            if (SelectedItem is not null)
+            {
+                try
+                {
+                    CalculateItemStatistics(SelectedItem.Id);
+                }
+                catch (Exception e)
+                {
+                    await AppShell.DisplayToastAsync($"Error: {e.Message}");   
+                }
+                    
+            }
+            
         }
     }
 
