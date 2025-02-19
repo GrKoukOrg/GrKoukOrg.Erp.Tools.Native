@@ -29,7 +29,7 @@
        
         <Style TargetType="editors:SfAutocomplete">
             <Setter Property="HighlightedTextColor" Value="Red" />
-            <Setter Property="TextHighlightMode" Value="MultipleOccurrence" />
+            <Setter Property="TextHighlightMode" Value="FirstOccurrence" />
             <Setter Property="FontFamily" Value="OpenSansRegular" />
             <Setter Property="FontSize" Value="{OnIdiom 16, Desktop=24}" />
             <Setter Property="MinimumHeightRequest" Value="44" />
@@ -80,6 +80,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
                 <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" />
@@ -97,8 +98,8 @@
                 <Label Text="{Binding SelectedItem.TimiPolisisLianFpa,StringFormat='{0:F2}€' }" Grid.Column="3" Grid.Row="4" />
                 <Label Text="Συν.Αγορών" Grid.Column="0" Grid.Row="5" />
                 <Label Text="{Binding ItemStatistics.TotalQuantityInWarehouse, StringFormat='{0:F2}'}" Grid.Column="1" Grid.Row="5" />
-                <Label Text="Μέση Τιμή Αγοράς" Grid.Column="2" Grid.Row="5" />
-                <Label Text="{Binding ItemStatistics.MeanPrice,StringFormat='{0:F2}€' }" Grid.Column="3" Grid.Row="5" />
+                <Label Text="Μέση Τιμή Αγοράς" Grid.Column="0" Grid.Row="6" />
+                <Label Text="{Binding ItemStatistics.MeanPrice,StringFormat='{0:F2}€' }" Grid.Column="1" Grid.Row="6" />
             </Grid>
         </VerticalStackLayout>
     </ContentPage.Content>
