@@ -19,6 +19,9 @@ public partial class SyncItemsPageModel : ObservableObject
     private readonly LocalSuppliersRepo _localSuppliersRepo;
     private readonly LocalBuyDocLinesRepo _localBuyDocLinesRepo;
     private readonly IBusinessServerDataAccess _businessServerDataAccess;
+    private readonly LocalCustomerRepo _localCustomerRepo;
+    private readonly LocalSaleDocumentsRepo _localSaleDocumentsRepo;
+    private readonly LocalSalesDocLinesRepo _localSalesDocLinesRepo;
     private readonly ILogger<SyncItemsPageModel> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -38,6 +41,15 @@ public partial class SyncItemsPageModel : ObservableObject
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddBuyDocLinesToLocalDatabaseCommand))]
     private bool _canSyncBuyDocLines = false;
 
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddCustomersToLocalDatabaseCommand))]
+    private bool _canSyncCustomers = false;
+
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddSaleDocsToLocalDatabaseCommand))]
+    private bool _canSyncSaleDocs = false;
+
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(AddSaleDocLinesToLocalDatabaseCommand))]
+    private bool _canSyncSaleDocLines = false;
+
     [ObservableProperty] private ICollection<ItemListDto> _items = new List<ItemListDto>();
     [ObservableProperty] private int _itemCount = 0;
 
@@ -50,6 +62,14 @@ public partial class SyncItemsPageModel : ObservableObject
     [ObservableProperty] private ICollection<BuyDocLineListDto> _buyDocLines = new List<BuyDocLineListDto>();
     [ObservableProperty] private int _buyDocLinesCount = 0;
 
+    [ObservableProperty] private ICollection<CustomerListDto> _customers = new List<CustomerListDto>();
+    [ObservableProperty] private int _customerCount = 0;
+
+    [ObservableProperty] private ICollection<SaleDocListDto> _saleDocs = new List<SaleDocListDto>();
+    [ObservableProperty] private int _saleDocsCount = 0;
+
+    [ObservableProperty] private ICollection<SaleDocLineListDto> _saleDocLines = new List<SaleDocLineListDto>();
+    [ObservableProperty] private int _saleDocLinesCount = 0;
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
     [ObservableProperty] private int _lastLogEntryIndex;
 
@@ -62,6 +82,9 @@ public partial class SyncItemsPageModel : ObservableObject
     public SyncItemsPageModel(LocalItemsRepo localItemsRepo, LocalBuyDocumentsRepo localBuyDocsRepo,
         LocalSuppliersRepo localSuppliersRepo, LocalBuyDocLinesRepo localBuyDocLinesRepo,
         IBusinessServerDataAccess businessServerDataAccess,
+        LocalCustomerRepo localCustomerRepo,
+        LocalSaleDocumentsRepo localSaleDocumentsRepo,
+        LocalSalesDocLinesRepo localSalesDocLinesRepo,
         ILogger<SyncItemsPageModel> logger)
     {
         _localItemsRepo = localItemsRepo;
@@ -69,6 +92,9 @@ public partial class SyncItemsPageModel : ObservableObject
         _localSuppliersRepo = localSuppliersRepo;
         _localBuyDocLinesRepo = localBuyDocLinesRepo;
         _businessServerDataAccess = businessServerDataAccess;
+        _localCustomerRepo = localCustomerRepo;
+        _localSaleDocumentsRepo = localSaleDocumentsRepo;
+        _localSalesDocLinesRepo = localSalesDocLinesRepo;
         _logger = logger;
     }
 
@@ -90,6 +116,21 @@ public partial class SyncItemsPageModel : ObservableObject
     partial void OnBuyDocLinesCountChanged(int value)
     {
         CanSyncBuyDocLines = value > 0;
+    }
+
+    partial void OnCustomerCountChanged(int value)
+    {
+        CanSyncCustomers = value > 0;
+    }
+
+    partial void OnSaleDocsCountChanged(int value)
+    {
+        CanSyncSaleDocs = value > 0;
+    }
+
+    partial void OnSaleDocLinesCountChanged(int value)
+    {
+        CanSyncSaleDocLines = value > 0;
     }
 
     [RelayCommand]
@@ -124,7 +165,23 @@ public partial class SyncItemsPageModel : ObservableObject
     {
         await GetBuyDocLinesProcessAsync();
     }
+    [RelayCommand]
+    private async Task GetCustomers()
+    {
+        await GetCustomersProcessAsync();
+    }
 
+    [RelayCommand]
+    private async Task GetSaleDocs()
+    {
+        await GetSaleDocumentsProcessAsync();
+    }
+
+    [RelayCommand]
+    private async Task GetSaleDocLines()
+    {
+        await GetSaleDocLinesProcessAsync();
+    }
     private async Task GetItemsProcessAsync()
     {
         AddLog("Getting items from server");
@@ -170,6 +227,28 @@ public partial class SyncItemsPageModel : ObservableObject
         }
     }
 
+    private async Task GetCustomersProcessAsync()
+    {
+        AddLog("Getting Customers from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            Customers = await _businessServerDataAccess.GetBusinessServerCustomerListAsync();
+            CustomerCount = Customers.Count;
+            AddLog($"Connected and retrieved {CustomerCount} customers");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in GetCustomersProcessAsync");
+            AddLog($"Error in GetCustomersProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetCustomersProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
+
     private async Task GetBuyDocumentsProcessAsync()
     {
         AddLog("Getting Buy Documents from server");
@@ -185,6 +264,28 @@ public partial class SyncItemsPageModel : ObservableObject
             _logger.LogError(e, "Error in GetBuyDocumentsProcessAsync");
             AddLog($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
             await AppShell.DisplayToastAsync($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
+
+    private async Task GetSaleDocumentsProcessAsync()
+    {
+        AddLog("Getting Sale Documents from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            SaleDocs = await _businessServerDataAccess.GetBusinessServerSaleDocListAsync();
+            SaleDocsCount = SaleDocs.Count;
+            AddLog($"Connected and retrieved {SaleDocsCount} Sale Documents");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in GetSaleDocumentsProcessAsync");
+            AddLog($"Error in GetSaleDocumentsProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetSaleDocumentsProcessAsync: {e.Message}");
         }
         finally
         {
@@ -214,6 +315,28 @@ public partial class SyncItemsPageModel : ObservableObject
         }
     }
 
+    private async Task GetSaleDocLinesProcessAsync()
+    {
+        AddLog("Getting Sale Doc Lines from server");
+        try
+        {
+            IsWaitingForResponse = true;
+            SaleDocLines = await _businessServerDataAccess.GetBusinessServerSaleDocLineListAsync();
+            SaleDocLinesCount = SaleDocLines.Count;
+            AddLog($"Connected and retrieved {SaleDocLinesCount} Sale Documents");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in GetSaleDocLinesProcessAsync");
+            AddLog($"Error in GetSaleDocLinesProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetSaleDocLinesProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
+        }
+    }
+
     [RelayCommand(CanExecute = nameof(CanSyncItems))]
     private async Task AddItemsToLocalDatabase()
     {
@@ -226,10 +349,22 @@ public partial class SyncItemsPageModel : ObservableObject
         await AddOrUpdateSuppliersToLocalDatabaseProcess();
     }
 
+    [RelayCommand(CanExecute = nameof(CanSyncCustomers))]
+    private async Task AddCustomersToLocalDatabase()
+    {
+        await AddOrUpdateCustomersToLocalDatabaseProcess();
+    }
+
     [RelayCommand(CanExecute = nameof(CanSyncBuyDocs))]
     private async Task AddBuyDocsToLocalDatabase()
     {
         await AddOrUpdateBuyDocsToLocalDatabaseProcess();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSyncSaleDocs))]
+    private async Task AddSaleDocsToLocalDatabase()
+    {
+        await AddOrUpdateSaleDocsToLocalDatabaseProcess();
     }
 
     [RelayCommand(CanExecute = nameof(CanSyncBuyDocLines))]
@@ -237,34 +372,69 @@ public partial class SyncItemsPageModel : ObservableObject
     {
         await AddOrUpdateBuyDocLinesToLocalDatabaseProcess();
     }
+
+    [RelayCommand(CanExecute = nameof(CanSyncSaleDocLines))]
+    private async Task AddSaleDocLinesToLocalDatabase()
+    {
+        await AddOrUpdateSaleDocLinesToLocalDatabaseProcess();
+    }
+
     [RelayCommand]
     private async Task DeleteAllItemsFromLocalDatabase()
     {
         AddLog("Delete all items from local database");
         var result = await _localItemsRepo.DeleteAllItemsAsync();
-        AddLog($"Deleted {result.ToString()} items"  );
+        AddLog($"Deleted {result.ToString()} items");
     }
+
     [RelayCommand]
     private async Task DeleteAllSuppliersFromLocalDatabase()
     {
         AddLog("Delete all suppliers from local database");
         var result = await _localSuppliersRepo.DeleteAllSuppliersAsync();
-        AddLog($"Deleted {result.ToString()} suppliers"  );
+        AddLog($"Deleted {result.ToString()} suppliers");
     }
+
+    [RelayCommand]
+    private async Task DeleteAllCustomersFromLocalDatabase()
+    {
+        AddLog("Delete all customers from local database");
+        var result = await _localCustomerRepo.DeleteAllCustomersAsync();
+        AddLog($"Deleted {result.ToString()} customers");
+    }
+
     [RelayCommand]
     private async Task DeleteAllBuyDocumentsFromLocalDatabase()
     {
         AddLog("Delete all Buy Documets from local database");
         var result = await _localBuyDocsRepo.DeleteAllBuyDocumentAsync();
-        AddLog($"Deleted {result.ToString()} buy documents"  );
+        AddLog($"Deleted {result.ToString()} buy documents");
     }
+
+    [RelayCommand]
+    private async Task DeleteAllSaleDocumentsFromLocalDatabase()
+    {
+        AddLog("Delete all Sale Documets from local database");
+        var result = await _localSaleDocumentsRepo.DeleteAllSaleDocumentAsync();
+        AddLog($"Deleted {result.ToString()} sale documents");
+    }
+
     [RelayCommand]
     private async Task DeleteAllBuyDocLinesFromLocalDatabase()
     {
         AddLog("Delete all Buy Doc Lines from local database");
         var result = await _localBuyDocLinesRepo.DeleteAllBuyDocLineAsync();
-        AddLog($"Deleted {result.ToString()} buy doc lines"  );
+        AddLog($"Deleted {result.ToString()} buy doc lines");
     }
+
+    [RelayCommand]
+    private async Task DeleteAllSaleDocLinesFromLocalDatabase()
+    {
+        AddLog("Delete all Sale Doc Lines from local database");
+        var result = await _localSalesDocLinesRepo.DeleteAllSaleDocLineAsync();
+        AddLog($"Deleted {result.ToString()} sale doc lines");
+    }
+
     private async Task AddOrUpdateItemsToLocalDatabaseProcess()
     {
         AddLog("Adding items to local database");
@@ -379,6 +549,63 @@ public partial class SyncItemsPageModel : ObservableObject
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 
+    private async Task AddOrUpdateCustomersToLocalDatabaseProcess()
+    {
+        AddLog("Adding Customers to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        int totalCount = Customers.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in Customers)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localCustomerRepo.CustomerExist(item.Id))
+                {
+                    var result = await _localCustomerRepo.UpdateCustomerAsync(item);
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.Name} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localCustomerRepo.AddCustomerAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.Name} returned {result}");
+                    addedCount++;
+                }
+
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 10 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+
+        AddLog("All Customers have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+
     private async Task AddOrUpdateBuyDocsToLocalDatabaseProcess()
     {
         AddLog("Adding Buy Documents to local database");
@@ -437,9 +664,67 @@ public partial class SyncItemsPageModel : ObservableObject
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 
+    private async Task AddOrUpdateSaleDocsToLocalDatabaseProcess()
+    {
+        AddLog("Adding Sale Documents to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        //int totalCount = BuyDocs.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in SaleDocs)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localSaleDocumentsRepo.SaleDocumentExist(item.Id))
+                {
+                    var result = await _localSaleDocumentsRepo.UpdateSaleDocumentAsync(item);
+                    AddLog(
+                        $"Index: {index + 1} Upd Id:{item.Id}, Name: {item.CustomerName} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localSaleDocumentsRepo.AddSaleDocumentAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.CustomerName} returned {result}");
+                    addedCount++;
+                }
+
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 20 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+
+        AddLog("All Sale documents have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+
     private async Task AddOrUpdateBuyDocLinesToLocalDatabaseProcess()
     {
-        AddLog("Adding items to local database");
+        AddLog("Adding Buy Doc Lines to local database");
         // Make the progress bar visible at the start
         IsProgressBarVisible = true;
 
@@ -488,6 +773,63 @@ public partial class SyncItemsPageModel : ObservableObject
         }
 
         AddLog("All Buy Doc Lines have been processed.");
+        AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
+        IsProgressBarVisible = false; // Hide the progress bar after completing the operation
+        Preferences.Default.Set("last_synced", DateTime.Now);
+        await AppShell.DisplayToastAsync("Finished updating local database");
+    }
+
+    private async Task AddOrUpdateSaleDocLinesToLocalDatabaseProcess()
+    {
+        AddLog("Adding Sale Doc Lines to local database");
+        // Make the progress bar visible at the start
+        IsProgressBarVisible = true;
+
+        // Create progress reporter to handle UI updates
+        var progress = new Progress<int>(value =>
+        {
+            OperationProgress = value;
+            OnPropertyChanged(nameof(OperationProgress));
+        });
+        int index = 0;
+        int totalCount = Items.Count;
+        int updatedCount = 0;
+        int addedCount = 0;
+        //var currentPage = Application.Current?.MainPage;
+        foreach (var item in SaleDocLines)
+        {
+            try
+            {
+                //Check if item with Id already exists in the database
+                if (await _localSalesDocLinesRepo.SaleDocLineExist(item.Id))
+                {
+                    var result = await _localSalesDocLinesRepo.UpdateSaleDocLineAsync(item);
+                    AddLog($"Index: {index + 1} Upd Id:{item.Id}, Name: {item.ItemName} returned {result.ToString()}");
+                    updatedCount++;
+                }
+                else
+                {
+                    var result = await _localSalesDocLinesRepo.AddSaleDocLineAsync(item);
+                    AddLog($"Index: {index + 1} Add Id:{item.Id}, Name: {item.ItemName} returned {result}");
+                    addedCount++;
+                }
+
+                ((IProgress<int>)progress).Report(++index);
+                // Allow time for UI to update after each iteration
+                if (index % 20 == 0)
+                {
+                    LastLogEntryIndex = index;
+                    await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
+                }
+            }
+            catch (Exception ex)
+            {
+                AddLog($"Error processing item {item.Id}: {ex.Message}");
+                _logger.LogError(ex, $"Error processing item {item.Id}");
+            }
+        }
+
+        AddLog("All Sale Doc Lines have been processed.");
         AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
         IsProgressBarVisible = false; // Hide the progress bar after completing the operation
         Preferences.Default.Set("last_synced", DateTime.Now);

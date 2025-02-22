@@ -14,6 +14,9 @@ public interface IBusinessServerDataAccess
      Task<ICollection<SupplierListDto>> GetBusinessServerSupplierListAsync();
      Task<ICollection<BuyDocListDto>> GetBusinessServerBuyDocListAsync();
      Task<ICollection<BuyDocLineListDto>> GetBusinessServerBuyDocLineListAsync();
+     Task<ICollection<CustomerListDto>> GetBusinessServerCustomerListAsync();
+     Task<ICollection<SaleDocListDto>> GetBusinessServerSaleDocListAsync();
+     Task<ICollection<SaleDocLineListDto>> GetBusinessServerSaleDocLineListAsync();
 }
 
 public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
@@ -114,7 +117,44 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
         }
 
     }
-    
+    public async Task<ICollection<CustomerListDto>> GetBusinessServerCustomerListAsync()
+    {
+        _logger.LogInformation("GetBusinessServerCustomerListAsync");
+        try
+        {
+            // Create HTTP client
+            var client = _httpClientFactory.CreateClient("BusinessServerApi");
+            client.Timeout = TimeSpan.FromSeconds(10);
+            // Send GET request
+            using var response = await client.GetAsync("/api/erpapi/getCustomers");
+            response.EnsureSuccessStatusCode();
+            // Read response content as JSON
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            // Deserialize JSON into a list of SupplierListDto
+            var customers = JsonSerializer.Deserialize<List<CustomerListDto>>(jsonContent);
+            // Return the suppliers (or an empty list if deserialization fails)
+            return customers ?? new List<CustomerListDto>();
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            // Timeout specific handling
+            _logger.LogError("The request timed out: {Message}", ex.Message);
+            throw new TimeoutException("The server request timed out.", ex); // Optional rethrow with a specific exception
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle network-related errors
+            _logger.LogError("A network-related error occurred: {Message}", ex.Message);
+            throw; // Optional: Rethrow or return an empty list
+        }
+        catch (Exception ex)
+        { 
+            // Handle other exceptions
+            _logger.LogError(ex, "Error in GetBusinessServerCustomerListAsync");
+            throw; // Rethrow the exception for the calling code to handle
+        }
+
+    }
     public async Task<ICollection<BuyDocListDto>> GetBusinessServerBuyDocListAsync()
     {
         _logger.LogInformation("GetBusinessServerBuyDocListAsync");
@@ -153,6 +193,44 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
         }
 
     }
+    public async Task<ICollection<SaleDocListDto>> GetBusinessServerSaleDocListAsync()
+    {
+        _logger.LogInformation("GetBusinessServerSaleDocListAsync");
+        try
+        {
+            // Create HTTP client
+            var client = _httpClientFactory.CreateClient("BusinessServerApi");
+            client.Timeout = TimeSpan.FromSeconds(10);
+            // Send GET request
+            using var response = await client.GetAsync("/api/erpapi/GetSaleDocuments");
+            response.EnsureSuccessStatusCode();
+            // Read response content as JSON
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            // Deserialize JSON into a list of SupplierListDto
+            var saleDocList = JsonSerializer.Deserialize<List<SaleDocListDto>>(jsonContent);
+            // Return the buydocListDto (or an empty list if deserialization fails)
+            return saleDocList ?? new List<SaleDocListDto>();
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            // Timeout specific handling
+            _logger.LogError("The request timed out: {Message}", ex.Message);
+            throw new TimeoutException("The server request timed out.", ex); // Optional rethrow with a specific exception
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle network-related errors
+            _logger.LogError("A network-related error occurred: {Message}", ex.Message);
+            throw; // Optional: Rethrow or return an empty list
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions
+            _logger.LogError(ex, "Error in GetBusinessServerSaleDocListAsync");
+            throw; // Rethrow the exception for the calling code to handle
+        }
+
+    }
     public async Task<ICollection<BuyDocLineListDto>> GetBusinessServerBuyDocLineListAsync()
     {
         _logger.LogInformation("GetBusinessServerBuyDocLineListAsync");
@@ -187,6 +265,44 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
         {
             // Handle other exceptions
             _logger.LogError(ex, "Error in GetBusinessServerBuyDocListAsync");
+            throw; // Rethrow the exception for the calling code to handle
+        }
+
+    }
+    public async Task<ICollection<SaleDocLineListDto>> GetBusinessServerSaleDocLineListAsync()
+    {
+        _logger.LogInformation("GetBusinessServerSaleDocLineListAsync");
+        try
+        {
+            // Create HTTP client
+            var client = _httpClientFactory.CreateClient("BusinessServerApi");
+            client.Timeout = TimeSpan.FromSeconds(10);
+            // Send GET request
+            using var response = await client.GetAsync("/api/erpapi/GetSaleDocLines");
+            response.EnsureSuccessStatusCode();
+            // Read response content as JSON
+            var jsonContent = await response.Content.ReadAsStringAsync();
+            // Deserialize JSON into a list of SupplierListDto
+            var saleDocLineList = JsonSerializer.Deserialize<List<SaleDocLineListDto>>(jsonContent);
+            // Return the buyDocLineListDto (or an empty list if deserialization fails)
+            return saleDocLineList ?? new List<SaleDocLineListDto>();
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            // Timeout specific handling
+            _logger.LogError("The request timed out: {Message}", ex.Message);
+            throw new TimeoutException("The server request timed out.", ex); // Optional rethrow with a specific exception
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle network-related errors
+            _logger.LogError("A network-related error occurred: {Message}", ex.Message);
+            throw; // Optional: Rethrow or return an empty list
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions
+            _logger.LogError(ex, "Error in GetBusinessServerSaleDocListAsync");
             throw; // Rethrow the exception for the calling code to handle
         }
 
