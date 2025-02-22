@@ -44,4 +44,8 @@ public class ItemStatisticsDto
     public decimal MeanPrice { get; set; }
     [JsonPropertyName("totalQuantityInWarehouse")]
     public decimal TotalQuantityInWarehouse { get; set; }
+    [JsonPropertyName("meanSalesPrice")]
+    public decimal MeanSalesPrice { get; set; }
+    [JsonPropertyName("totalQuantitySold")]
+    public decimal TotalQuantitySold { get; set; }
 }

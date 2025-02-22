@@ -108,6 +108,12 @@
                     <Label Text="Μέση Τιμή Αγοράς" Grid.Column="0" Grid.Row="6" />
                     <Label Text="{Binding ItemStatistics.MeanPrice,StringFormat='{0:F2}€' }" Grid.Column="1"
                            Grid.Row="6" />
+                    <Label Text="Συν.Πωλήσεων" Grid.Column="2" Grid.Row="5" />
+                    <Label Text="{Binding ItemStatistics.TotalQuantitySold, StringFormat='{0:F2}'}"
+                           Grid.Column="3" Grid.Row="5" />
+                    <Label Text="Μέση Τιμή Πώλησης" Grid.Column="2" Grid.Row="6" />
+                    <Label Text="{Binding ItemStatistics.MeanSalesPrice,StringFormat='{0:F2}€' }" Grid.Column="3"
+                           Grid.Row="6" />
                 </Grid>
             </VerticalStackLayout>
         </ScrollView>
