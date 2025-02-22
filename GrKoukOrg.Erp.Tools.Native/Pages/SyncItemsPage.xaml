@@ -76,82 +76,78 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                
+
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-                
+
             </Grid.RowDefinitions>
 
             <!-- Your Content -->
-            <FlexLayout Grid.Row="0" Grid.Column="0" Direction="Row" Wrap="Wrap" JustifyContent="Center" AlignItems="Start" HorizontalOptions="Fill">
-                <VerticalStackLayout>
-                    <Label Text="Items Count" Padding="{StaticResource LayoutPadding}" />    
-                    <Label Text="{Binding ItemCount}"  HorizontalTextAlignment="Center"/>
-                    <Button  Text="Get Items"
-                             Command="{Binding GetItemsCommand}"   >
-                    </Button>    
-                    <Button  Text="Update Items"
-                             Command="{Binding AddItemsToLocalDatabaseCommand}"   >
-                    </Button>    
-                    <Button  Text="Delete Items"
-                             Command="{Binding DeleteAllItemsFromLocalDatabaseCommand}"   >
-                    </Button>    
-                </VerticalStackLayout>
-                <VerticalStackLayout>
-                    <Label Text="Suppliers Count" Padding="{StaticResource LayoutPadding}" />
-                    <Label Text="{Binding SupplierCount}"  HorizontalTextAlignment="Center"/>
-                    <Button  Text="Get Suppliers"
-                             Command="{Binding GetSuppliersCommand}" >
-                    </Button>  
-                    <Button  Text="Update Suppliers"
-                             Command="{Binding AddSuppliersToLocalDatabaseCommand}"   >
-                    </Button>  
-                    <Button  Text="Delete Suppliers"
-                             Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}"   >
-                    </Button>    
-                </VerticalStackLayout>
-                <VerticalStackLayout>
-                    <Label Text="Buy Docs Count" Padding="{StaticResource LayoutPadding}" />
-                    <Label Text="{Binding BuyDocsCount}" HorizontalTextAlignment="Center" />
-                    <Button  Text="Get Buy Docs"
-                             Command="{Binding GetBuyDocsCommand}"  >
-                    </Button>    
-                    <Button  Text="Update Buy Docs"
-                             Command="{Binding AddBuyDocsToLocalDatabaseCommand}"   >
-                    </Button>    
-                    <Button  Text="Delete Buy Docs"
-                             Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}"   >
-                    </Button>    
-                </VerticalStackLayout>
-                <VerticalStackLayout>
-                    <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
-                    <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
-                    <Button  Text="Get Buy Doc Lines"
-                             Command="{Binding GetBuyDocLinesCommand}">
-                    </Button>    
-                    <Button  Text="Update Buy Doc Lines"
-                             Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}"   >
-                    </Button>    
-                    <Button  Text="Delete Doc Lines"
-                             Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}"   >
-                    </Button>    
-                </VerticalStackLayout>
-            </FlexLayout>
-            
-           
-            
-            
-            
-            
-            
+            <ScrollView Grid.Row="0" Grid.Column="0" Orientation="Both">
+                <FlexLayout Direction="Column" Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
+                    <VerticalStackLayout>
+                        <Label Text="Items Count" Padding="{StaticResource LayoutPadding}" />
+                        <Label Text="{Binding ItemCount}" HorizontalTextAlignment="Center" />
+                        <Button Text="Get Items"
+                                Command="{Binding GetItemsCommand}">
+                        </Button>
+                        <Button Text="Update Items"
+                                Command="{Binding AddItemsToLocalDatabaseCommand}">
+                        </Button>
+                        <Button Text="Delete Items"
+                                Command="{Binding DeleteAllItemsFromLocalDatabaseCommand}">
+                        </Button>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Label Text="Suppliers Count" Padding="{StaticResource LayoutPadding}" />
+                        <Label Text="{Binding SupplierCount}" HorizontalTextAlignment="Center" />
+                        <Button Text="Get Suppliers"
+                                Command="{Binding GetSuppliersCommand}">
+                        </Button>
+                        <Button Text="Update Suppliers"
+                                Command="{Binding AddSuppliersToLocalDatabaseCommand}">
+                        </Button>
+                        <Button Text="Delete Suppliers"
+                                Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}">
+                        </Button>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Label Text="Buy Docs Count" Padding="{StaticResource LayoutPadding}" />
+                        <Label Text="{Binding BuyDocsCount}" HorizontalTextAlignment="Center" />
+                        <Button Text="Get Buy Docs"
+                                Command="{Binding GetBuyDocsCommand}">
+                        </Button>
+                        <Button Text="Update Buy Docs"
+                                Command="{Binding AddBuyDocsToLocalDatabaseCommand}">
+                        </Button>
+                        <Button Text="Delete Buy Docs"
+                                Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}">
+                        </Button>
+                    </VerticalStackLayout>
+                    <VerticalStackLayout>
+                        <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
+                        <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
+                        <Button Text="Get Buy Doc Lines"
+                                Command="{Binding GetBuyDocLinesCommand}">
+                        </Button>
+                        <Button Text="Update Buy Doc Lines"
+                                Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}">
+                        </Button>
+                        <Button Text="Delete Doc Lines"
+                                Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}">
+                        </Button>
+                    </VerticalStackLayout>
+                </FlexLayout>
+            </ScrollView>
+
 
             <syncfusion:SfDataGrid x:Name="LogDataGrid"
                                    Grid.Column="0" Grid.Row="1"
-                                   
+
                                    ItemsSource="{Binding LogEntries}"
                                    AutoGenerateColumnsMode="None"
                                    AllowResizingColumns="True"
@@ -163,7 +159,7 @@
                 </syncfusion:SfDataGrid.Columns>
             </syncfusion:SfDataGrid>
             <progressBar:SfLinearProgressBar x:Name="ProgressBar"
-                                             Grid.Column="0" Grid.Row="2" 
+                                             Grid.Column="0" Grid.Row="2"
                                              Progress="{Binding OperationProgress}"
                                              Minimum="0"
                                              Maximum="{Binding ItemCount}"
