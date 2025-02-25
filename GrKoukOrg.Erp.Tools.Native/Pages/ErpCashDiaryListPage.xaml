@@ -3,9 +3,52 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:grd="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="pageModels:ErpCashDiaryListPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ErpCashDiaryListPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <grd:DataGridStyle x:Key="customStyle" 
+                               RowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"
+                               HeaderRowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"
+                               RowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"
+                               HeaderRowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
     <ContentPage.Content>
+        <Grid 
+            RowSpacing="0" ColumnSpacing="0">
+            <!-- Set one row to fill entire space -->
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <grd:SfDataGrid
+                DefaultStyle="{StaticResource customStyle}"
+                ColumnWidthMode="Fill"
+                ItemsSource="{Binding Items}"
+                VerticalOptions="FillAndExpand"
+                HorizontalOptions="FillAndExpand"
+                HorizontalScrollBarVisibility="Always"
+                
+                AutoGenerateColumnsMode="None"
+                RowHeight="40"
+                >
+                <grd:SfDataGrid.Columns>
+                    <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" />
+                    <grd:DataGridTextColumn HeaderText="Trans Name" MappingName="TransName" />
+                </grd:SfDataGrid.Columns>
+            </grd:SfDataGrid>    
+        </Grid>
+
         
     </ContentPage.Content>
 </ContentPage>

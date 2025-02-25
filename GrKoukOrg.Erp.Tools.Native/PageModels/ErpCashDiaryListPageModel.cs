@@ -7,7 +7,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 public partial class ErpCashDiaryListPageModel:ObservableObject
 {
     private readonly ILocalCashDiaryRepo<CashDiaryItemDto> _localCashDiaryRepo;
-
+    [ObservableProperty] private ICollection<CashDiaryItemDto> _items;
     public ErpCashDiaryListPageModel(ILocalCashDiaryRepo<CashDiaryItemDto> localCashDiaryRepo)
     {
         _localCashDiaryRepo = localCashDiaryRepo;
@@ -16,6 +16,6 @@ public partial class ErpCashDiaryListPageModel:ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        
+        Items = await _localCashDiaryRepo.ListItemsAsync();
     }
 }

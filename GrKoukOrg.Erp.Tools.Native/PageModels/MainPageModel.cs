@@ -104,6 +104,11 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         }
 
         [RelayCommand]
+        private async Task ShowCashDiaryList()
+        {
+            await Shell.Current.GoToAsync("erpcashdiarylist");
+        }
+        [RelayCommand]
         private async Task Test()
         {
             var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
