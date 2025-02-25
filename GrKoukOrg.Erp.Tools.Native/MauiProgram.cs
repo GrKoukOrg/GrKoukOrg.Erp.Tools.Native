@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
+using GrKoukOrg.Erp.Tools.Native.Models;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
 using ZXing.Net.Maui.Controls;
+using ErpCashDiaryListPageModel = GrKoukOrg.Erp.Tools.Native.PageModels.ErpCashDiaryListPageModel;
 
 namespace GrKoukOrg.Erp.Tools.Native
 {
@@ -37,6 +39,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             
            
             builder.Services.AddSingleton<LocalItemsRepo>();
+           
             builder.Services.AddSingleton<LocalBuyDocumentsRepo>();
             builder.Services.AddSingleton<LocalBuyDocLinesRepo>();
             builder.Services.AddSingleton<LocalSuppliersRepo>();
@@ -45,18 +48,18 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddSingleton<LocalCustomerRepo>();
             builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
             builder.Services.AddSingleton<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
-
+            builder.Services.AddSingleton<ILocalCashDiaryRepo<CashDiaryItemDto>, LocalCashDiaryTestRepo>();
             builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
             builder.Services.AddSingleton<MainPageModel>();
          
             builder.Services.AddSingleton<SettingsPageModel>();
-            
            
             builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
             builder.Services.AddTransientWithShellRoute<SyncItemsPage,SyncItemsPageModel>("syncitems");
             builder.Services.AddTransientWithShellRoute<ItemDetailsPage, ItemDetailsPageModel>("itemdetails");
+            builder.Services.AddTransientWithShellRoute<ErpCashDiaryListPage, ErpCashDiaryListPageModel>("erpcashdiarylist");
             builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
             {
                 var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();
