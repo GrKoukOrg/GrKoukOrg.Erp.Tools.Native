@@ -10,8 +10,8 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <grd:DataGridStyle x:Key="customStyle" 
-                               RowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"
-                               HeaderRowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}"
+                               RowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                               HeaderRowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
                                RowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"
                                HeaderRowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"/>
         </ResourceDictionary>
@@ -40,7 +40,7 @@
                 HorizontalScrollBarVisibility="Always"
                 
                 AutoGenerateColumnsMode="None"
-                RowHeight="40"
+               
                 >
                 <grd:SfDataGrid.Columns>
                     <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" />
