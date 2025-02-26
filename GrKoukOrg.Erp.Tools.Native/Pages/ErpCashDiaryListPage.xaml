@@ -14,6 +14,7 @@
                                HeaderRowBackground="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
                                RowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"
                                HeaderRowTextColor="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}"/>
+            
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Behaviors>
@@ -34,6 +35,7 @@
             <grd:SfDataGrid
                 DefaultStyle="{StaticResource customStyle}"
                 ColumnWidthMode="Fill"
+                
                 ItemsSource="{Binding Items}"
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="FillAndExpand"
@@ -43,8 +45,13 @@
                
                 >
                 <grd:SfDataGrid.Columns>
-                    <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" />
+                    <grd:DataGridNumericColumn HeaderText="Id" MappingName="Id"  Visible="False"/>
+                    <grd:DataGridDateColumn HeaderText="Date" MappingName="TransDate"/>
+                    <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" Visible="False"/>
                     <grd:DataGridTextColumn HeaderText="Trans Name" MappingName="TransName" />
+                    <grd:DataGridNumericColumn HeaderText="Amount" MappingName="TotalAmount" 
+                                              
+                                               Format="C2"/>
                 </grd:SfDataGrid.Columns>
             </grd:SfDataGrid>    
         </Grid>
