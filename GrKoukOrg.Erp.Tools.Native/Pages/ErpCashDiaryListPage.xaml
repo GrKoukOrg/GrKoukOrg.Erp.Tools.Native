@@ -5,6 +5,7 @@
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              xmlns:grd="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
              x:DataType="pageModels:ErpCashDiaryListPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ErpCashDiaryListPage">
     <ContentPage.Resources>
@@ -35,7 +36,9 @@
             <grd:SfDataGrid
                 DefaultStyle="{StaticResource customStyle}"
                 ColumnWidthMode="Fill"
-                
+                AllowKeyboardNavigation="True"
+                SelectionMode="Single"
+                AllowEditing="True"
                 ItemsSource="{Binding Items}"
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="FillAndExpand"
@@ -46,9 +49,18 @@
                 >
                 <grd:SfDataGrid.Columns>
                     <grd:DataGridNumericColumn HeaderText="Id" MappingName="Id"  Visible="False"/>
-                    <grd:DataGridDateColumn HeaderText="Date" MappingName="TransDate"/>
                     <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" Visible="False"/>
-                    <grd:DataGridTextColumn HeaderText="Trans Name" MappingName="TransName" />
+                    <grd:DataGridComboBoxColumn
+                        HeaderText="Customers"
+                        CanFilterSuggestions="True"
+                        AllowEditing="True"
+                        ValueMemberPath="TransName"
+                        DisplayMemberPath="TransName"
+                        ItemsSource="{Binding TransNameSuggestions}"
+                        MappingName="TransName">
+                    </grd:DataGridComboBoxColumn>
+                    <grd:DataGridDateColumn HeaderText="Date" MappingName="TransDate"/>
+                   
                     <grd:DataGridNumericColumn HeaderText="Amount" MappingName="TotalAmount" 
                                               
                                                Format="C2"/>

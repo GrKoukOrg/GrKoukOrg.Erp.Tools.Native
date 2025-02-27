@@ -23,7 +23,7 @@ public partial class ItemDetailsPageModel : ObservableObject
     [ObservableProperty] private ItemListDto _selectedItem;
     [ObservableProperty] private string _searchText;
     [ObservableProperty] private ICollection<SearchItem> _searchItems;
-[ObservableProperty] private ItemStatisticsDto _itemStatistics=new ItemStatisticsDto();
+    [ObservableProperty] private ItemStatisticsDto _itemStatistics=new ItemStatisticsDto();
     public ItemDetailsPageModel(LocalItemsRepo localItemsRepo, LocalBuyDocumentsRepo localBuyDocumentsRepo,
         LocalBuyDocLinesRepo localBuyDocLinesRepo
         ,LocalSaleDocumentsRepo localSaleDocumentsRepo
