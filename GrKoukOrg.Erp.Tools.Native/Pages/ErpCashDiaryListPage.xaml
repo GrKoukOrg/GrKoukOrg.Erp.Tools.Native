@@ -39,7 +39,8 @@
                 AllowKeyboardNavigation="True"
                 NavigationMode="Cell"
                 SelectionMode="Single"
-                AllowEditing="True"
+                AllowResizingColumns="True"
+                SortingMode="Single"
                 ItemsSource="{Binding Items}"
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="FillAndExpand"
@@ -51,16 +52,7 @@
                 <grd:SfDataGrid.Columns>
                     <grd:DataGridNumericColumn HeaderText="Id" MappingName="Id"  Visible="False"/>
                     <grd:DataGridTextColumn HeaderText="Trans Id" MappingName="TransId" Visible="False"/>
-                    <grd:DataGridComboBoxColumn
-                        HeaderText="Customers"
-                        CanFilterSuggestions="True"
-                        IsEditableMode="True"
-                        SuggestionMode="Contains"
-                        ValueMemberPath="TransName"
-                        DisplayMemberPath="TransName"
-                        ItemsSource="{Binding TransNameSuggestions}"
-                        MappingName="TransName">
-                    </grd:DataGridComboBoxColumn>
+                    <grd:DataGridTextColumn HeaderText="Trans Name" MappingName="TransName"/>
                     <grd:DataGridDateColumn HeaderText="Date" MappingName="TransDate"/>
                    
                     <grd:DataGridNumericColumn HeaderText="Amount" MappingName="TotalAmount" 
