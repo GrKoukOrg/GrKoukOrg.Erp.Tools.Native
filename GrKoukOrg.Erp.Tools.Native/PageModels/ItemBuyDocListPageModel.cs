@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
+using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
@@ -10,29 +11,33 @@ public partial class ItemBuyDocListPageModel : ObservableObject, IQueryAttributa
     private readonly LocalBuyDocLinesRepo _localBuyDocLinesRepo;
     private readonly LocalBuyDocumentsRepo _localBuyDocumentsRepo;
     private readonly ModalErrorHandler _errorHandler;
+    private readonly ILogger<ItemBuyDocListPageModel> _logger;
     private int _itemId;
     [ObservableProperty] private ICollection<ItemBuyListLineDto> _items;
     [ObservableProperty] private DateTime _fromDate;
     [ObservableProperty] private DateTime _toDate;
 
     public ItemBuyDocListPageModel(LocalBuyDocLinesRepo localBuyDocLinesRepo,
-        LocalBuyDocumentsRepo localBuyDocumentsRepo, ModalErrorHandler errorHandler)
+        LocalBuyDocumentsRepo localBuyDocumentsRepo, ModalErrorHandler errorHandler,ILogger<ItemBuyDocListPageModel> logger)
     {
         _localBuyDocLinesRepo = localBuyDocLinesRepo;
         _localBuyDocumentsRepo = localBuyDocumentsRepo;
         _errorHandler = errorHandler;
+        _logger = logger;
     }
 
     [RelayCommand]
     private async Task Appearing()
     {
-        ToDate = DateTime.Today;
-        FromDate = DateTime.Today.AddDays(-30);
+      _logger.LogDebug("Inside Appearing");
         //Items = await _localBuyDocLinesRepo.ListBuyDocLinesByDateRangeAsync(FromDate,ToDate);
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
+        _logger.LogDebug("Inside ApplyQueryAttributes");
+        ToDate = DateTime.Today;
+        FromDate = DateTime.Today.AddDays(-30);
         if (query.ContainsKey("itemid"))
         {
             _itemId = Convert.ToInt32(query["itemid"]);
@@ -47,6 +52,7 @@ public partial class ItemBuyDocListPageModel : ObservableObject, IQueryAttributa
     }
     private async Task LoadData(int itemId)
     {
+        _logger.LogDebug("Inside LoadData");
         var buyDocLines = await _localBuyDocLinesRepo.ListBuyDocLinesByDateRangeAsync(itemId, FromDate, ToDate);
         var buyDocs = await _localBuyDocumentsRepo.ListBuyDocsAsync();
         Items = buyDocLines.Join(
