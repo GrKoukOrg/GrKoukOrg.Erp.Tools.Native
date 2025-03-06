@@ -135,6 +135,15 @@ public partial class ItemDetailsPageModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task ShowItemBuyDocs()
+    {
+        if (SelectedItem is not null)
+        {
+            await Shell.Current.GoToAsync($"itembuylist?itemid={SelectedItem.Id}");    
+        }
+        
+    }
+    [RelayCommand]
     private async Task ScanBarcode()
     {
         var barcodeScannerPopupPage = new BarCodeScannerPopupPage();

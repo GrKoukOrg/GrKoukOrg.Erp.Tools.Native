@@ -111,7 +111,7 @@ public class LocalBuyDocLinesRepo
         return buyDocLines;
     }
 
-    public async Task<List<BuyDocLineListDto>> ListBuyDocLinesByDateRangeAsync(DateTime fromDate, DateTime toDate)
+    public async Task<List<BuyDocLineListDto>> ListBuyDocLinesByDateRangeAsync(int itemId,DateTime fromDate, DateTime toDate)
     {
         await Init(); // Ensure the database is initialized
 
@@ -127,8 +127,9 @@ public class LocalBuyDocLinesRepo
                UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
                UnitNetAmount, UnitVatAmount, UnitTotalAmount
         FROM BuyDocLines
-        WHERE TransDate >= @FromDate AND TransDate <= @ToDate
+        WHERE ItemId=@ItemId AND TransDate >= @FromDate AND TransDate <= @ToDate
         ";
+            command.Parameters.AddWithValue("@ItemId", itemId);
             command.Parameters.AddWithValue("@FromDate", fromDate);
             command.Parameters.AddWithValue("@ToDate", toDate);
 

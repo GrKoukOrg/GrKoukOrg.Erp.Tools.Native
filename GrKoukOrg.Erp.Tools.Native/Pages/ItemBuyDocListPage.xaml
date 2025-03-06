@@ -3,10 +3,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
-             xmlns:grd="http://schemas.syncfusion.com/maui"
+             xmlns:grd="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="pageModels:ItemBuyDocListPageModel"
-             x:Name="itemBuyDocListDetails"
+             x:Name="ItemBuyDocListDetails"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ItemBuyDocListPage">
     
     <ContentPage.Resources>
@@ -20,9 +21,12 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Behaviors>
+        <!-- <toolkit:EventToCommandBehavior -->
+        <!--     EventName="Appearing" -->
+        <!--     BindingContext="{Binding Path=BindingContext, Source={x:Reference Name=ItemBuyDocListDetails}}" -->
+        <!--     Command="{Binding AppearingCommand}" /> -->
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
-            BindingContext="{Binding Path=BindingContext, Source={x:Reference Name=itemBuyDocListDetails}}"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.Content>
@@ -32,14 +36,58 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Από Ημ/νία"/>
+                <DatePicker Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Date="{Binding FromDate}">
+                    <DatePicker.Behaviors>
+                        <toolkit:EventToCommandBehavior EventName="DateSelected"
+                                                        Command="{Binding DateSelectedCommand}"
+                                                        EventArgsConverter="{StaticResource DatePickerDateSelectedValueConverter}" />
+                    </DatePicker.Behaviors>
+                </DatePicker>
+                <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="Εως Ημ/νία"/>
+                <DatePicker Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Date="{Binding ToDate}">
+                    <DatePicker.Behaviors>
+                        <toolkit:EventToCommandBehavior EventName="DateSelected"
+                                                        Command="{Binding DateSelectedCommand}"
+                                                        EventArgsConverter="{StaticResource DatePickerDateSelectedValueConverter}" />
+                    </DatePicker.Behaviors>
+                </DatePicker>
+                <grd:SfDataGrid
+                    Grid.Row="3"
+                    Grid.Column="0" Grid.ColumnSpan="4"
+                    DefaultStyle="{StaticResource customStyle}"
+                    ColumnWidthMode="Fill"
+                    AllowKeyboardNavigation="True"
+                    NavigationMode="Cell"
+                    SelectionMode="Single"
+                    AllowResizingColumns="True"
+                    SortingMode="Single"
+                    ItemsSource="{Binding Items}"
+                    VerticalOptions="FillAndExpand"
+                    HorizontalOptions="FillAndExpand"
+                    HorizontalScrollBarVisibility="Always"
                 
+                    AutoGenerateColumnsMode="None"
+               
+                >
+                    <grd:SfDataGrid.Columns>
+                        <grd:DataGridNumericColumn HeaderText="Id" MappingName="Id"  Visible="False"/>
+                        <grd:DataGridDateColumn HeaderText="Ημ/νία" MappingName="TransDate"/>
+                        <grd:DataGridTextColumn HeaderText="Προμηθευτής" MappingName="SupplierName" />
+                        <grd:DataGridTextColumn HeaderText="Trans Name" MappingName="TransName"/>
+                        <grd:DataGridNumericColumn HeaderText="Ποσότητα" MappingName="UnitQty"/> 
+                   
+                        <grd:DataGridNumericColumn HeaderText="Amount" MappingName="UnitTotalAmount" Format="C2"/>
+                    </grd:SfDataGrid.Columns>
+                </grd:SfDataGrid>    
             </Grid>
         </ScrollView>
     </ContentPage.Content>

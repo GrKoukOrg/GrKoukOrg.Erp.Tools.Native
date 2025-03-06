@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="Resources/Styles/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:AutoCompleteSelectionConverter x:Key="AutoCompleteSelectionConverter" />
+            <converters:DatePickerDateSelectedValueConverter x:Key="DatePickerDateSelectedValueConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
