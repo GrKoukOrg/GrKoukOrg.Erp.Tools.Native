@@ -6,7 +6,7 @@ namespace GrKoukOrg.Erp.Tools.Native.Data;
 
 public class LocalBuyDocLinesRepo
 {
-     private bool _hasBeenInitialized = false;
+    private bool _hasBeenInitialized = false;
     private readonly ILogger _logger;
 
     public LocalBuyDocLinesRepo(ILogger<LocalBuyDocLinesRepo> logger)
@@ -56,7 +56,7 @@ public class LocalBuyDocLinesRepo
 
         _hasBeenInitialized = true;
     }
-   
+
     public async Task<List<BuyDocLineListDto>> ListBuyDocLinesAsync()
     {
         await Init(); // Ensure the database is initialized
@@ -111,6 +111,62 @@ public class LocalBuyDocLinesRepo
         return buyDocLines;
     }
 
+    public async Task<List<BuyDocLineListDto>> ListBuyDocLinesByDateRangeAsync(DateTime fromDate, DateTime toDate)
+    {
+        await Init(); // Ensure the database is initialized
+
+        var buyDocLines = new List<BuyDocLineListDto>();
+
+        await using (var connection = new SqliteConnection(Constants.DatabasePath))
+        {
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+        SELECT Id, TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
+               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
+               UnitNetAmount, UnitVatAmount, UnitTotalAmount
+        FROM BuyDocLines
+        WHERE TransDate >= @FromDate AND TransDate <= @ToDate
+        ";
+            command.Parameters.AddWithValue("@FromDate", fromDate);
+            command.Parameters.AddWithValue("@ToDate", toDate);
+
+            try
+            {
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    buyDocLines.Add(new BuyDocLineListDto
+                    {
+                        Id = reader.GetInt32(0),
+                        TransDate = reader.GetDateTime(1),
+                        BuyDocId = reader.GetInt32(2),
+                        ItemId = reader.GetInt32(3),
+                        ItemName = reader.IsDBNull(4) ? string.Empty : reader.GetString(4),
+                        ItemCode = reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                        UnitOfMeasureName = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                        UnitFpaPerc = reader.GetDouble(7),
+                        UnitQty = reader.GetDecimal(8),
+                        UnitPrice = reader.GetDecimal(9),
+                        UnitDiscountRate = reader.GetDouble(10),
+                        UnitDiscountAmount = reader.GetDecimal(11),
+                        UnitNetAmount = reader.GetDecimal(12),
+                        UnitVatAmount = reader.GetDecimal(13),
+                        UnitTotalAmount = reader.GetDecimal(14)
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error listing BuyDocLines within the date range {FromDate} to {ToDate}", fromDate,
+                    toDate);
+                throw;
+            }
+        }
+
+        return buyDocLines;
+    }
 
     public async Task<bool> BuyDocLineExist(int id)
     {
@@ -131,7 +187,6 @@ public class LocalBuyDocLinesRepo
         return false;
     }
 
-  
 
     public async Task<BuyDocLineListDto?> GetBuyDocLineAsync(int id)
     {
@@ -184,7 +239,7 @@ public class LocalBuyDocLinesRepo
         return null; // Return null if no record is found
     }
 
-   
+
     public async Task<int> AddBuyDocLineAsync(BuyDocLineListDto buyDocLine)
     {
         await Init(); // Ensure the database is initialized
@@ -228,7 +283,6 @@ public class LocalBuyDocLinesRepo
         }
     }
 
-  
 
     public async Task<int> UpdateBuyDocLineAsync(BuyDocLineListDto buyDocLine)
     {
@@ -282,8 +336,8 @@ public class LocalBuyDocLinesRepo
             throw;
         }
     }
-  
-    
+
+
     public async Task<int> DeleteBuyDocLineAsync(BuyDocLineListDto item)
     {
         await Init();
@@ -296,6 +350,7 @@ public class LocalBuyDocLinesRepo
 
         return await deleteCmd.ExecuteNonQueryAsync();
     }
+
     public async Task<int> DeleteAllBuyDocLineAsync()
     {
         await Init();
