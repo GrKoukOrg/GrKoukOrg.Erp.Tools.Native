@@ -60,6 +60,7 @@
                                                         EventArgsConverter="{StaticResource DatePickerDateSelectedValueConverter}" />
                     </DatePicker.Behaviors>
                 </DatePicker>
+                
                 <grd:SfDataGrid
                     Grid.Row="3"
                     Grid.Column="0" Grid.ColumnSpan="4"
