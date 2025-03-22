@@ -53,5 +53,7 @@ public class ItemBuyListLineDto
     public decimal UnitTotalAmount { get; set; }
     
     [JsonPropertyName("unitFinalPrice")]
-    public decimal UnitFinalPrice => UnitNetAmount/UnitQty;
+    public decimal UnitFinalPrice => UnitTotalAmount/UnitQty;
+    [JsonPropertyName("unitFinalPrice2")]
+    public decimal UnitFinalPrice2 => UnitNetAmount/UnitQty;
 }
