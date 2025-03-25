@@ -14,6 +14,10 @@ public partial class SettingsPageModel:ObservableObject
     private string _businessApiUrl = string.Empty;
     [ObservableProperty]
     private string _erpApiUrl = string.Empty;
+    
+    [ObservableProperty]
+    private string _companyCode = string.Empty;
+
     // ReSharper disable once ConvertToPrimaryConstructor
     public SettingsPageModel(ISettingsDataService settingsDataService)
     {
@@ -25,6 +29,7 @@ public partial class SettingsPageModel:ObservableObject
     {
         BusinessApiUrl = await _settingsDataService.GetBusinessApiUrlAsync();
         ErpApiUrl = await _settingsDataService.GetErpApiUrlAsync();
+        CompanyCode=  _settingsDataService.GetBusinessCompanyCode();
     }
 
     [RelayCommand]
@@ -34,6 +39,7 @@ public partial class SettingsPageModel:ObservableObject
         {
             await _settingsDataService.SetBusinessApiUrlAsync(BusinessApiUrl);
             await _settingsDataService.SetErpApiUrlAsync(ErpApiUrl);
+             _settingsDataService.SetBusinessCompanyCode(CompanyCode);
             await AppShell.DisplayToastAsync("Settings saved");
         }
         catch (Exception e)

@@ -62,6 +62,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddTransientWithShellRoute<ItemDetailsPage, ItemDetailsPageModel>("itemdetails");
             builder.Services.AddTransientWithShellRoute<ErpCashDiaryListPage, ErpCashDiaryListPageModel>("erpcashdiarylist");
             builder.Services.AddTransientWithShellRoute<ItemBuyDocListPage, ItemBuyDocListPageModel>("itembuylist");
+            builder.Services.AddTransientWithShellRoute<SyncToErpPage, SyncToErpPageModel>("synctoerp");
             
             builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
             {

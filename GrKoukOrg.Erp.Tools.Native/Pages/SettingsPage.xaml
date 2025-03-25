@@ -51,7 +51,11 @@
           <Label Text="Settings" Style="{StaticResource Title2}"/>
           
           <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}">
-                      
+              <sf:SfTextInputLayout 
+                  Hint="Business Company Code">
+                  <Entry
+                      Text="{Binding CompanyCode}" />
+              </sf:SfTextInputLayout>        
               <sf:SfTextInputLayout 
                   Hint="Business Api Url">
                   <Entry
@@ -62,6 +66,7 @@
                   <Entry
                       Text="{Binding ErpApiUrl}" />
               </sf:SfTextInputLayout>
+              
               <Button 
                   HeightRequest="{OnIdiom 44, Desktop=60}"
                   Text="Save"

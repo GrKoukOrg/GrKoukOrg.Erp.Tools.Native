@@ -49,3 +49,17 @@ public class ItemStatisticsDto
     [JsonPropertyName("totalQuantitySold")]
     public decimal TotalQuantitySold { get; set; }
 }
+
+/// <summary>
+/// This must be compatible with the equivalent
+/// definition in Erp
+/// </summary>
+public class ItemFamilyDto
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    // [JsonPropertyName("code")]
+    // public string Code { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+}

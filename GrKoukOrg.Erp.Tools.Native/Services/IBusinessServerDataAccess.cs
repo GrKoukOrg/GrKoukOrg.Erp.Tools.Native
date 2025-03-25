@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GrKoukOrg.Erp.Tools.Native.Models;
+using GrKoukOrg.Erp.Tools.Native.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.Services;
@@ -17,6 +18,7 @@ public interface IBusinessServerDataAccess
      Task<ICollection<CustomerListDto>> GetBusinessServerCustomerListAsync();
      Task<ICollection<SaleDocListDto>> GetBusinessServerSaleDocListAsync();
      Task<ICollection<SaleDocLineListDto>> GetBusinessServerSaleDocLineListAsync();
+     Task<BusinessApiResponse<IList<ItemFamilyDto>>> GetBusinessServerItemFamilyListAsync();
 }
 
 public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
@@ -306,5 +308,49 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             throw; // Rethrow the exception for the calling code to handle
         }
 
+    }
+
+    public async Task<BusinessApiResponse<IList<ItemFamilyDto>>> GetBusinessServerItemFamilyListAsync()
+    {
+        _logger.LogInformation("GetBusinessServerItemFamilyListAsync");
+        try
+        {
+            // Create HTTP client
+            var client = _httpClientFactory.CreateClient("BusinessServerApi");
+            client.Timeout = TimeSpan.FromSeconds(10);
+            // Send GET request
+            using var response = await client.GetAsync("/api/erpapi/GetItemFamilies");
+            response.EnsureSuccessStatusCode();
+
+            // Read response content as JSON
+            var jsonContent = await response.Content.ReadAsStringAsync();
+
+            // Deserialize JSON 
+            
+            var apiResponse = JsonSerializer.Deserialize<BusinessApiResponse<IList<ItemFamilyDto>>>(jsonContent);
+
+          
+            return apiResponse ?? new BusinessApiResponse<IList<ItemFamilyDto>>();
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            // Timeout specific handling
+            _logger.LogError("The request timed out: {Message}", ex.Message);
+            throw new TimeoutException("The server request timed out.", ex); // Optional rethrow with a specific exception
+        }
+        catch (HttpRequestException ex)
+        {
+            // Handle network-related errors
+            _logger.LogError("A network-related error occurred: {Message}", ex.Message);
+            throw; // Optional: Rethrow or return an empty list
+        }
+        catch (Exception ex)
+        {
+            // Handle other exceptions
+            _logger.LogError(ex, "Error in GetServerItemsListAsync");
+            throw; // Rethrow the exception for the calling code to handle
+        }
+
+       
     }
 }

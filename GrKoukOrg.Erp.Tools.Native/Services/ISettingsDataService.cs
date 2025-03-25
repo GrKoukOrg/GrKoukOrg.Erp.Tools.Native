@@ -13,12 +13,15 @@ public interface ISettingsDataService
     Task<int> SetErpApiUrlAsync(string url);
     string GetErpApiUrl();
     int SetErpApiUrl(string url);
+    string GetBusinessCompanyCode();
+    int SetBusinessCompanyCode(string code);
 }
 
 public class SettingsMemoryDataService : ISettingsDataService
 {
     private const string businessApiBaseDefaultUrl= "http://192.168.20.38:1234";
     private const string erpApiBaseDefaultUrl= "https://192.168.20.38:5001/";
+    private const string companyCodeDefaultCode= "NOTTOBAL";
     public async Task<string> GetBusinessApiUrlAsync()
     {
         string url = Preferences.Get("businessApiUrl",businessApiBaseDefaultUrl );
@@ -62,6 +65,18 @@ public class SettingsMemoryDataService : ISettingsDataService
     public int SetErpApiUrl(string url)
     {
         Preferences.Set("erpApiUrl",url);
+        return 0;
+    }
+
+    public string GetBusinessCompanyCode()
+    {
+        string code = Preferences.Get("businessCompanyCode", companyCodeDefaultCode);
+        return code;
+    }
+
+    public int SetBusinessCompanyCode(string code)
+    {
+        Preferences.Set("businessCompanyCode",code);
         return 0;
     }
 }
