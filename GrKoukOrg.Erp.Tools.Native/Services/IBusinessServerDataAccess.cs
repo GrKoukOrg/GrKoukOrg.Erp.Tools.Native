@@ -40,7 +40,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/getitems");
+            using var response = await client.GetAsync("/api/busapi/getitems");
             response.EnsureSuccessStatusCode();
 
             // Read response content as JSON
@@ -90,7 +90,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/getsuppliers");
+            using var response = await client.GetAsync("/api/busapi/getsuppliers");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -128,7 +128,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/getCustomers");
+            using var response = await client.GetAsync("/api/busapi/getCustomers");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -166,7 +166,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/GetBuyDocuments");
+            using var response = await client.GetAsync("/api/busapi/GetBuyDocuments");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -204,7 +204,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/GetSaleDocuments");
+            using var response = await client.GetAsync("/api/busapi/GetSaleDocuments");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -242,7 +242,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/GetBuyDocLines");
+            using var response = await client.GetAsync("/api/busapi/GetBuyDocLines");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -280,7 +280,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/GetSaleDocLines");
+            using var response = await client.GetAsync("/api/busapi/GetSaleDocLines");
             response.EnsureSuccessStatusCode();
             // Read response content as JSON
             var jsonContent = await response.Content.ReadAsStringAsync();
@@ -319,7 +319,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            using var response = await client.GetAsync("/api/erpapi/GetItemFamilies");
+            using var response = await client.GetAsync("/api/busapi/GetItemFamilies");
             response.EnsureSuccessStatusCode();
 
             // Read response content as JSON
