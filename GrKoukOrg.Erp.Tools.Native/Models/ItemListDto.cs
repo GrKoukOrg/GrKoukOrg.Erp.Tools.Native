@@ -63,3 +63,17 @@ public class ItemFamilyDto
     [JsonPropertyName("name")]
     public string Name { get; set; }
 }
+
+/// <summary>
+/// This must be compatible with the equivalent
+/// definition in Erp
+/// </summary>
+public class UnitOfMeasurementDto
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    // [JsonPropertyName("code")]
+    // public string Code { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+}

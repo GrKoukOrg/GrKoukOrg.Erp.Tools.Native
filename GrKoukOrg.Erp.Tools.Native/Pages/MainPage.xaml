@@ -49,19 +49,7 @@
           
 
         <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Padding="20" Spacing="10">
-            <Label Text="Username" />
-            <Entry Text="{Binding UserName}" Placeholder="Enter username" />
-
-            <Label Text="Password" />
-            <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Enter password" />
-
-            <Button Text="Login" Command="{Binding LoginCommand}" />
-            <Button Text="Perform Test Call" Command="{Binding TestCommand}" />
-            <Button Text="Cash Diary" Command="{Binding ShowCashDiaryListCommand}" />
-
-            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
-
-            <Label Text="{Binding StatusMessage}" TextColor="Red" FontAttributes="Italic" />
+           
         </VerticalStackLayout>
 
     </Grid>

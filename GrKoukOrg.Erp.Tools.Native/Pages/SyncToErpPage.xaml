@@ -16,8 +16,9 @@
             <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Enter password" />
 
             <Button Text="Login" Command="{Binding LoginCommand}" />
-            <Button Text="Perform Test Call" Command="{Binding TestCommand}" />
-           
+            
+            <Button Text="Sync Item Families" Command="{Binding SyncItemFamiliesCommand}" />
+            <Button Text="Sync Units Of Measurement" Command="{Binding SyncUnitsOfMeasurementCommand}" />
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 
