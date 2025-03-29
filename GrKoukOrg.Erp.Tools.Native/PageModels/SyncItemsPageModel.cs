@@ -462,6 +462,7 @@ public partial class SyncItemsPageModel : ObservableObject
         });
         int index = 0;
         int totalCount = Items.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -519,6 +520,7 @@ public partial class SyncItemsPageModel : ObservableObject
         });
         int index = 0;
         int totalCount = Suppliers.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -576,6 +578,7 @@ public partial class SyncItemsPageModel : ObservableObject
         });
         int index = 0;
         int totalCount = Customers.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -632,7 +635,8 @@ public partial class SyncItemsPageModel : ObservableObject
             OnPropertyChanged(nameof(OperationProgress));
         });
         int index = 0;
-        //int totalCount = BuyDocs.Count;
+        int totalCount = BuyDocs.Count;
+        ItemCount= totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -690,7 +694,8 @@ public partial class SyncItemsPageModel : ObservableObject
             OnPropertyChanged(nameof(OperationProgress));
         });
         int index = 0;
-        //int totalCount = BuyDocs.Count;
+        int totalCount = SaleDocs.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -748,7 +753,8 @@ public partial class SyncItemsPageModel : ObservableObject
             OnPropertyChanged(nameof(OperationProgress));
         });
         int index = 0;
-        int totalCount = Items.Count;
+        int totalCount = BuyDocLines.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
@@ -805,7 +811,8 @@ public partial class SyncItemsPageModel : ObservableObject
             OnPropertyChanged(nameof(OperationProgress));
         });
         int index = 0;
-        int totalCount = Items.Count;
+        int totalCount = SaleDocLines.Count;
+        ItemCount = totalCount;
         int updatedCount = 0;
         int addedCount = 0;
         //var currentPage = Application.Current?.MainPage;
