@@ -141,6 +141,9 @@
                             <Button Text="Delete Doc Lines"
                                     Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}">
                             </Button>
+                            <Button Text="Drop buy Doc Lines"
+                                    Command="{Binding DropBuyDocLineTableFromLocalDatabaseCommand}">
+                            </Button>
                         </VerticalStackLayout>
                     </FlexLayout>
             
@@ -183,6 +186,9 @@
                             </Button>
                             <Button Text="Delete Sale Doc Lines"
                                     Command="{Binding DeleteAllSaleDocLinesFromLocalDatabaseCommand}">
+                            </Button>
+                            <Button Text="Drop Doc Lines"
+                                    Command="{Binding DropSaleDocLineTableFromLocalDatabaseCommand}">
                             </Button>
                         </VerticalStackLayout>
                     </FlexLayout>

@@ -49,7 +49,9 @@ public partial class ItemDetailsPageModel : ObservableObject
                 doc => doc.Id,
                 line => line.BuyDocId,
                 (doc, line) => new
-                    { doc.BuyDocDefId, line.UnitQty, line.UnitTotalAmount, line.UnitDiscountAmount, line.ItemId }
+                    { doc.BuyDocDefId, line.UnitQty,
+                        UnitTotalAmount = line.LineTotalAmount,
+                        UnitDiscountAmount = line.LineDiscountAmount, line.ItemId }
             )
             .Where(x => x.ItemId == itemId);
         
@@ -59,7 +61,9 @@ public partial class ItemDetailsPageModel : ObservableObject
                 doc => doc.Id,
                 line => line.SaleDocId,
                 (doc, line) => new
-                    { doc.SaleDocDefId, line.UnitQty, line.UnitTotalAmount, line.UnitDiscountAmount, line.ItemId }
+                    { doc.SaleDocDefId, line.UnitQty,
+                        UnitTotalAmount = line.LineTotalAmount,
+                        UnitDiscountAmount = line.LineDiscountAmount, line.ItemId }
             )
             .Where(x => x.ItemId == itemId);
         

@@ -89,7 +89,7 @@
                         <grd:DataGridTextColumn HeaderText="TM" MappingName="UnitPrice" Format="C2"/>
                         <grd:DataGridTextColumn HeaderText="TMF" MappingName="UnitFinalPrice" Format="C2"/>
                         <grd:DataGridTextColumn HeaderText="TMF1" MappingName="UnitFinalPrice2" Format="C2"/>
-                        <grd:DataGridNumericColumn HeaderText="Amount" MappingName="UnitTotalAmount" Format="C2"/>
+                        <grd:DataGridNumericColumn HeaderText="Amount" MappingName="LineTotalAmount" Format="C2"/>
                     </grd:SfDataGrid.Columns>
                 </grd:SfDataGrid>    
             </Grid>

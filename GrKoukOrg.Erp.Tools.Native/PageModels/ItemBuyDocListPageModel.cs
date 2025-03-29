@@ -70,11 +70,11 @@ public partial class ItemBuyDocListPageModel : ObservableObject, IQueryAttributa
                 TransDate = d.TransDate,
                 UnitPrice = l.UnitPrice,
                 UnitQty = l.UnitQty,
-                UnitDiscountAmount = l.UnitDiscountAmount,
+                LineDiscountAmount = l.LineDiscountAmount,
                 UnitDiscountRate = l.UnitDiscountRate,
-                UnitNetAmount = l.UnitNetAmount,
-                UnitTotalAmount = l.UnitTotalAmount,
-                UnitVatAmount = l.UnitVatAmount,
+                LineNetAmount = l.LineNetAmount,
+                LineTotalAmount = l.LineTotalAmount,
+                LineVatAmount = l.LineVatAmount,
                 BuyDocDefName = d.BuyDocDefName,
                 UnitOfMeasureName = l.UnitOfMeasureName
             }

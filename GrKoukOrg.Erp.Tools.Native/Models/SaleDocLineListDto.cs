@@ -27,13 +27,13 @@ public class SaleDocLineListDto
     public decimal UnitPrice { get; set; }
     [JsonPropertyName("unitDiscountRate")]
     public double UnitDiscountRate { get; set; }
-    [JsonPropertyName("unitDiscountAmount")]
-    public decimal UnitDiscountAmount { get; set; }
-    [JsonPropertyName("unitNetAmount")]
-    public decimal UnitNetAmount { get; set; }
-    [JsonPropertyName("unitVatAmount")]
-    public decimal UnitVatAmount { get; set; }
-    [JsonPropertyName("unitTotalAmount")]
-    public decimal UnitTotalAmount { get; set; }
+    [JsonPropertyName("lineDiscountAmount")]
+    public decimal LineDiscountAmount { get; set; }
+    [JsonPropertyName("lineNetAmount")]
+    public decimal LineNetAmount { get; set; }
+    [JsonPropertyName("lineVatAmount")]
+    public decimal LineVatAmount { get; set; }
+    [JsonPropertyName("lineTotalAmount")]
+    public decimal LineTotalAmount { get; set; }
 
 }

@@ -40,20 +40,20 @@ public class ItemBuyListLineDto
     [JsonPropertyName("unitDiscountRate")]
     public double UnitDiscountRate { get; set; }
     
-    [JsonPropertyName("unitDiscountAmount")]
-    public decimal UnitDiscountAmount { get; set; }
+    [JsonPropertyName("lineDiscountAmount")]
+    public decimal LineDiscountAmount { get; set; }
     
-    [JsonPropertyName("unitNetAmount")]
-    public decimal UnitNetAmount { get; set; }
+    [JsonPropertyName("lineNetAmount")]
+    public decimal LineNetAmount { get; set; }
     
-    [JsonPropertyName("unitVatAmount")]
-    public decimal UnitVatAmount { get; set; }
+    [JsonPropertyName("lineVatAmount")]
+    public decimal LineVatAmount { get; set; }
     
-    [JsonPropertyName("unitTotalAmount")]
-    public decimal UnitTotalAmount { get; set; }
+    [JsonPropertyName("lineTotalAmount")]
+    public decimal LineTotalAmount { get; set; }
     
     [JsonPropertyName("unitFinalPrice")]
-    public decimal UnitFinalPrice => UnitTotalAmount/UnitQty;
+    public decimal UnitFinalPrice => LineTotalAmount/UnitQty;
     [JsonPropertyName("unitFinalPrice2")]
-    public decimal UnitFinalPrice2 => UnitNetAmount/UnitQty;
+    public decimal UnitFinalPrice2 => LineNetAmount/UnitQty;
 }

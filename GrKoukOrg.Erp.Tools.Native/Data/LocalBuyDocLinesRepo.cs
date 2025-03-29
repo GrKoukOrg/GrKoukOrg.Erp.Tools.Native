@@ -38,10 +38,10 @@ public class LocalBuyDocLinesRepo
                 UnitQty DECIMAL(18, 4) NOT NULL,
                 UnitPrice DECIMAL(18, 4) NOT NULL, -- Decimal can be represented as REAL in SQLite
                 UnitDiscountRate REAL NOT NULL,
-                UnitDiscountAmount DECIMAL(18, 2) NOT NULL,
-                UnitNetAmount DECIMAL(18, 2) NOT NULL,
-                UnitVatAmount DECIMAL(18, 2) NOT NULL,
-                UnitTotalAmount DECIMAL(18, 2) NOT NULL
+                LineDiscountAmount DECIMAL(18, 2) NOT NULL,
+                LineNetAmount DECIMAL(18, 2) NOT NULL,
+                LineVatAmount DECIMAL(18, 2) NOT NULL,
+                LineTotalAmount DECIMAL(18, 2) NOT NULL
             );
                 ";
 
@@ -70,8 +70,8 @@ public class LocalBuyDocLinesRepo
             var command = connection.CreateCommand();
             command.CommandText = @"
             SELECT Id, TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
-                   UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
-                   UnitNetAmount, UnitVatAmount, UnitTotalAmount
+                   UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+                   LineNetAmount, LineVatAmount, LineTotalAmount
             FROM  BuyDocLines
         ";
 
@@ -94,10 +94,10 @@ public class LocalBuyDocLinesRepo
                         UnitQty = reader.GetDecimal(8),
                         UnitPrice = reader.GetDecimal(9),
                         UnitDiscountRate = reader.GetDouble(10),
-                        UnitDiscountAmount = reader.GetDecimal(11),
-                        UnitNetAmount = reader.GetDecimal(12),
-                        UnitVatAmount = reader.GetDecimal(13),
-                        UnitTotalAmount = reader.GetDecimal(14)
+                        LineDiscountAmount = reader.GetDecimal(11),
+                        LineNetAmount = reader.GetDecimal(12),
+                        LineVatAmount = reader.GetDecimal(13),
+                        LineTotalAmount = reader.GetDecimal(14)
                     });
                 }
             }
@@ -124,8 +124,8 @@ public class LocalBuyDocLinesRepo
             var command = connection.CreateCommand();
             command.CommandText = @"
         SELECT Id, TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
-               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
-               UnitNetAmount, UnitVatAmount, UnitTotalAmount
+               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+               LineNetAmount, LineVatAmount, LineTotalAmount
         FROM BuyDocLines
         WHERE ItemId=@ItemId AND TransDate >= @FromDate AND TransDate <= @ToDate
         ";
@@ -151,10 +151,10 @@ public class LocalBuyDocLinesRepo
                         UnitQty = reader.GetDecimal(8),
                         UnitPrice = reader.GetDecimal(9),
                         UnitDiscountRate = reader.GetDouble(10),
-                        UnitDiscountAmount = reader.GetDecimal(11),
-                        UnitNetAmount = reader.GetDecimal(12),
-                        UnitVatAmount = reader.GetDecimal(13),
-                        UnitTotalAmount = reader.GetDecimal(14)
+                        LineDiscountAmount = reader.GetDecimal(11),
+                        LineNetAmount = reader.GetDecimal(12),
+                        LineVatAmount = reader.GetDecimal(13),
+                        LineTotalAmount = reader.GetDecimal(14)
                     });
                 }
             }
@@ -199,8 +199,8 @@ public class LocalBuyDocLinesRepo
         var command = connection.CreateCommand();
         command.CommandText = @"
         SELECT Id, TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
-               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
-               UnitNetAmount, UnitVatAmount, UnitTotalAmount
+               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+               LineNetAmount, LineVatAmount, LineTotalAmount
         FROM BuyDocLines
         WHERE Id = @id
     ";
@@ -224,10 +224,10 @@ public class LocalBuyDocLinesRepo
                     UnitQty = reader.GetDecimal(8),
                     UnitPrice = reader.GetDecimal(9),
                     UnitDiscountRate = reader.GetDouble(10),
-                    UnitDiscountAmount = reader.GetDecimal(11),
-                    UnitNetAmount = reader.GetDecimal(12),
-                    UnitVatAmount = reader.GetDecimal(13),
-                    UnitTotalAmount = reader.GetDecimal(14)
+                    LineDiscountAmount = reader.GetDecimal(11),
+                    LineNetAmount = reader.GetDecimal(12),
+                    LineVatAmount = reader.GetDecimal(13),
+                    LineTotalAmount = reader.GetDecimal(14)
                 };
             }
         }
@@ -251,8 +251,8 @@ public class LocalBuyDocLinesRepo
         var command = connection.CreateCommand();
         command.CommandText = @"
         INSERT INTO BuyDocLines (Id,TransDate, BuyDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
-                                    UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, UnitDiscountAmount, 
-                                    UnitNetAmount, UnitVatAmount, UnitTotalAmount)
+                                    UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+                                    LineNetAmount, LineVatAmount, LineTotalAmount)
         VALUES (@id,@transDate, @buyDocId, @itemId, @itemName, @itemCode, @unitOfMeasureName, 
                 @unitFpaPerc, @unitQty, @unitPrice, @unitDiscountRate, @unitDiscountAmount, 
                 @unitNetAmount, @unitVatAmount, @unitTotalAmount);
@@ -268,10 +268,10 @@ public class LocalBuyDocLinesRepo
         command.Parameters.AddWithValue("@unitQty", buyDocLine.UnitQty);
         command.Parameters.AddWithValue("@unitPrice", buyDocLine.UnitPrice);
         command.Parameters.AddWithValue("@unitDiscountRate", buyDocLine.UnitDiscountRate);
-        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.UnitDiscountAmount);
-        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.UnitNetAmount);
-        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.UnitVatAmount);
-        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.UnitTotalAmount);
+        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.LineDiscountAmount);
+        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.LineNetAmount);
+        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.LineVatAmount);
+        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.LineTotalAmount);
 
         try
         {
@@ -305,10 +305,10 @@ public class LocalBuyDocLinesRepo
             UnitQty = @unitQty,
             UnitPrice = @unitPrice,
             UnitDiscountRate = @unitDiscountRate,
-            UnitDiscountAmount = @unitDiscountAmount,
-            UnitNetAmount = @unitNetAmount,
-            UnitVatAmount = @unitVatAmount,
-            UnitTotalAmount = @unitTotalAmount
+            LineDiscountAmount = @unitDiscountAmount,
+            LineNetAmount = @unitNetAmount,
+            LineVatAmount = @unitVatAmount,
+            LineTotalAmount = @unitTotalAmount
         WHERE Id = @id
     ";
         command.Parameters.AddWithValue("@id", buyDocLine.Id);
@@ -322,10 +322,10 @@ public class LocalBuyDocLinesRepo
         command.Parameters.AddWithValue("@unitQty", buyDocLine.UnitQty);
         command.Parameters.AddWithValue("@unitPrice", buyDocLine.UnitPrice);
         command.Parameters.AddWithValue("@unitDiscountRate", buyDocLine.UnitDiscountRate);
-        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.UnitDiscountAmount);
-        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.UnitNetAmount);
-        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.UnitVatAmount);
-        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.UnitTotalAmount);
+        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.LineDiscountAmount);
+        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.LineNetAmount);
+        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.LineVatAmount);
+        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.LineTotalAmount);
 
         try
         {
@@ -360,6 +360,18 @@ public class LocalBuyDocLinesRepo
 
         var deleteCmd = connection.CreateCommand();
         deleteCmd.CommandText = "DELETE FROM BuyDoclines";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
+    
+    public async Task<int> DropBuyDocLinesTableAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "Drop table BuyDoclines";
 
         return await deleteCmd.ExecuteNonQueryAsync();
     }

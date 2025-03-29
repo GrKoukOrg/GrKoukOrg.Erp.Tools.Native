@@ -386,7 +386,20 @@ public partial class SyncItemsPageModel : ObservableObject
         var result = await _localItemsRepo.DeleteAllItemsAsync();
         AddLog($"Deleted {result.ToString()} items");
     }
-
+    [RelayCommand]
+    private async Task DropBuyDocLineTableFromLocalDatabase()
+    {
+        AddLog("Drop buydoclines table from local database");
+        var result = await _localBuyDocLinesRepo.DropBuyDocLinesTableAsync();
+        AddLog($"Dropped table");
+    }
+    [RelayCommand]
+    private async Task DropSaleDocLineTableFromLocalDatabase()
+    {
+        AddLog("Drop saledoclines table from local database");
+        var result = await _localSalesDocLinesRepo.DropSaleDocLinesTableAsync();
+        AddLog($"Dropped table");
+    }
     [RelayCommand]
     private async Task DeleteAllSuppliersFromLocalDatabase()
     {
