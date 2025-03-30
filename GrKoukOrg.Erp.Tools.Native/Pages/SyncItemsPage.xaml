@@ -71,6 +71,10 @@
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="DeviceStates">
                     <VisualState x:Name="Phone">
+                        <VisualState.StateTriggers>
+                            <DeviceStateTrigger Device="Phone" />
+                        </VisualState.StateTriggers>
+
                         <VisualState.Setters>
                             <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
                             <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="0" />
@@ -78,6 +82,10 @@
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Tablet">
+                        <VisualState.StateTriggers>
+                            <DeviceStateTrigger Device="Tablet" />
+                        </VisualState.StateTriggers>
+
                         <VisualState.Setters>
                             <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
                             <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
@@ -85,6 +93,10 @@
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Desktop">
+                        <VisualState.StateTriggers>
+                            <DeviceStateTrigger Device="Desktop" />
+                        </VisualState.StateTriggers>
+
                         <VisualState.Setters>
                             <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
                             <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
