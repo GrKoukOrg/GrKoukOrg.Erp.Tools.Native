@@ -16,31 +16,28 @@
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
             Command="{Binding AppearingCommand}" />
-
     </ContentPage.Behaviors>
+
     <ContentPage.Resources>
         <Style x:Key="InvalidEntryStyle" TargetType="Entry">
             <Setter Property="TextColor" Value="Red" />
         </Style>
 
         <Style TargetType="Entry">
-            <Setter Property="TextColor"
-                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
             <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="FontFamily" Value="OpenSansRegular" />
-            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=24}" />
-            <Setter Property="PlaceholderColor"
-                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-            <Setter Property="MinimumHeightRequest" Value="44" />
-            <Setter Property="MinimumWidthRequest" Value="44" />
+            <Setter Property="FontFamily" Value="OpenSansRegular"/>
+            <Setter Property="FontSize" Value="{OnIdiom Phone=16, Tablet=20, Desktop=24}" />
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44"/>
+            <Setter Property="MinimumWidthRequest" Value="44"/>
             <Setter Property="VisualStateManager.VisualStateGroups">
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="CommonStates">
                         <VisualState x:Name="Normal" />
                         <VisualState x:Name="Disabled">
                             <VisualState.Setters>
-                                <Setter Property="TextColor"
-                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -48,169 +45,132 @@
             </Setter>
         </Style>
         <Style TargetType="syncfusion:DataGridCell">
-            <Setter Property="TextColor"
-                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         </Style>
         <Style TargetType="syncfusion:DataGridHeaderCell">
-            <Setter Property="TextColor"
-                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
             <Setter Property="FontAttributes" Value="Bold" />
         </Style>
     </ContentPage.Resources>
-    <!-- <ContentPage.ToolbarItems> -->
-    <!--     <ToolbarItem Text="Get Items" Command="{Binding GetItemsCommand}" /> -->
-    <!--     <ToolbarItem Text="Get Suppliers" Command="{Binding GetItemsCommand}" /> -->
-    <!--     <ToolbarItem Text="Sync Items" Command="{Binding AddItemsToLocalDatabaseCommand}" /> -->
-    <!-- </ContentPage.ToolbarItems> -->
 
     <Grid>
         <!-- Main Content -->
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <!-- The actual content of the page -->
-        <Grid Padding="{StaticResource LayoutPadding}"
-              RowSpacing="{StaticResource LayoutSpacing}"
-              ColumnSpacing="{StaticResource LayoutSpacing}">
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-
-            </Grid.ColumnDefinitions>
-
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
-
             </Grid.RowDefinitions>
 
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" x:Name="Column1" />
+                <ColumnDefinition Width="0" x:Name="Column2" />
+                <ColumnDefinition Width="0" x:Name="Column3" />
+            </Grid.ColumnDefinitions>
+
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="DeviceStates">
+                    <VisualState x:Name="Phone">
+                        <VisualState.Setters>
+                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
+                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="0" />
+                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Tablet">
+                        <VisualState.Setters>
+                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
+                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
+                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="0" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="Desktop">
+                        <VisualState.Setters>
+                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
+                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
+                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="*" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
             <!-- Your Content -->
-            <ScrollView Grid.Row="0" Grid.Column="0" Orientation="Both">
+            <ScrollView Grid.Row="0" Grid.ColumnSpan="3" Orientation="Both">
                 <VerticalStackLayout>
                     <FlexLayout Direction="Column" Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <VerticalStackLayout>
                             <Label Text="Items Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding ItemCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Items"
-                                    Command="{Binding GetItemsCommand}">
-                            </Button>
-                            <Button Text="Update Items"
-                                    Command="{Binding AddItemsToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Items"
-                                    Command="{Binding DeleteAllItemsFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Items" Command="{Binding GetItemsCommand}" />
+                            <Button Text="Update Items" Command="{Binding AddItemsToLocalDatabaseCommand}" />
+                            <Button Text="Delete Items" Command="{Binding DeleteAllItemsFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Suppliers Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding SupplierCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Suppliers"
-                                    Command="{Binding GetSuppliersCommand}">
-                            </Button>
-                            <Button Text="Update Suppliers"
-                                    Command="{Binding AddSuppliersToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Suppliers"
-                                    Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Suppliers" Command="{Binding GetSuppliersCommand}" />
+                            <Button Text="Update Suppliers" Command="{Binding AddSuppliersToLocalDatabaseCommand}" />
+                            <Button Text="Delete Suppliers" Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Buy Docs Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding BuyDocsCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Buy Docs"
-                                    Command="{Binding GetBuyDocsCommand}">
-                            </Button>
-                            <Button Text="Update Buy Docs"
-                                    Command="{Binding AddBuyDocsToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Buy Docs"
-                                    Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Buy Docs" Command="{Binding GetBuyDocsCommand}" />
+                            <Button Text="Update Buy Docs" Command="{Binding AddBuyDocsToLocalDatabaseCommand}" />
+                            <Button Text="Delete Buy Docs" Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Buy Doc Lines"
-                                    Command="{Binding GetBuyDocLinesCommand}">
-                            </Button>
-                            <Button Text="Update Buy Doc Lines"
-                                    Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Doc Lines"
-                                    Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Drop buy Doc Lines"
-                                    Command="{Binding DropBuyDocLineTableFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Buy Doc Lines" Command="{Binding GetBuyDocLinesCommand}" />
+                            <Button Text="Update Buy Doc Lines" Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}" />
+                            <Button Text="Delete Doc Lines" Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}" />
+                            <Button Text="Drop buy Doc Lines" Command="{Binding DropBuyDocLineTableFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                     </FlexLayout>
-            
+
                     <FlexLayout Direction="Column" Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <VerticalStackLayout>
                             <Label Text="Customer Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding CustomerCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Customers"
-                                    Command="{Binding GetCustomersCommand}">
-                            </Button>
-                            <Button Text="Update Items"
-                                    Command="{Binding AddCustomersToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Items"
-                                    Command="{Binding DeleteAllCustomersFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Customers" Command="{Binding GetCustomersCommand}" />
+                            <Button Text="Update Items" Command="{Binding AddCustomersToLocalDatabaseCommand}" />
+                            <Button Text="Delete Items" Command="{Binding DeleteAllCustomersFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
-                        
+
                         <VerticalStackLayout>
                             <Label Text="Sale Docs Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding SaleDocsCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Sale Docs"
-                                    Command="{Binding GetSaleDocsCommand}">
-                            </Button>
-                            <Button Text="Update Sale Docs"
-                                    Command="{Binding AddSaleDocsToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Sale Docs"
-                                    Command="{Binding DeleteAllSaleDocumentsFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Sale Docs" Command="{Binding GetSaleDocsCommand}" />
+                            <Button Text="Update Sale Docs" Command="{Binding AddSaleDocsToLocalDatabaseCommand}" />
+                            <Button Text="Delete Sale Docs" Command="{Binding DeleteAllSaleDocumentsFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Sale Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding SaleDocLinesCount}" HorizontalTextAlignment="Center" />
-                            <Button Text="Get Sale Doc Lines"
-                                    Command="{Binding GetSaleDocLinesCommand}">
-                            </Button>
-                            <Button Text="Update Sale Doc Lines"
-                                    Command="{Binding AddSaleDocLinesToLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Delete Sale Doc Lines"
-                                    Command="{Binding DeleteAllSaleDocLinesFromLocalDatabaseCommand}">
-                            </Button>
-                            <Button Text="Drop Doc Lines"
-                                    Command="{Binding DropSaleDocLineTableFromLocalDatabaseCommand}">
-                            </Button>
+                            <Button Text="Get Sale Doc Lines" Command="{Binding GetSaleDocLinesCommand}" />
+                            <Button Text="Update Sale Doc Lines" Command="{Binding AddSaleDocLinesToLocalDatabaseCommand}" />
+                            <Button Text="Delete Sale Doc Lines" Command="{Binding DeleteAllSaleDocLinesFromLocalDatabaseCommand}" />
+                            <Button Text="Drop Doc Lines" Command="{Binding DropSaleDocLineTableFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                     </FlexLayout>
                 </VerticalStackLayout>
             </ScrollView>
 
-
             <syncfusion:SfDataGrid x:Name="LogDataGrid"
-                                   Grid.Column="0" Grid.Row="1"
-
+                                   Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
                                    ItemsSource="{Binding LogEntries}"
                                    AutoGenerateColumnsMode="None"
                                    AllowResizingColumns="True"
                                    VerticalScrollBarVisibility="Always">
                 <syncfusion:SfDataGrid.Columns>
-                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"
-                                                   ColumnWidthMode="Auto" />
+                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" ColumnWidthMode="Auto" />
                     <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill" />
                 </syncfusion:SfDataGrid.Columns>
             </syncfusion:SfDataGrid>
+
             <progressBar:SfLinearProgressBar x:Name="ProgressBar"
-                                             Grid.Column="0" Grid.Row="2"
+                                             Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
                                              Progress="{Binding OperationProgress}"
                                              Minimum="0"
                                              Maximum="{Binding ItemCount}"
@@ -220,15 +180,17 @@
         <!-- Busy Indicator Overlay -->
         <Grid IsVisible="{Binding IsWaitingForResponse}" BackgroundColor="Black" Opacity="0.5">
             <!-- Overlay -->
-            <Grid RowDefinitions="Auto,*">
-                <core:SfBusyIndicator
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    IsRunning="{Binding IsWaitingForResponse}"
-                    AnimationType="CircularMaterial"
-                    HeightRequest="100"
-                    WidthRequest="100" />
-            </Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <core:SfBusyIndicator
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                IsRunning="{Binding IsWaitingForResponse}"
+                AnimationType="CircularMaterial"
+                HeightRequest="100"
+                WidthRequest="100" />
         </Grid>
     </Grid>
 

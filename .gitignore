@@ -398,3 +398,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+/GrKoukOrg.Erp.Tools.Native/Platforms/.DS_Store
+/.DS_Store
+/GrKoukOrg.Erp.Tools.Native/Resources/.DS_Store
+/GrKoukOrg.Erp.Tools.Native/.DS_Store
+/.idea/.DS_Store
+/.idea/.idea.GrKoukOrg.Erp.Tools.Native/.idea
