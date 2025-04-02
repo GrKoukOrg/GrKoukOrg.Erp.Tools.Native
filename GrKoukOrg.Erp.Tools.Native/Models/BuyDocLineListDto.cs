@@ -38,3 +38,39 @@ public class BuyDocLineListDto
     public decimal LineTotalAmount { get; set; }
 
 }
+
+public class BuyDocLineDto
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    [JsonPropertyName("transDate")]
+    public DateTime TransDate { get; set; }
+    [JsonPropertyName("buyDocId")]
+    public int BuyDocId { get; set; }
+    [JsonPropertyName("itemId")]
+    public int ItemId { get; set; }
+    [JsonPropertyName("itemName")]
+    public string? ItemName { get; set; }
+    [JsonPropertyName("itemCode")]
+    public string? ItemCode { get; set; }
+    //public string? UnitOfMeasureCode { get; set; }
+    [JsonPropertyName("unitOfMeasureName")]
+    public string? UnitOfMeasureName { get; set; }
+    [JsonPropertyName("unitFpaPerc")]
+    public double UnitFpaPerc { get; set; }
+    [JsonPropertyName("unitQty")]
+    public decimal UnitQty { get; set; }
+    [JsonPropertyName("unitPrice")]
+    public decimal UnitPrice { get; set; }
+    [JsonPropertyName("unitDiscountRate")]
+    public double UnitDiscountRate { get; set; }
+    [JsonPropertyName("lineDiscountAmount")]
+    public decimal LineDiscountAmount { get; set; }
+    [JsonPropertyName("lineNetAmount")]
+    public decimal LineNetAmount { get; set; }
+    [JsonPropertyName("lineVatAmount")]
+    public decimal LineVatAmount { get; set; }
+    [JsonPropertyName("lineTotalAmount")]
+    public decimal LineTotalAmount { get; set; }
+
+}

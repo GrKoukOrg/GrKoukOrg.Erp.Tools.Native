@@ -53,7 +53,7 @@
         </Style>
     </ContentPage.Resources>
 
-    <Grid>
+    <Grid Padding="{StaticResource LayoutPadding}">
         <!-- Main Content -->
         <Grid>
             <Grid.RowDefinitions>
@@ -68,43 +68,7 @@
                 <ColumnDefinition Width="0" x:Name="Column3" />
             </Grid.ColumnDefinitions>
 
-            <VisualStateManager.VisualStateGroups>
-                <VisualStateGroup x:Name="DeviceStates">
-                    <VisualState x:Name="Phone">
-                        <VisualState.StateTriggers>
-                            <DeviceStateTrigger Device="Phone" />
-                        </VisualState.StateTriggers>
-
-                        <VisualState.Setters>
-                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
-                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="0" />
-                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="0" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Tablet">
-                        <VisualState.StateTriggers>
-                            <DeviceStateTrigger Device="Tablet" />
-                        </VisualState.StateTriggers>
-
-                        <VisualState.Setters>
-                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
-                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
-                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="0" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="Desktop">
-                        <VisualState.StateTriggers>
-                            <DeviceStateTrigger Device="Desktop" />
-                        </VisualState.StateTriggers>
-
-                        <VisualState.Setters>
-                            <Setter TargetName="Column1" Property="ColumnDefinition.Width" Value="*" />
-                            <Setter TargetName="Column2" Property="ColumnDefinition.Width" Value="*" />
-                            <Setter TargetName="Column3" Property="ColumnDefinition.Width" Value="*" />
-                        </VisualState.Setters>
-                    </VisualState>
-                </VisualStateGroup>
-            </VisualStateManager.VisualStateGroups>
+           
 
             <!-- Your Content -->
             <ScrollView Grid.Row="0" Grid.ColumnSpan="3" Orientation="Both">
