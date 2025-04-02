@@ -1,0 +1,67 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusBuyDocListSyncPage">
+    <Grid>
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup>
+            <!-- Desktop: 3 Columns -->
+            <VisualState x:Name="Wide">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="800"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Property="ColumnDefinitions">
+                        <Setter.Value>
+                            <ColumnDefinitionCollection>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </ColumnDefinitionCollection>
+                        </Setter.Value>
+                    </Setter>
+                </VisualState.Setters>
+            </VisualState>
+
+            <!-- Tablet: 2 Columns -->
+            <VisualState x:Name="Medium">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="500"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Property="ColumnDefinitions">
+                        <Setter.Value>
+                            <ColumnDefinitionCollection>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </ColumnDefinitionCollection>
+                        </Setter.Value>
+                    </Setter>
+                </VisualState.Setters>
+            </VisualState>
+
+            <!-- Phone: 1 Column -->
+            <VisualState x:Name="Narrow">
+                <VisualState.StateTriggers>
+                    <AdaptiveTrigger MinWindowWidth="0"/>
+                </VisualState.StateTriggers>
+                <VisualState.Setters>
+                    <Setter Property="ColumnDefinitions">
+                        <Setter.Value>
+                            <ColumnDefinitionCollection>
+                                <ColumnDefinition Width="Auto"/>
+                            </ColumnDefinitionCollection>
+                        </Setter.Value>
+                    </Setter>
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <!-- Sample content -->
+    <BoxView Color="Red" Grid.Row="0" Grid.Column="0"/>
+    <BoxView Color="Green" Grid.Row="0" Grid.Column="1"/>
+    <BoxView Color="Blue" Grid.Row="0" Grid.Column="2"/>
+</Grid>
+   
+</ContentPage>

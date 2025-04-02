@@ -136,22 +136,6 @@ public partial class SyncItemsPageModel : ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        //Projects = await _projectRepository.ListAsync();
-        //OperationProgress = 50;
-        if (DeviceInfo.Idiom == DeviceIdiom.Phone)
-        {
-            VisualStateManager.GoToState(App.Current?.MainPage, "Phone");
-        }
-        else if (DeviceInfo.Idiom == DeviceIdiom.Tablet)
-        {
-            VisualStateManager.GoToState(App.Current?.MainPage, "Tablet");
-        }
-        else if (DeviceInfo.Idiom == DeviceIdiom.Desktop)
-        {
-            VisualStateManager.GoToState(App.Current?.MainPage, "Desktop");
-        }
-
-
         IsProgressBarVisible = false;
         IsWaitingForResponse = false;
     }

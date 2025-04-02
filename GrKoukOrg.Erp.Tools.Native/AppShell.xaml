@@ -29,7 +29,12 @@
         Title="Sync To Erp"
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:SyncToErpPage}"
-        Route="synctoerp" />
+        Route="synctoerp" /> 
+    <ShellContent
+        Title="Business Buy Docs to Erp"
+        Icon="{StaticResource IconDashboard}"
+        ContentTemplate="{DataTemplate pages:BusBuyDocListSyncPage}"
+        Route="busbuydoclistsync" />
     <ShellContent
         Title="Settings"
         Icon="{StaticResource IconDashboard}"
