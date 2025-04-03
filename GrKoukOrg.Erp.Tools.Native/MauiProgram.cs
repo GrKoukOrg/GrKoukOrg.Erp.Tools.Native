@@ -56,12 +56,14 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddSingleton<MainPageModel>();
          
             builder.Services.AddSingleton<SettingsPageModel>();
-           
+            builder.Services.AddSingleton<INavigationParameterService, NavigationParameterService>();
+            
             builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
             builder.Services.AddTransientWithShellRoute<SyncItemsPage,SyncItemsPageModel>("syncitems");
             builder.Services.AddTransientWithShellRoute<ItemDetailsPage, ItemDetailsPageModel>("itemdetails");
             builder.Services.AddTransientWithShellRoute<ErpCashDiaryListPage, ErpCashDiaryListPageModel>("erpcashdiarylist");
             builder.Services.AddTransientWithShellRoute<ItemBuyDocListPage, ItemBuyDocListPageModel>("itembuylist");
+            builder.Services.AddTransientWithShellRoute<BusinessBuyDocumentsListPage, BusinessBuyDocumentsListPageModel>("Businessbuydoclist");
             builder.Services.AddTransientWithShellRoute<SyncToErpPage, SyncToErpPageModel>("synctoerp");
             builder.Services.AddTransientWithShellRoute<BusBuyDocListSyncPage, BusBuyDocListSyncPageModel>("busbuydoclistsync");
             

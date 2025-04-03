@@ -407,7 +407,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
             var client = _httpClientFactory.CreateClient("BusinessServerApi");
             client.Timeout = TimeSpan.FromSeconds(10);
             // Send GET request
-            string uri = $"/api/busapi/GetBuyDocuments?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
+            string uri = $"/api/busapi/GetBusinessBuyDocumentsInPeriod?fromDate={fromDate.ToString("yyyy-MM-dd")}&toDate={toDate.ToString("yyyy-MM-dd")}";
             using var response = await client.GetAsync(uri);
             response.EnsureSuccessStatusCode();
 

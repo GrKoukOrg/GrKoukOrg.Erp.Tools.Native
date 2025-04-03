@@ -11,6 +11,7 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
     private readonly ILogger<BusBuyDocListSyncPageModel> _logger;
     private readonly ApiService _apiService;
     private readonly ISettingsDataService _settingsDataService;
+    private readonly INavigationParameterService _navParameterService;
     private readonly IBusinessServerDataAccess _businessServerDataAccess;
 
     [ObservableProperty] private bool _isProgressBarVisible = false;
@@ -20,18 +21,25 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
     [ObservableProperty] private string _userName = string.Empty;
     [ObservableProperty] private string _password = string.Empty;
     [ObservableProperty] private string _statusMessage = string.Empty;
-    
+    [ObservableProperty] private int _buyDocCount = 0;
+    [ObservableProperty] private int _saleDocCount = 0;
+    [ObservableProperty] private DateTime _fromDate = DateTime.Today;
+    [ObservableProperty] private DateTime _toDate = DateTime.Today;
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
-    
     [ObservableProperty] private int _lastLogEntryIndex;
+    
+    private IList<BuyDocumentDto> _buyDocuments;
     public BusBuyDocListSyncPageModel(ILogger<BusBuyDocListSyncPageModel> logger
-        , ApiService apiService
-        , ISettingsDataService settingsDataService
-        , IBusinessServerDataAccess businessServerDataAccess)
+        ,ApiService apiService
+        ,ISettingsDataService settingsDataService
+        ,INavigationParameterService navParameterService
+        ,IBusinessServerDataAccess businessServerDataAccess
+        )
     {
         _logger = logger;
         _apiService = apiService;
         _settingsDataService = settingsDataService;
+        _navParameterService = navParameterService;
         _businessServerDataAccess = businessServerDataAccess;
     }
     
@@ -80,6 +88,66 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
         finally
         {
             IsBusy = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task GetSaleDocs()
+    {
+        await GetSaleDocumentsProcessAsync();
+    }
+
+    private async Task GetSaleDocumentsProcessAsync()
+    {
+        throw new NotImplementedException();
+    }
+    
+    [RelayCommand]
+    private async Task GetBuyDocs()
+    {
+        await GetBuyDocumentsProcessAsync();
+    }
+   
+    [RelayCommand]
+    private async Task ShowBuyDocuments()
+    {
+        if (_buyDocuments is null || _buyDocuments.Count == 0)
+        {
+            return;
+        }
+        _navParameterService.BuyDocuments = _buyDocuments;
+      
+
+        await Shell.Current.GoToAsync("Businessbuydoclist");
+    
+    }
+
+    private async Task ShowBuyDocumentsProcessAsync()
+    {
+        AddLog("Getting Buy Doc from business server");
+    }
+
+    private async Task GetBuyDocumentsProcessAsync()
+    {
+        AddLog("Getting Buy Doc from business server");
+        try
+        {
+            IsWaitingForResponse = true;
+            
+            var response = await _businessServerDataAccess.GetBusinessServerBuyDocsInPeriodListAsync(DateOnly.FromDateTime(FromDate), DateOnly.FromDateTime(ToDate));
+            _buyDocuments = response.Items;
+            BuyDocCount = _buyDocuments.Count;
+            AddLog($"Connected and retrieved {BuyDocCount} Buy Documents");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in GetBuyDocumentsProcessAsync");
+            AddLog($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
+            await AppShell.DisplayToastAsync($"Error in GetBuyDocumentsProcessAsync: {e.Message}");
+        }
+        finally
+        {
+            IsWaitingForResponse = false;
         }
     }
 }

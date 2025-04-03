@@ -43,6 +43,11 @@
              Default="15">
         <OnIdiom.Desktop>30</OnIdiom.Desktop>
     </OnIdiom>
+    <OnIdiom x:Key="DatePickerMargin"
+             x:TypeArguments="Thickness"
+             Default="0,15,0,0">
+            <OnIdiom.Desktop>0,30,0,0</OnIdiom.Desktop>
+    </OnIdiom>
     <OnIdiom x:Key="LayoutPaddingSmall"
              x:TypeArguments="Thickness"
              Default="5">

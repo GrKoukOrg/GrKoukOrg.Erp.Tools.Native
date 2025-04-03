@@ -23,6 +23,7 @@
     <ContentPage.Behaviors>
         <!-- <toolkit:EventToCommandBehavior -->
         <!--     EventName="Appearing" -->
+        <!--     This is supposed to solve the problem with the new version of communitytoolkit.mvvm  -->
         <!--     BindingContext="{Binding Path=BindingContext, Source={x:Reference Name=ItemBuyDocListDetails}}" -->
         <!--     Command="{Binding AppearingCommand}" /> -->
         <toolkit:EventToCommandBehavior
