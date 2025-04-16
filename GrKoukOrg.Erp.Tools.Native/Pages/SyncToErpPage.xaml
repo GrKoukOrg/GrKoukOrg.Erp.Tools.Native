@@ -19,6 +19,7 @@
             
             <Button Text="Sync Item Families" Command="{Binding SyncItemFamiliesCommand}" />
             <Button Text="Sync Units Of Measurement" Command="{Binding SyncUnitsOfMeasurementCommand}" />
+            <Button Text="Sync Suppliers" Command="{Binding SyncSuppliersCommand}" />
 
             <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />
 

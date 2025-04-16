@@ -184,4 +184,11 @@ public partial class SyncToErpPageModel:ObservableObject
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private async Task SyncSuppliers()
+    {
+        //open sync suppliers page to perform sync
+        await Shell.Current.GoToAsync("syncSuppliers");
+    }
 }
