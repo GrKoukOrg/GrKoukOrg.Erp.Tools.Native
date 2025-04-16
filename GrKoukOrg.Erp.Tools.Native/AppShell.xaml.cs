@@ -39,7 +39,7 @@ namespace GrKoukOrg.Erp.Tools.Native
 
             var toast = Toast.Make(message, textSize: 18);
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
             await toast.Show(cts.Token);
         }
 
