@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:models="clr-namespace:GrKoukOrg.Erp.Tools.Native.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:syncgrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:synclist="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
+             xmlns:core="http://schemas.syncfusion.com/maui"
+             x:DataType="pageModels:SyncSuppliersPageModel"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncSuppliersPage">
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+
+        <Style TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="FontSize" Value="{OnIdiom Phone=16, Tablet=20, Desktop=24}" />
+            <Setter Property="PlaceholderColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <Style TargetType="syncgrid:DataGridCell">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        </Style>
+        <Style TargetType="syncgrid:DataGridHeaderCell">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+    <ContentPage.Content>
+        <ScrollView>
+            <Grid Padding="{StaticResource LayoutPadding}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Get Suppliers" Command="{Binding GetSuppliersCommand}" />
+                <synclist:SfListView Grid.Row="1" Grid.Column="0" 
+                                     x:Name="BusinessListView"
+                    ItemsSource="{Binding Suppliers}"
+                                     ItemSize="70"
+                    HeightRequest="300"
+                                     IsStickyHeader="True"
+                    SelectionChangedCommand="{Binding BusinessEntitySelectionChangedCommand}"
+                    SelectionChangedCommandParameter="{x:Reference BusinessListView}"
+                >
+                    <synclist:SfListView.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid BackgroundColor="Blue" HeightRequest="45">
+                                <Label LineBreakMode="NoWrap"
+                                       Margin="10,0,0,0" Text="Business Suppliers" FontAttributes="Bold"
+                                       FontSize="18" TextColor="White" HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.HeaderTemplate>
+                    <synclist:SfListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SupplierListDto">
+                            <Grid Padding="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontAttributes="Bold"  />
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Afm}" />
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.ItemTemplate>
+                </synclist:SfListView>
+                <synclist:SfListView Grid.Row="1" Grid.Column="1" 
+                                     x:Name="ErpListView"
+                                     ItemsSource="{Binding ErpSelectedSuppliers}"
+                                     ItemSize="70"
+                                     IsStickyHeader="True"
+                                     HeightRequest="300"
+                                     SelectionChangedCommand="{Binding BusinessEntitySelectionChangedCommand}"
+                                     SelectionChangedCommandParameter="{x:Reference BusinessListView}"
+                >
+                    <synclist:SfListView.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid BackgroundColor="Blue" HeightRequest="45">
+                                <Label LineBreakMode="NoWrap"
+                                       Margin="10,0,0,0" Text="Erp Suppliers" FontAttributes="Bold"
+                                       FontSize="18" TextColor="White" HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.HeaderTemplate>
+                    <synclist:SfListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:SupplierListDto">
+                            <Grid Padding="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontAttributes="Bold"  />
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Afm}" />
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.ItemTemplate>
+                </synclist:SfListView>
+                <syncgrid:SfDataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                     x:Name="LogDataGrid"
+
+                                     ItemsSource="{Binding LogEntries}"
+                                     AutoGenerateColumnsMode="None"
+                                     AllowResizingColumns="True"
+                                     VerticalScrollBarVisibility="Always">
+                    <syncgrid:SfDataGrid.Columns>
+                        <syncgrid:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"
+                                                     ColumnWidthMode="Auto" />
+                        <syncgrid:DataGridTextColumn HeaderText="Message" MappingName="Message"
+                                                     ColumnWidthMode="Fill" />
+                    </syncgrid:SfDataGrid.Columns>
+                </syncgrid:SfDataGrid>
+                <!-- Busy Indicator Overlay -->
+                <Grid IsVisible="{Binding IsWaitingForResponse}" BackgroundColor="Black" Opacity="0.5">
+                    <!-- Overlay -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <core:SfBusyIndicator
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        IsRunning="{Binding IsWaitingForResponse}"
+                        AnimationType="CircularMaterial"
+                        HeightRequest="100"
+                        WidthRequest="100" />
+                </Grid>
+            </Grid>
+           
+           
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
