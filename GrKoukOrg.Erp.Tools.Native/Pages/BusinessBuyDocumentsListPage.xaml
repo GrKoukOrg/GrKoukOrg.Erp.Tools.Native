@@ -23,20 +23,13 @@
                 <DataTemplate x:DataType="models:BuyDocumentDto">
                     <Border>
                         <VerticalStackLayout Padding="10">
-                            <!-- <Label Text="{Binding SupplierName}" FontSize="24" /> -->
-                            <!-- <Label Text="{Binding TransDate, StringFormat='{0:dd/MM/yyyy}'}" /> -->
-                            <!-- <Label Text="{Binding NetAmount, StringFormat='{}{0:C}'}" /> -->
-                            <!-- <Label Text="{Binding VatAmount, StringFormat='{}{0:C}'}" /> -->
-                            <!-- <Label Text="{Binding TotalAmount, StringFormat='{}{0:C}'}" /> -->
                             <Label Text="{Binding SupplierName, FallbackValue='Unknown Supplier', TargetNullValue='No Supplier'}" FontSize="24" />
+                            <Label Text="{Binding  BuyDocDefName, FallbackValue='Unknown Document', TargetNullValue='No Document'}" FontSize="24" />
                             <Label Text="{Binding TransDate, StringFormat='{0:dd/MM/yyyy}', FallbackValue='No Date', TargetNullValue='No Date'}" />
                             <Label Text="{Binding NetAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                             <Label Text="{Binding VatAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                             <Label Text="{Binding TotalAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-
-                             
                         </VerticalStackLayout>
-                       
                     </Border>
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
