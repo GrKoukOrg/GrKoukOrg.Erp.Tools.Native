@@ -8,6 +8,7 @@
              xmlns:syncgrid="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
              xmlns:synclist="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:core="http://schemas.syncfusion.com/maui"
+             Title="Sync Suppliers to Erp"
              x:DataType="pageModels:SyncSuppliersPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncSuppliersPage">
     <ContentPage.Resources>
