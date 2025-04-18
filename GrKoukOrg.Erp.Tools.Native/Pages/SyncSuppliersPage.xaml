@@ -57,22 +57,31 @@
     </ContentPage.Behaviors>
     <ContentPage.Content>
         <ScrollView>
-            <Grid Padding="{StaticResource LayoutPadding}">
+            <Grid Padding="{StaticResource LayoutPadding}"
+                  ColumnSpacing="10" RowSpacing="10"
+                  >
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Get Suppliers" Command="{Binding GetSuppliersCommand}" />
-                <synclist:SfListView Grid.Row="1" Grid.Column="0" 
+                <Button Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        Text="Get Suppliers" Command="{Binding GetSuppliersCommand}" />
+                <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="1"
+                        Text="Match Suppliers" Command="{Binding MatchSuppliersCommand}" />
+                <Button Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1"
+                        Text="Send Suppliers" Command="{Binding SendMatchedSuppliersToErpCommand}" />
+                <synclist:SfListView Grid.Row="2" Grid.Column="0" 
                                      x:Name="BusinessListView"
                     ItemsSource="{Binding Suppliers}"
                                      ItemSize="70"
-                    HeightRequest="300"
+                    HeightRequest="400"
                                      IsStickyHeader="True"
                     SelectionChangedCommand="{Binding BusinessEntitySelectionChangedCommand}"
                     SelectionChangedCommandParameter="{x:Reference BusinessListView}"
@@ -103,14 +112,14 @@
                         </DataTemplate>
                     </synclist:SfListView.ItemTemplate>
                 </synclist:SfListView>
-                <synclist:SfListView Grid.Row="1" Grid.Column="1" 
+                <synclist:SfListView Grid.Row="2" Grid.Column="1" 
                                      x:Name="ErpListView"
                                      ItemsSource="{Binding ErpSelectedSuppliers}"
                                      ItemSize="70"
                                      IsStickyHeader="True"
-                                     HeightRequest="300"
-                                     SelectionChangedCommand="{Binding BusinessEntitySelectionChangedCommand}"
-                                     SelectionChangedCommandParameter="{x:Reference BusinessListView}"
+                                     HeightRequest="400"
+                                     SelectionChangedCommand="{Binding ErpEntitySelectionChangedCommand}"
+                                     SelectionChangedCommandParameter="{x:Reference ErpListView}"
                 >
                     <synclist:SfListView.HeaderTemplate>
                         <DataTemplate>
@@ -138,7 +147,45 @@
                         </DataTemplate>
                     </synclist:SfListView.ItemTemplate>
                 </synclist:SfListView>
-                <syncgrid:SfDataGrid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                 <synclist:SfListView Grid.Row="2" Grid.Column="2" 
+                                     x:Name="MatchedListView"
+                                     ItemsSource="{Binding MatchedSuppliers}"
+                                     ItemSize="70"
+                                     IsStickyHeader="True"
+                                     HeightRequest="400"
+                                     SelectionChangedCommand="{Binding MatchedEntitySelectionChangedCommand}"
+                                     SelectionChangedCommandParameter="{x:Reference MatchedListView}"
+                >
+                    <synclist:SfListView.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid BackgroundColor="Blue" HeightRequest="45">
+                                <Label LineBreakMode="NoWrap"
+                                       Margin="10,0,0,0" Text="Matched Suppliers" FontAttributes="Bold"
+                                       FontSize="18" TextColor="White" HorizontalOptions="Center"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.HeaderTemplate>
+                    <synclist:SfListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:MatchedSuppliersDto">
+                            <Grid Padding="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding BusinessSupplier.Name}" FontAttributes="Bold"  />
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding ErpSupplier.Name}" FontAttributes="Bold"  />
+                                <Label Grid.Row="0" Grid.Column="1" Text="{Binding BusinessSupplier.Afm}" />
+                                <Label Grid.Row="1" Grid.Column="1" Text="{Binding ErpSupplier.Afm}" />
+                            </Grid>
+                        </DataTemplate>
+                    </synclist:SfListView.ItemTemplate>
+                </synclist:SfListView>
+                <syncgrid:SfDataGrid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
                                      x:Name="LogDataGrid"
 
                                      ItemsSource="{Binding LogEntries}"

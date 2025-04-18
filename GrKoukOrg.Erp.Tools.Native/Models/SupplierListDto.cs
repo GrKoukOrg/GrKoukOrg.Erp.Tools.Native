@@ -13,4 +13,10 @@ namespace GrKoukOrg.Erp.Tools.Native.Models
         [JsonPropertyName("afm")]
         public string Afm { get; set; }
     }
+
+    public class MatchedSuppliersDto
+    {
+        public SupplierListDto BusinessSupplier { get; set; } = new SupplierListDto();
+        public SupplierListDto ErpSupplier { get; set; } = new SupplierListDto();
+    }
 }
