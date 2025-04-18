@@ -5,36 +5,76 @@
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              xmlns:models="clr-namespace:GrKoukOrg.Erp.Tools.Native.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:DataType="pageModels:BusinessBuyDocumentsListPageModel"    
+             x:DataType="pageModels:BusinessBuyDocumentsListPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusinessBuyDocumentsListPage">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
-    
-    <ScrollView>
-        
-        <VerticalStackLayout 
-            BindableLayout.ItemsSource="{Binding Items}" 
-            Margin="{StaticResource LayoutPadding}" 
-            Spacing="{StaticResource LayoutSpacing}">
-            <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="models:BuyDocumentDto">
-                    <Border>
-                        <VerticalStackLayout Padding="10">
-                            <Label Text="{Binding SupplierName, FallbackValue='Unknown Supplier', TargetNullValue='No Supplier'}" FontSize="24" />
-                            <Label Text="{Binding  BuyDocDefName, FallbackValue='Unknown Document', TargetNullValue='No Document'}" FontSize="24" />
-                            <Label Text="{Binding TransDate, StringFormat='{0:dd/MM/yyyy}', FallbackValue='No Date', TargetNullValue='No Date'}" />
-                            <Label Text="{Binding NetAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-                            <Label Text="{Binding VatAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-                            <Label Text="{Binding TotalAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-                        </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </VerticalStackLayout>
+    <ContentPage.Content>
 
-       
-    </ScrollView>
+
+        <ScrollView>
+
+            <VerticalStackLayout
+                BindableLayout.ItemsSource="{Binding Items}"
+                Margin="{StaticResource LayoutPadding}"
+                Spacing="{StaticResource LayoutSpacing}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:BuyDocumentDto">
+                        <Border>
+                            <VerticalStackLayout Padding="10">
+                                <Label
+                                    Text="{Binding SupplierName, FallbackValue='Unknown Supplier', TargetNullValue='No Supplier'}"
+                                    FontSize="24" />
+                                <Label
+                                    Text="{Binding  BuyDocDefName,StringFormat='{0}', FallbackValue='Unknown Document', TargetNullValue='No Document'}"
+                                    FontSize="24" />
+                                <Label
+                                    Text="{Binding TransDate, StringFormat='Trans Date {0:dd/MM/yyyy}', FallbackValue='No Date', TargetNullValue='No Date'}" />
+                                <Label
+                                    Text="{Binding  RefNumber,StringFormat='Ref Number: {0}', FallbackValue='', TargetNullValue='No Ref'}" />
+                                <VerticalStackLayout>
+                                    <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
+                                        <Label Text="Net Amount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                        <Label
+                                            Text="{Binding NetAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
+                                            Grid.Column="1" HorizontalTextAlignment="End" />
+                                    </Grid>
+                                    <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
+                                        <Label Text="VatAmount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                        <Label
+                                            Text="{Binding VatAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
+                                            Grid.Column="1" HorizontalTextAlignment="End" />
+                                    </Grid>
+
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout>
+                                    <Label
+                                        Text="{Binding TotalAmount, StringFormat='{}Total Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
+                                    <Label
+                                        Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
+                                </HorizontalStackLayout>
+                                <Button Text="Action"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ActionCommand}"
+                                        CommandParameter="{Binding .}" />
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   HeightRequest="150"
+                                   WidthRequest="150"
+                                   Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
+
+        </ScrollView>
+    </ContentPage.Content>
 </ContentPage>

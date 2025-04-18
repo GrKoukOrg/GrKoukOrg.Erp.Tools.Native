@@ -13,7 +13,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private readonly INavigationParameterService _navParameterService;
     private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BuyDocumentDto> _items;
-   
+    [ObservableProperty] private bool _isBusy = false;
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
         ,INavigationParameterService navParameterService
         , ModalErrorHandler errorHandler)
@@ -27,9 +27,20 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
+        IsBusy = true;
         Items = await Task.Run(() => new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments));
+        IsBusy = false;
        // return Task.CompletedTask;
     }
     
-    
+    [RelayCommand]
+    private async Task Action(BuyDocumentDto document)
+    {
+        if (document == null)
+            return;
+
+        // Add your logic here. Example:
+       // await AppShell.DisplayAlertAsync("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
+    }
+
 }
