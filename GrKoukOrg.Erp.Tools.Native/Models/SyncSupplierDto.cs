@@ -4,6 +4,8 @@ namespace GrKoukOrg.Erp.Tools.Native.Models;
 
 public class SyncSupplierDto
 {
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
     [JsonPropertyName("busId")]
     public int BusId { get; set; }
     [JsonPropertyName("companyCode")]

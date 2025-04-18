@@ -84,14 +84,14 @@ public partial class SyncSuppliersPageModel : ObservableObject
             //Create update item
             busItemsRequest.Items.Add(new SyncSupplierDto()
             {
-                BusId = matchedItem.BusinessSupplier.Id,
-                ErpId = matchedItem.ErpSupplier.Id,
-                BusCode = matchedItem.BusinessSupplier.Code,
+                BusId = busItem.Id,
+                ErpId = erpItem.Id,
+                BusCode = busItem.Code,
                 CompanyCode = _companyCode,
-                Name = matchedItem.BusinessSupplier.Name,
-                TaxNumber = matchedItem.BusinessSupplier.Afm,
-                SourceChecksum = ChecksumHelper.CalculateChecksum(matchedItem.BusinessSupplier.Id.ToString()
-                    , matchedItem.BusinessSupplier.Code, matchedItem.BusinessSupplier.Name, matchedItem.BusinessSupplier.Afm, _companyCode
+                Name = busItem.Name,
+                TaxNumber = busItem.Afm,
+                SourceChecksum = ChecksumHelper.CalculateChecksum(busItem.Id.ToString()
+                    , busItem.Code, busItem.Name, busItem.Afm, _companyCode
                 )
 
             });
@@ -102,24 +102,25 @@ public partial class SyncSuppliersPageModel : ObservableObject
         var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncMatchedBusinessSuppliers");
         try
         {
-            var payload = busItemsRequest;
+            //var payload = busItemsRequest;
             var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
             {
-                Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+                Content = new StringContent(JsonSerializer.Serialize(busItemsRequest), Encoding.UTF8, "application/json")
             };
             var result = await _apiService.MakeAuthenticatedRequestAsync(request);
             var jsonContent = await result.Content.ReadAsStringAsync();
-            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<ItemFamilyDto>>(jsonContent);
+            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<SyncSupplierDto>>(jsonContent);
                  
-            var stMessage = $"Message: {erpResponse.Message}\n" +
-                            $"Added Count: {erpResponse.AddedCount}\n" +
-                            $"Failed to Add Count: {erpResponse.FailedToAddCount}\n" +
-                            $"Updated Count: {erpResponse.UpdatedCount}\n" +
-                            $"Failed to Update Count: {erpResponse.FailedToUpdateCount}\n" +
-                            $"Deleted Count: {erpResponse.DeletedCount}\n" +
+            var stMessage = $"Message: {erpResponse.Message} "  +
+                            $"Added Count: {erpResponse.AddedCount} " +
+                            $"Failed to Add Count: {erpResponse.FailedToAddCount} " +
+                            $"Updated Count: {erpResponse.UpdatedCount} " +
+                            $"Failed to Update Count: {erpResponse.FailedToUpdateCount} " +
+                            $"Deleted Count: {erpResponse.DeletedCount} " +
                             $"Failed to Delete Count: {erpResponse.FailedToDeleteCount}";
             AddLog( stMessage);
-            Console.WriteLine(result);
+            MatchedSuppliers.Clear();
+            
         }
         catch (Exception ex)
         {
