@@ -23,7 +23,7 @@
                 Margin="{StaticResource LayoutPadding}"
                 Spacing="{StaticResource LayoutSpacing}">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:BuyDocumentDto">
+                    <DataTemplate x:DataType="models:BusinessBuyDocUpdateItem">
                         <Border>
                             <VerticalStackLayout Padding="10">
                                 <Label
@@ -57,10 +57,14 @@
                                     <Label
                                         Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                                 </HorizontalStackLayout>
-                                <Button Text="Action"
-                                        Command="{Binding Path=ActionCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
-                                        CommandParameter="{Binding .}" />
-
+                                
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" RowDefinitions="Auto,*">
+                                    <Button Text="Action" Grid.Row="0" Grid.Column="0"
+                                            Command="{Binding Path=SendToErpCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
+                                            CommandParameter="{Binding .}" />
+                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                                        Text="{Binding Message}" TextColor="Red" FontAttributes="Italic" />
+                                    </Grid>
                                
 
 

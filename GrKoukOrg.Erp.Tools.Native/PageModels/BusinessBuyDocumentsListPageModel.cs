@@ -7,16 +7,16 @@ using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
-
 public partial class BusinessBuyDocumentsListPageModel : ObservableObject
 {
     private readonly ILogger<BusinessBuyDocumentsListPageModel> _logger;
     private readonly INavigationParameterService _navParameterService;
     private readonly ModalErrorHandler _errorHandler;
-    [ObservableProperty] private ObservableCollection<BuyDocumentDto> _items;
+    [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
     [ObservableProperty] private bool _isBusy = false;
+
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
-        ,INavigationParameterService navParameterService
+        , INavigationParameterService navParameterService
         , ModalErrorHandler errorHandler)
     {
         _logger = logger;
@@ -24,39 +24,83 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         _errorHandler = errorHandler;
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
-  
+
     [RelayCommand]
     private async Task Appearing()
     {
         IsBusy = true;
-        Items = await Task.Run(() => new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments));
+        Items = await Task.Run(() =>
+        {
+            List<BusinessBuyDocUpdateItem> ritems = _navParameterService.BuyDocuments.Select(doc =>
+                new BusinessBuyDocUpdateItem()
+                {
+                    Id = doc.Id,
+                    BuyDocDefId = doc.BuyDocDefId,
+                    BuyDocDefName = doc.BuyDocDefName,
+                    NetAmount = doc.NetAmount,
+                    VatAmount = doc.VatAmount,
+                    PayedAmount = doc.PayedAmount,
+                    RefNumber = doc.RefNumber,
+                    SupplierId = doc.SupplierId,
+                    SupplierName = doc.SupplierName,
+                    TransDate = doc.TransDate,
+                    BuyDocLines = doc.BuyDocLines?.Select(line => new BuyDocLineDto
+
+                    {
+                        Id = line.Id,
+                        ItemId = line.ItemId,
+                        ItemCode = line.ItemCode,
+                        ItemName = line.ItemName,
+                        UnitPrice = line.UnitPrice,
+                        UnitQty = line.UnitQty,
+                        LineDiscountAmount = line.LineDiscountAmount,
+                        UnitDiscountRate = line.UnitDiscountRate,
+                        LineNetAmount = line.LineNetAmount,
+                        LineTotalAmount = line.LineTotalAmount,
+                    }).ToList() ?? new List<BuyDocLineDto>(),
+                }
+            ).ToList();
+            return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
+        });
+
         IsBusy = false;
-       // return Task.CompletedTask;
+        // return Task.CompletedTask;
     }
-    
+
     [RelayCommand]
-    private async Task Action(BuyDocumentDto document) // Changed return type to Task and added async
+    private async Task SendToErp(BusinessBuyDocUpdateItem document) // Changed return type to Task and added async
     {
-        Console.WriteLine($"Attempting to execute action..."); // More specific logging
+
         if (document == null)
         {
-            Debug.WriteLine("Action cannot execute: document parameter is null.");
-            //await AppShell.DisplayToastAsync("Action cannot execute: document parameter is null.");
-            // Optionally display an error to the user
-            //if (Application.Current?.MainPage != null) {
-            //    await Application.Current.MainPage.DisplayAlert("Error", "Document data is missing.", "OK");
-            //}
+            Debug.WriteLine("SendToErp cannot execute: document parameter is null.");
             return; // Return if document is null
         }
+        Debug.WriteLine(
+            $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
+        
+        var updatedDocument = new BusinessBuyDocUpdateItem
+        {
+            Id = document.Id,
+            BuyDocDefId = document.BuyDocDefId,
+            BuyDocDefName = document.BuyDocDefName,
+            NetAmount = document.NetAmount,
+            VatAmount = document.VatAmount,
+            PayedAmount = document.PayedAmount,
+            RefNumber = document.RefNumber,
+            SupplierId = document.SupplierId,
+            SupplierName = document.SupplierName,
+            TransDate = document.TransDate,
+            BuyDocLines = document.BuyDocLines,
+            Message = "Sending to ERP"
+        };
 
-        // Add your actual logic here. Example:
-        Debug.WriteLine($"Action confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
-        //if (Application.Current?.MainPage != null) {
-        //    await Application.Current.MainPage.DisplayAlert("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
-        //}
-        // Add other logic like navigation, data processing, etc.
-        //await AppShell.DisplayToastAsync($"Action Triggered You clicked on {document.SupplierName}");
+        // Find the index of the old item and replace it
+        int index = Items.IndexOf(document);
+        if (index >= 0)
+        {
+            Items[index] = updatedDocument;
+        }
+       
     }
-
-
 }
