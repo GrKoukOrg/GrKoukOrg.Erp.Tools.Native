@@ -28,7 +28,9 @@
                             <Label Text="{Binding Description}" />
                         </VerticalStackLayout>
                         <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding NavigateToProjectCommand, Source={RelativeSource AncestorType={x:Type pageModels:ProjectListPageModel}}, x:DataType=pageModels:ProjectListPageModel}" CommandParameter="{Binding .}"/>
+                            <TapGestureRecognizer Command="{Binding NavigateToProjectCommand, 
+                            Source={RelativeSource AncestorType={x:Type pageModels:ProjectListPageModel}}, x:DataType=pageModels:ProjectListPageModel}" 
+                                                  CommandParameter="{Binding .}"/>
                         </Border.GestureRecognizers>
                     </Border>
                 </DataTemplate>

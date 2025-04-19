@@ -34,14 +34,26 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
     
     [RelayCommand]
-    private void Action(BuyDocumentDto document)
+    private async Task Action(BuyDocumentDto document) // Changed return type to Task and added async
     {
-        Console.WriteLine($"Action executed for document: ");
-       // if (document == null)
-            return;
+        Console.WriteLine($"Attempting to execute action..."); // More specific logging
+        if (document == null)
+        {
+            Console.WriteLine("Action cannot execute: document parameter is null.");
+            // Optionally display an error to the user
+            if (Application.Current?.MainPage != null) {
+                await Application.Current.MainPage.DisplayAlert("Error", "Document data is missing.", "OK");
+            }
+            return; // Return if document is null
+        }
 
-        // Add your logic here. Example:
-       // await AppShell.DisplayAlertAsync("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
+        // Add your actual logic here. Example:
+        Console.WriteLine($"Action confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
+        if (Application.Current?.MainPage != null) {
+            await Application.Current.MainPage.DisplayAlert("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
+        }
+        // Add other logic like navigation, data processing, etc.
     }
+
 
 }

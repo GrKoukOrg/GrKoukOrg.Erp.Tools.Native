@@ -6,6 +6,7 @@
              xmlns:models="clr-namespace:GrKoukOrg.Erp.Tools.Native.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="pageModels:BusinessBuyDocumentsListPageModel"
+             x:Name="ThisPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusinessBuyDocumentsListPage">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -56,16 +57,15 @@
                                     <Label
                                         Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                                 </HorizontalStackLayout>
-                                <!--<Button Text="Action"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ActionCommand}"
-                                        CommandParameter="{Binding .}" />-->
                                 <Button Text="Action"
-                                        BindingContext="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext}"
-                                        Command="{Binding ActionCommand}"
+                                        Command="{Binding Path=ActionCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
                                         CommandParameter="{Binding .}" />
+
+                               
 
 
                             </VerticalStackLayout>
+                           
                         </Border>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
