@@ -5,6 +5,7 @@
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              xmlns:models="clr-namespace:GrKoukOrg.Erp.Tools.Native.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              x:DataType="pageModels:BusinessBuyDocumentsListPageModel"
              x:Name="ThisPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusinessBuyDocumentsListPage">
@@ -17,71 +18,94 @@
 
 
         <ScrollView>
+            <Grid Margin="{StaticResource LayoutPadding}" ColumnSpacing="5" RowSpacing="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="0" Grid.Column="0"
+                        Text="Check Status of documents"
+                        Command="{Binding CheckStatusOfDocumentsCommand}"
+                        >
+                </Button> <Button Grid.Row="0" Grid.Column="1"
+                                  Text="Cancel"
+                                  Command="{Binding CancelStatusCheckCommand}"
+                          ></Button>
+                <core:SfBusyIndicator Grid.Row="0" Grid.Column="2" x:Name="BusyIndicator"
+                                      HeightRequest="50" 
+                                      HorizontalOptions="Fill"
+                                      IsRunning="{Binding IsCheckingStatus}"
+                                      AnimationType="LinearMaterial" />
+                <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                    BindableLayout.ItemsSource="{Binding Items}"
+                    
+                    Spacing="{StaticResource LayoutSpacing}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:BusinessBuyDocUpdateItem">
+                            <Border>
+                                <VerticalStackLayout Padding="10">
+                                    <Label
+                                        Text="{Binding SupplierName, FallbackValue='Unknown Supplier', TargetNullValue='No Supplier'}"
+                                        FontSize="24" />
+                                    <Label
+                                        Text="{Binding  BuyDocDefName,StringFormat='{0}', FallbackValue='Unknown Document', TargetNullValue='No Document'}"
+                                        FontSize="24" />
+                                    <Label
+                                        Text="{Binding TransDate, StringFormat='Trans Date {0:dd/MM/yyyy}', FallbackValue='No Date', TargetNullValue='No Date'}" />
+                                    <Label
+                                        Text="{Binding  RefNumber,StringFormat='Ref Number: {0}', FallbackValue='', TargetNullValue='No Ref'}" />
+                                    <VerticalStackLayout>
+                                        <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
+                                            <Label Text="Net Amount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                            <Label
+                                                Text="{Binding NetAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
+                                                Grid.Column="1" HorizontalTextAlignment="End" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
+                                            <Label Text="VatAmount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                            <Label
+                                                Text="{Binding VatAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
+                                                Grid.Column="1" HorizontalTextAlignment="End" />
+                                        </Grid>
 
-            <VerticalStackLayout
-                BindableLayout.ItemsSource="{Binding Items}"
-                Margin="{StaticResource LayoutPadding}"
-                Spacing="{StaticResource LayoutSpacing}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:BusinessBuyDocUpdateItem">
-                        <Border>
-                            <VerticalStackLayout Padding="10">
-                                <Label
-                                    Text="{Binding SupplierName, FallbackValue='Unknown Supplier', TargetNullValue='No Supplier'}"
-                                    FontSize="24" />
-                                <Label
-                                    Text="{Binding  BuyDocDefName,StringFormat='{0}', FallbackValue='Unknown Document', TargetNullValue='No Document'}"
-                                    FontSize="24" />
-                                <Label
-                                    Text="{Binding TransDate, StringFormat='Trans Date {0:dd/MM/yyyy}', FallbackValue='No Date', TargetNullValue='No Date'}" />
-                                <Label
-                                    Text="{Binding  RefNumber,StringFormat='Ref Number: {0}', FallbackValue='', TargetNullValue='No Ref'}" />
-                                <VerticalStackLayout>
-                                    <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
-                                        <Label Text="Net Amount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout>
                                         <Label
-                                            Text="{Binding NetAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
-                                            Grid.Column="1" HorizontalTextAlignment="End" />
-                                    </Grid>
-                                    <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="10">
-                                        <Label Text="VatAmount" Grid.Column="0" HorizontalTextAlignment="Start" />
+                                            Text="{Binding TotalAmount, StringFormat='{}Total Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                                         <Label
-                                            Text="{Binding VatAmount, StringFormat='{}{0:C}', FallbackValue='0.00', TargetNullValue='0.00'}"
-                                            Grid.Column="1" HorizontalTextAlignment="End" />
+                                            Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
+                                    </HorizontalStackLayout>
+
+                                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" RowDefinitions="Auto,*">
+                                        <Button Text="Send to Erp" Grid.Row="0" Grid.Column="0"
+                                                Command="{Binding Path=SendToErpCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
+                                                CommandParameter="{Binding .}" />
+                                        <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                                               Text="{Binding Message}" TextColor="Red" FontAttributes="Italic" />
                                     </Grid>
+
 
                                 </VerticalStackLayout>
-                                <HorizontalStackLayout>
-                                    <Label
-                                        Text="{Binding TotalAmount, StringFormat='{}Total Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-                                    <Label
-                                        Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
-                                </HorizontalStackLayout>
-                                
-                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" RowDefinitions="Auto,*">
-                                    <Button Text="Action" Grid.Row="0" Grid.Column="0"
-                                            Command="{Binding Path=SendToErpCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
-                                            CommandParameter="{Binding .}" />
-                                    <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
-                                        Text="{Binding Message}" TextColor="Red" FontAttributes="Italic" />
-                                    </Grid>
-                               
 
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                       IsVisible="{Binding IsBusy}"
+                                       HeightRequest="150"
+                                       WidthRequest="150"
+                                       Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
 
-                            </VerticalStackLayout>
-                           
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-                <ActivityIndicator IsRunning="{Binding IsBusy}"
-                                   IsVisible="{Binding IsBusy}"
-                                   HeightRequest="150"
-                                   WidthRequest="150"
-                                   Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                   VerticalOptions="Center"
-                                   HorizontalOptions="Center" />
-
-            </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Grid>
 
 
         </ScrollView>

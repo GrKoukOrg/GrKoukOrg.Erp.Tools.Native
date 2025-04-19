@@ -14,6 +14,12 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
     [ObservableProperty] private bool _isBusy = false;
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
+    private bool _isCheckingStatus = false;
+    [ObservableProperty] private int _checkedItems = 0;
+    [ObservableProperty] private int _totalItems = 0;
+    private CancellationTokenSource _cancellationTokenSource;
 
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
         , INavigationParameterService navParameterService
@@ -45,7 +51,6 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     SupplierName = doc.SupplierName,
                     TransDate = doc.TransDate,
                     BuyDocLines = doc.BuyDocLines?.Select(line => new BuyDocLineDto
-
                     {
                         Id = line.Id,
                         ItemId = line.ItemId,
@@ -60,24 +65,79 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     }).ToList() ?? new List<BuyDocLineDto>(),
                 }
             ).ToList();
+            
             return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
         });
-
+    
         IsBusy = false;
-        // return Task.CompletedTask;
+        
+        // await StartStatusCheck();
+    }
+
+    [RelayCommand]
+    private async Task CheckStatusOfDocuments()
+    {
+        await StartStatusCheck();
+    }
+
+   
+    private async Task StartStatusCheck()
+    {
+        IsCheckingStatus = true;
+        CheckedItems = 0;
+        TotalItems = Items.Count;
+        _cancellationTokenSource = new CancellationTokenSource();
+    
+        try
+        {
+            foreach (var item in Items)
+            {
+                if (_cancellationTokenSource.Token.IsCancellationRequested)
+                    break;
+    
+                await CheckDocumentStatus(item);
+                CheckedItems++;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Status check cancelled");
+        }
+        finally
+        {
+            IsCheckingStatus = false;
+            _cancellationTokenSource = null;
+        }
+    }
+    
+    private async Task CheckDocumentStatus(BusinessBuyDocUpdateItem item)
+    {
+        try
+        {
+            // TODO: Replace with actual API call
+            await Task.Delay(1000, _cancellationTokenSource.Token);
+            item.Message = "Checked with ERP";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking document status");
+            item.Message = "Error checking status";
+        }
+    }
+    
+    [RelayCommand(CanExecute = nameof(IsCheckingStatus))]
+    private void CancelStatusCheck()
+    {
+        _cancellationTokenSource?.Cancel();
     }
 
     [RelayCommand]
     private async Task SendToErp(BusinessBuyDocUpdateItem document) // Changed return type to Task and added async
     {
-
-        if (document == null)
-        {
-            Debug.WriteLine("SendToErp cannot execute: document parameter is null.");
-            return; // Return if document is null
-        }
+        
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
+        //Create the payload to send to Erp
         
         var updatedDocument = new BusinessBuyDocUpdateItem
         {
