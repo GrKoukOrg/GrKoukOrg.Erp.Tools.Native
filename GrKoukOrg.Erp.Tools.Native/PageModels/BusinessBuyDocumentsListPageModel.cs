@@ -90,7 +90,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     
         try
         {
-            foreach (var item in Items)
+            foreach (var item in _navParameterService.BuyDocuments)
             {
                 if (_cancellationTokenSource.Token.IsCancellationRequested)
                     break;
@@ -110,18 +110,25 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         }
     }
     
-    private async Task CheckDocumentStatus(BusinessBuyDocUpdateItem item)
+    private async Task CheckDocumentStatus(BuyDocumentDto item)
     {
         try
         {
-            // TODO: Replace with actual API call
             await Task.Delay(1000, _cancellationTokenSource.Token);
-            item.Message = "Checked with ERP";
+            var targetItem = Items.FirstOrDefault(x => x.Id == item.Id);
+            if (targetItem != null)
+            {
+                UpdateMessageToItem(targetItem, "Checked with ERP");
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error checking document status");
-            item.Message = "Error checking status";
+            var targetItem = Items.FirstOrDefault(x => x.Id == item.Id);
+            if (targetItem != null)
+            {
+                UpdateMessageToItem(targetItem, "Error checking status");
+            }
         }
     }
     
@@ -134,33 +141,36 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [RelayCommand]
     private async Task SendToErp(BusinessBuyDocUpdateItem document) // Changed return type to Task and added async
     {
-        
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
         //Create the payload to send to Erp
-        
+
+        UpdateMessageToItem(document,"Sending to Erp");
+    }
+
+    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message )
+    {
         var updatedDocument = new BusinessBuyDocUpdateItem
         {
-            Id = document.Id,
-            BuyDocDefId = document.BuyDocDefId,
-            BuyDocDefName = document.BuyDocDefName,
-            NetAmount = document.NetAmount,
-            VatAmount = document.VatAmount,
-            PayedAmount = document.PayedAmount,
-            RefNumber = document.RefNumber,
-            SupplierId = document.SupplierId,
-            SupplierName = document.SupplierName,
-            TransDate = document.TransDate,
-            BuyDocLines = document.BuyDocLines,
-            Message = "Sending to ERP"
+            Id = item.Id,
+            BuyDocDefId = item.BuyDocDefId,
+            BuyDocDefName = item.BuyDocDefName,
+            NetAmount = item.NetAmount,
+            VatAmount = item.VatAmount,
+            PayedAmount = item.PayedAmount,
+            RefNumber = item.RefNumber,
+            SupplierId = item.SupplierId,
+            SupplierName = item.SupplierName,
+            TransDate = item.TransDate,
+            BuyDocLines = item.BuyDocLines,
+            Message = message
         };
 
         // Find the index of the old item and replace it
-        int index = Items.IndexOf(document);
+        int index = Items.IndexOf(item);
         if (index >= 0)
         {
             Items[index] = updatedDocument;
         }
-       
     }
 }
