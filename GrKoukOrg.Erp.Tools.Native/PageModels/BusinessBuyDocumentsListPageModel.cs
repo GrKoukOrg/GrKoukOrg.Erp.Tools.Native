@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
@@ -39,20 +40,22 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         Console.WriteLine($"Attempting to execute action..."); // More specific logging
         if (document == null)
         {
-            Console.WriteLine("Action cannot execute: document parameter is null.");
+            Debug.WriteLine("Action cannot execute: document parameter is null.");
+            //await AppShell.DisplayToastAsync("Action cannot execute: document parameter is null.");
             // Optionally display an error to the user
-            if (Application.Current?.MainPage != null) {
-                await Application.Current.MainPage.DisplayAlert("Error", "Document data is missing.", "OK");
-            }
+            //if (Application.Current?.MainPage != null) {
+            //    await Application.Current.MainPage.DisplayAlert("Error", "Document data is missing.", "OK");
+            //}
             return; // Return if document is null
         }
 
         // Add your actual logic here. Example:
-        Console.WriteLine($"Action confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
-        if (Application.Current?.MainPage != null) {
-            await Application.Current.MainPage.DisplayAlert("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
-        }
+        Debug.WriteLine($"Action confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
+        //if (Application.Current?.MainPage != null) {
+        //    await Application.Current.MainPage.DisplayAlert("Action Triggered", $"You clicked on {document.SupplierName}", "OK");
+        //}
         // Add other logic like navigation, data processing, etc.
+        //await AppShell.DisplayToastAsync($"Action Triggered You clicked on {document.SupplierName}");
     }
 
 
