@@ -56,9 +56,14 @@
                                     <Label
                                         Text="{Binding PayedAmount, StringFormat='{} Payed Amount {0:C}', FallbackValue='0.00', TargetNullValue='0.00'}" />
                                 </HorizontalStackLayout>
-                                <Button Text="Action"
+                                <!--<Button Text="Action"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ActionCommand}"
+                                        CommandParameter="{Binding .}" />-->
+                                <Button Text="Action"
+                                        BindingContext="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext}"
+                                        Command="{Binding ActionCommand}"
                                         CommandParameter="{Binding .}" />
+
 
                             </VerticalStackLayout>
                         </Border>

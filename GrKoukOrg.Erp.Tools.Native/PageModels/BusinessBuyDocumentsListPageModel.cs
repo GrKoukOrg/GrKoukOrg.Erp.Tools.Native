@@ -34,9 +34,10 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
     
     [RelayCommand]
-    private async Task Action(BuyDocumentDto document)
+    private void Action(BuyDocumentDto document)
     {
-        if (document == null)
+        Console.WriteLine($"Action executed for document: ");
+       // if (document == null)
             return;
 
         // Add your logic here. Example:
