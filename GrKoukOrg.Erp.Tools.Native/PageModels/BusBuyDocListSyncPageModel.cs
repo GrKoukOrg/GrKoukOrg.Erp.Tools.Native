@@ -28,7 +28,7 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
     [ObservableProperty] private int _lastLogEntryIndex;
     
-    private IList<BuyDocumentDto> _buyDocuments;
+    private IList<BusinessBuyDocumentDto> _buyDocuments;
     public BusBuyDocListSyncPageModel(ILogger<BusBuyDocListSyncPageModel> logger
         ,ApiService apiService
         ,ISettingsDataService settingsDataService

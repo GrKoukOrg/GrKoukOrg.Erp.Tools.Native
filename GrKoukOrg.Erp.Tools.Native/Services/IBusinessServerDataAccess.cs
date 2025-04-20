@@ -20,7 +20,7 @@ public interface IBusinessServerDataAccess
      Task<ICollection<SaleDocLineListDto>> GetBusinessServerSaleDocLineListAsync();
      Task<BusinessApiResponse<IList<ItemFamilyDto>>> GetBusinessServerItemFamilyListAsync();
      Task<BusinessApiResponse<IList<UnitOfMeasurementDto>>> GetBusinessServerUnitsOfMeasurementListAsync();
-     Task<BusinessApiResponse<IList<BuyDocumentDto>>> GetBusinessServerBuyDocsInPeriodListAsync(DateOnly fromDate, DateOnly toDate);
+     Task<BusinessApiResponse<IList<BusinessBuyDocumentDto>>> GetBusinessServerBuyDocsInPeriodListAsync(DateOnly fromDate, DateOnly toDate);
 }
 
 public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
@@ -398,7 +398,7 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
         }
     }
 
-    public async Task<BusinessApiResponse<IList<BuyDocumentDto>>> GetBusinessServerBuyDocsInPeriodListAsync(DateOnly fromDate, DateOnly toDate)
+    public async Task<BusinessApiResponse<IList<BusinessBuyDocumentDto>>> GetBusinessServerBuyDocsInPeriodListAsync(DateOnly fromDate, DateOnly toDate)
     {
         _logger.LogInformation("GetBusinessServerBuyDocsInPeriodListAsync");
         try
@@ -416,10 +416,10 @@ public class BusinessServerHttpDataAccess : IBusinessServerDataAccess
 
             // Deserialize JSON 
             
-            var apiResponse = JsonSerializer.Deserialize<BusinessApiResponse<IList<BuyDocumentDto>>>(jsonContent);
+            var apiResponse = JsonSerializer.Deserialize<BusinessApiResponse<IList<BusinessBuyDocumentDto>>>(jsonContent);
 
           
-            return apiResponse ?? new BusinessApiResponse<IList<BuyDocumentDto>>();
+            return apiResponse ?? new BusinessApiResponse<IList<BusinessBuyDocumentDto>>();
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {

@@ -1,8 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Text;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
+using GrKoukOrg.Erp.Tools.Native.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
@@ -11,6 +14,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
 {
     private readonly ILogger<BusinessBuyDocumentsListPageModel> _logger;
     private readonly INavigationParameterService _navParameterService;
+    private readonly ISettingsDataService _settingsDataService;
+    private readonly ApiService _apiService;
     private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
     [ObservableProperty] private bool _isBusy = false;
@@ -22,11 +27,15 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private CancellationTokenSource _cancellationTokenSource;
 
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
-        , INavigationParameterService navParameterService
+        , INavigationParameterService navParameterService,
+        ISettingsDataService settingsDataService,
+        ApiService apiService
         , ModalErrorHandler errorHandler)
     {
         _logger = logger;
         _navParameterService = navParameterService;
+        _settingsDataService = settingsDataService;
+        _apiService = apiService;
         _errorHandler = errorHandler;
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
@@ -46,7 +55,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     NetAmount = doc.NetAmount,
                     VatAmount = doc.VatAmount,
                     PayedAmount = doc.PayedAmount,
-                    RefNumber = doc.RefNumber,
+                    RefNumber = doc.RefNumber.ToString(),
                     SupplierId = doc.SupplierId,
                     SupplierName = doc.SupplierName,
                     TransDate = doc.TransDate,
@@ -110,15 +119,45 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         }
     }
     
-    private async Task CheckDocumentStatus(BuyDocumentDto item)
+    private async Task CheckDocumentStatus(BusinessBuyDocumentDto item)
     {
         try
         {
-            await Task.Delay(1000, _cancellationTokenSource.Token);
+            //Send request to Erp
             var targetItem = Items.FirstOrDefault(x => x.Id == item.Id);
-            if (targetItem != null)
+            var companyCode = _settingsDataService.GetBusinessCompanyCode();
+            var erpApiBase = _settingsDataService.GetErpApiUrl(); 
+            var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncCheckBusinessBuyDocument");
+            try
             {
-                UpdateMessageToItem(targetItem, "Checked with ERP");
+                var payload = new SyncBusinessBuyDocumentRequest()
+                {
+                    Id = item.Id,
+                    CompanyCode = companyCode,
+                    TransDate = item.TransDate,
+                    SupplierId = item.SupplierId,
+                    RefNumber = item.RefNumber,
+                    PayedAmount = item.PayedAmount,
+                    TotalAmount = item.TotalAmount
+                };
+                var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
+                {
+                    Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+                };
+                var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                var jsonContent = await result.Content.ReadAsStringAsync();
+                var erpResponse = JsonSerializer.Deserialize<ErpCheckDocumentResponse>(jsonContent);
+
+                var stMessage = erpResponse.Message;
+                if (targetItem != null)
+                {
+                    UpdateMessageToItem(targetItem, stMessage);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem);
             }
         }
         catch (Exception ex)
@@ -172,5 +211,29 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         {
             Items[index] = updatedDocument;
         }
+    }
+    private void LogAndHandleException(Exception ex, string customMessage,BusinessBuyDocUpdateItem targetItem)
+    {
+        string errorMessage = ex switch
+        {
+            TaskCanceledException when ex.InnerException is TimeoutException =>
+                $"The request timed out: {ex.Message}",
+            HttpRequestException =>
+                "Network error: Unable to connect to the server. Please check your connection and try again.",
+            JsonException =>
+                "Data parsing error: The server returned data in an unexpected format.",
+            TaskCanceledException =>
+                "Request timeout: The server is taking too long to respond. Please try again later.",
+            _ =>
+                $"An unexpected error occurred: {ex.Message}"
+        };
+        if (targetItem is not null)
+        {
+            UpdateMessageToItem(targetItem, errorMessage);
+        }
+        Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+
+        // Optionally, display the message using a Toast
+        AppShell.DisplayToastAsync(customMessage ?? errorMessage).FireAndForgetSafeAsync();
     }
 }
