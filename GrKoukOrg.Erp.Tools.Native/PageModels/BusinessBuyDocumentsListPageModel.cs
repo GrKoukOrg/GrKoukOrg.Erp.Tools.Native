@@ -22,6 +22,9 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [ObservableProperty] 
     [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
     private bool _isCheckingStatus = false;
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
+    private bool _canCheckDocuments = false;
     [ObservableProperty] private int _checkedItems = 0;
     [ObservableProperty] private int _totalItems = 0;
     private CancellationTokenSource _cancellationTokenSource;
@@ -40,6 +43,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
 
+  
     [RelayCommand]
     private async Task Appearing()
     {
@@ -55,21 +59,27 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     NetAmount = doc.NetAmount,
                     VatAmount = doc.VatAmount,
                     PayedAmount = doc.PayedAmount,
-                    RefNumber = doc.RefNumber.ToString(),
+                    TotalAmount = doc.TotalAmount,
+                    RefNumber = doc.RefNumber,
                     SupplierId = doc.SupplierId,
                     SupplierName = doc.SupplierName,
                     TransDate = doc.TransDate,
                     BuyDocLines = doc.BuyDocLines?.Select(line => new BuyDocLineDto
                     {
                         Id = line.Id,
+                        BuyDocId = line.BuyDocId,
+                        TransDate = line.TransDate,
                         ItemId = line.ItemId,
                         ItemCode = line.ItemCode,
                         ItemName = line.ItemName,
                         UnitPrice = line.UnitPrice,
                         UnitQty = line.UnitQty,
+                        UnitFpaPerc = line.UnitFpaPerc,
+                        UnitOfMeasureName = line.UnitOfMeasureName,
                         LineDiscountAmount = line.LineDiscountAmount,
                         UnitDiscountRate = line.UnitDiscountRate,
                         LineNetAmount = line.LineNetAmount,
+                        LineVatAmount = line.LineVatAmount,
                         LineTotalAmount = line.LineTotalAmount,
                     }).ToList() ?? new List<BuyDocLineDto>(),
                 }
@@ -77,13 +87,17 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             
             return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
         });
-    
+        TotalItems = Items.Count;
         IsBusy = false;
         
         // await StartStatusCheck();
     }
 
-    [RelayCommand]
+    partial void OnTotalItemsChanged(int value)
+    {
+        CanCheckDocuments = value > 0;
+    }
+    [RelayCommand(CanExecute = nameof(CanCheckDocuments))]
     private async Task CheckStatusOfDocuments()
     {
         await StartStatusCheck();
@@ -134,6 +148,10 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 {
                     Id = item.Id,
                     CompanyCode = companyCode,
+                    BuyDocDefId = item.BuyDocDefId,
+                    BuyDocDefName = item.BuyDocDefName,
+                    VatAmount = item.VatAmount,
+                    NetAmount = item.NetAmount,
                     TransDate = item.TransDate,
                     SupplierId = item.SupplierId,
                     RefNumber = item.RefNumber,
@@ -178,13 +196,62 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SendToErp(BusinessBuyDocUpdateItem document) // Changed return type to Task and added async
+    private async Task SendToErp(BusinessBuyDocUpdateItem document) 
     {
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
         //Create the payload to send to Erp
 
         UpdateMessageToItem(document,"Sending to Erp");
+        
+        var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
+        var companyCode = _settingsDataService.GetBusinessCompanyCode();
+        var erpApiBase = _settingsDataService.GetErpApiUrl(); 
+        var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocument");
+        try
+        {
+            var payload = new SyncBusinessBuyDocumentRequest()
+            {
+                Id = document.Id,
+                CompanyCode = companyCode,
+                BuyDocDefId = document.BuyDocDefId,
+                BuyDocDefName = document.BuyDocDefName,
+                TransDate = document.TransDate,
+                SupplierId = document.SupplierId,
+                RefNumber = document.RefNumber,
+                VatAmount = decimal.Abs(document.VatAmount),
+                NetAmount = decimal.Abs( document.NetAmount),
+                PayedAmount = document.PayedAmount,
+                TotalAmount = decimal.Abs( document.TotalAmount)
+            };
+            var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+            };
+            var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorContent = await result.Content.ReadAsStringAsync();
+                if (targetItem != null)
+                {
+                    UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}");
+                }
+                return;
+            }
+            var jsonContent = await result.Content.ReadAsStringAsync();
+            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent);
+
+            var stMessage = erpResponse.Message;
+            if (targetItem != null)
+            {
+                UpdateMessageToItem(targetItem, stMessage);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem);
+        }
     }
 
     private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message )
@@ -201,6 +268,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             SupplierId = item.SupplierId,
             SupplierName = item.SupplierName,
             TransDate = item.TransDate,
+            TotalAmount = item.TotalAmount,
             BuyDocLines = item.BuyDocLines,
             Message = message
         };
