@@ -108,6 +108,14 @@ public partial class SyncSuppliersPageModel : ObservableObject
                 Content = new StringContent(JsonSerializer.Serialize(busItemsRequest), Encoding.UTF8, "application/json")
             };
             var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorReason=result.ReasonPhrase;
+                var errorContent = await result.Content.ReadAsStringAsync();
+                var errMessage = $"Error: {errorReason} {errorContent}";
+                AddLog( errMessage);
+                return;
+            }
             var jsonContent = await result.Content.ReadAsStringAsync();
             var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<SyncSupplierDto>>(jsonContent);
                  
@@ -173,6 +181,14 @@ public partial class SyncSuppliersPageModel : ObservableObject
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, uri);
                 var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorReason=result.ReasonPhrase;
+                    var errorContent = await result.Content.ReadAsStringAsync();
+                    var errMessage = $"Error: {errorReason} {errorContent}";
+                    AddLog( errMessage);
+                    return;
+                }
                 var jsonContent = await result.Content.ReadAsStringAsync();
                 var destinationItems = JsonSerializer.Deserialize<IList<SyncSupplierDto>>(jsonContent);
                 var sourceList = new List<SyncSupplierDto>();
@@ -277,6 +293,14 @@ public partial class SyncSuppliersPageModel : ObservableObject
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, uri);
                 var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorReason=result.ReasonPhrase;
+                    var errorContent = await result.Content.ReadAsStringAsync();
+                    var errMessage = $"Error: {errorReason} {errorContent}";
+                    AddLog( errMessage);
+                    return;
+                }
                 var jsonContent = await result.Content.ReadAsStringAsync();
                 var erpResponse = JsonSerializer.Deserialize<IList<SupplierListDto>>(jsonContent);
                 ErpSuppliers = new ObservableCollection<SupplierListDto>(erpResponse);
