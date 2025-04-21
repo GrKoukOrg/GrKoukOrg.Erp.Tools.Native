@@ -1,0 +1,321 @@
+using GrKoukOrg.Erp.Tools.Native.Models;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
+
+namespace GrKoukOrg.Erp.Tools.Native.Data;
+
+public class LocalSalesDocLinesRepo
+{
+    private bool _hasBeenInitialized = false;
+    private readonly ILogger _logger;
+
+    public LocalSalesDocLinesRepo(ILogger<LocalSalesDocLinesRepo> logger)
+    {
+        _logger = logger;
+    }
+
+    private async Task Init()
+    {
+        if (_hasBeenInitialized)
+            return;
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        try
+        {
+            var createSaleDocLinesTableCmd = connection.CreateCommand();
+            createSaleDocLinesTableCmd.CommandText = @"
+              CREATE TABLE IF NOT EXISTS SaleDocLines (
+                Id INTEGER PRIMARY KEY,
+                TransDate TEXT NOT NULL, -- DateTime in C# maps to TEXT in SQLite in ISO 8601 format
+                SaleDocId INTEGER NOT NULL,
+                ItemId INTEGER NOT NULL,
+                ItemName TEXT(200), -- Nullable string
+                ItemCode TEXT(20), -- Nullable string
+                UnitOfMeasureName TEXT(200), -- Nullable string
+                UnitFpaPerc REAL NOT NULL,
+                UnitQty DECIMAL(18, 4) NOT NULL,
+                UnitPrice DECIMAL(18, 4) NOT NULL, -- Decimal can be represented as REAL in SQLite
+                UnitDiscountRate REAL NOT NULL,
+                LineDiscountAmount DECIMAL(18, 2) NOT NULL,
+                LineNetAmount DECIMAL(18, 2) NOT NULL,
+                LineVatAmount DECIMAL(18, 2) NOT NULL,
+                LineTotalAmount DECIMAL(18, 2) NOT NULL
+            );
+                ";
+
+
+            await createSaleDocLinesTableCmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error creating tables");
+            throw;
+        }
+
+        _hasBeenInitialized = true;
+    }
+   
+    public async Task<List<SaleDocLineListDto>> ListSaleDocLinesAsync()
+    {
+        await Init(); // Ensure the database is initialized
+
+        var buyDocLines = new List<SaleDocLineListDto>();
+
+        await using (var connection = new SqliteConnection(Constants.DatabasePath))
+        {
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+            SELECT Id, TransDate, SaleDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
+                   UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+                   LineNetAmount, LineVatAmount, LineTotalAmount
+            FROM  SaleDocLines
+        ";
+
+            try
+            {
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    buyDocLines.Add(new SaleDocLineListDto
+                    {
+                        Id = reader.GetInt32(0),
+                        TransDate = reader.GetDateTime(1), // Assuming dates are stored as ISO-8601 formatted TEXT
+                        SaleDocId = reader.GetInt32(2),
+                        ItemId = reader.GetInt32(3),
+                        ItemName = reader.IsDBNull(4) ? string.Empty : reader.GetString(4), // Handle nullable string
+                        ItemCode = reader.IsDBNull(5) ? string.Empty : reader.GetString(5), // Handle nullable string
+                        UnitOfMeasureName =
+                            reader.IsDBNull(6) ? string.Empty : reader.GetString(6), // Handle nullable string
+                        UnitFpaPerc = reader.GetDouble(7),
+                        UnitQty = reader.GetDecimal(8),
+                        UnitPrice = reader.GetDecimal(9),
+                        UnitDiscountRate = reader.GetDouble(10),
+                        LineDiscountAmount = reader.GetDecimal(11),
+                        LineNetAmount = reader.GetDecimal(12),
+                        LineVatAmount = reader.GetDecimal(13),
+                        LineTotalAmount = reader.GetDecimal(14)
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error listing SaleDocLines");
+                throw;
+            }
+        }
+
+        return buyDocLines;
+    }
+
+
+    public async Task<bool> SaleDocLineExist(int id)
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var selectCmd = connection.CreateCommand();
+        selectCmd.CommandText = "SELECT Id FROM SaleDocLines WHERE ID = @id";
+        selectCmd.Parameters.AddWithValue("@id", id);
+
+        await using var reader = await selectCmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+  
+
+    public async Task<SaleDocLineListDto?> GetSaleDocLineAsync(int id)
+    {
+        await Init(); // Ensure the database is initialized
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+        SELECT Id, TransDate, SaleDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
+               UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+               LineNetAmount, LineVatAmount, LineTotalAmount
+        FROM SaleDocLines
+        WHERE Id = @id
+    ";
+        command.Parameters.AddWithValue("@id", id);
+
+        try
+        {
+            await using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new SaleDocLineListDto
+                {
+                    Id = reader.GetInt32(0),
+                    TransDate = reader.GetDateTime(1),
+                    SaleDocId = reader.GetInt32(2),
+                    ItemId = reader.GetInt32(3),
+                    ItemName = reader.IsDBNull(4) ? null : reader.GetString(4),
+                    ItemCode = reader.IsDBNull(5) ? null : reader.GetString(5),
+                    UnitOfMeasureName = reader.IsDBNull(6) ? null : reader.GetString(6),
+                    UnitFpaPerc = reader.GetDouble(7),
+                    UnitQty = reader.GetDecimal(8),
+                    UnitPrice = reader.GetDecimal(9),
+                    UnitDiscountRate = reader.GetDouble(10),
+                    LineDiscountAmount = reader.GetDecimal(11),
+                    LineNetAmount = reader.GetDecimal(12),
+                    LineVatAmount = reader.GetDecimal(13),
+                    LineTotalAmount = reader.GetDecimal(14)
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error fetching buy doc line with Id = {Id}", id);
+            throw;
+        }
+
+        return null; // Return null if no record is found
+    }
+
+   
+    public async Task<int> AddSaleDocLineAsync(SaleDocLineListDto buyDocLine)
+    {
+        await Init(); // Ensure the database is initialized
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+        INSERT INTO SaleDocLines (Id,TransDate, SaleDocId, ItemId, ItemName, ItemCode, UnitOfMeasureName, 
+                                    UnitFpaPerc, UnitQty, UnitPrice, UnitDiscountRate, LineDiscountAmount, 
+                                    LineNetAmount, LineVatAmount, LineTotalAmount)
+        VALUES (@id,@transDate, @buyDocId, @itemId, @itemName, @itemCode, @unitOfMeasureName, 
+                @unitFpaPerc, @unitQty, @unitPrice, @unitDiscountRate, @unitDiscountAmount, 
+                @unitNetAmount, @unitVatAmount, @unitTotalAmount);
+    ";
+        command.Parameters.AddWithValue("@id", buyDocLine.Id);
+        command.Parameters.AddWithValue("@transDate", buyDocLine.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
+        command.Parameters.AddWithValue("@buyDocId", buyDocLine.SaleDocId);
+        command.Parameters.AddWithValue("@itemId", buyDocLine.ItemId);
+        command.Parameters.AddWithValue("@itemName", buyDocLine.ItemName ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@itemCode", buyDocLine.ItemCode ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@unitOfMeasureName", buyDocLine.UnitOfMeasureName ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@unitFpaPerc", buyDocLine.UnitFpaPerc);
+        command.Parameters.AddWithValue("@unitQty", buyDocLine.UnitQty);
+        command.Parameters.AddWithValue("@unitPrice", buyDocLine.UnitPrice);
+        command.Parameters.AddWithValue("@unitDiscountRate", buyDocLine.UnitDiscountRate);
+        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.LineDiscountAmount);
+        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.LineNetAmount);
+        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.LineVatAmount);
+        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.LineTotalAmount);
+
+        try
+        {
+            return await command.ExecuteNonQueryAsync(); // Returns the number of rows affected
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error adding buy document line");
+            throw;
+        }
+    }
+
+  
+
+    public async Task<int> UpdateSaleDocLineAsync(SaleDocLineListDto buyDocLine)
+    {
+        await Init(); // Ensure the database is initialized
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var command = connection.CreateCommand();
+        command.CommandText = @"
+        UPDATE SaleDocLines
+        SET TransDate = @transDate,
+            SaleDocId = @buyDocId,
+            ItemId = @itemId,
+            ItemName = @itemName,
+            ItemCode = @itemCode,
+            UnitOfMeasureName = @unitOfMeasureName,
+            UnitFpaPerc = @unitFpaPerc,
+            UnitQty = @unitQty,
+            UnitPrice = @unitPrice,
+            UnitDiscountRate = @unitDiscountRate,
+            LineDiscountAmount = @unitDiscountAmount,
+            LineNetAmount = @unitNetAmount,
+            LineVatAmount = @unitVatAmount,
+            LineTotalAmount = @unitTotalAmount
+        WHERE Id = @id
+    ";
+        command.Parameters.AddWithValue("@id", buyDocLine.Id);
+        command.Parameters.AddWithValue("@transDate", buyDocLine.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
+        command.Parameters.AddWithValue("@buyDocId", buyDocLine.SaleDocId);
+        command.Parameters.AddWithValue("@itemId", buyDocLine.ItemId);
+        command.Parameters.AddWithValue("@itemName", buyDocLine.ItemName ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@itemCode", buyDocLine.ItemCode ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@unitOfMeasureName", buyDocLine.UnitOfMeasureName ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@unitFpaPerc", buyDocLine.UnitFpaPerc);
+        command.Parameters.AddWithValue("@unitQty", buyDocLine.UnitQty);
+        command.Parameters.AddWithValue("@unitPrice", buyDocLine.UnitPrice);
+        command.Parameters.AddWithValue("@unitDiscountRate", buyDocLine.UnitDiscountRate);
+        command.Parameters.AddWithValue("@unitDiscountAmount", buyDocLine.LineDiscountAmount);
+        command.Parameters.AddWithValue("@unitNetAmount", buyDocLine.LineNetAmount);
+        command.Parameters.AddWithValue("@unitVatAmount", buyDocLine.LineVatAmount);
+        command.Parameters.AddWithValue("@unitTotalAmount", buyDocLine.LineTotalAmount);
+
+        try
+        {
+            return await command.ExecuteNonQueryAsync(); // Returns the number of rows affected
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating buy document line with Id = {Id}", buyDocLine.Id);
+            throw;
+        }
+    }
+  
+    
+    public async Task<int> DeleteSaleDocLineAsync(SaleDocLineListDto item)
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "DELETE FROM SaleDoclines WHERE ID = @id";
+        deleteCmd.Parameters.AddWithValue("@id", item.Id);
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
+    public async Task<int> DeleteAllSaleDocLineAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "DELETE FROM SaleDoclines";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
+    public async Task<int> DropSaleDocLinesTableAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "Drop table SaleDoclines";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
+}

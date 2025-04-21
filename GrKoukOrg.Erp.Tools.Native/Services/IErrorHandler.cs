@@ -1,3 +1,5 @@
+using System;
+
 namespace GrKoukOrg.Erp.Tools.Native.Services
 {
     /// <summary>

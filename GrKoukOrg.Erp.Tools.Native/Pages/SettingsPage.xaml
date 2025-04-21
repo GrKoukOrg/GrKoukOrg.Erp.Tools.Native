@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             x:DataType="pageModels:SettingsPageModel"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SettingsPage">
+   
+        <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"                
+            Command="{Binding AppearingCommand}" />
+        </ContentPage.Behaviors>
+        <ContentPage.Resources>
+            <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+                <Setter Property="TextColor" Value="Red" />
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="FontFamily" Value="OpenSansRegular"/>
+                <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=24}" />
+                <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+                <Setter Property="MinimumHeightRequest" Value="44"/>
+                <Setter Property="MinimumWidthRequest" Value="44"/>
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ContentPage.Resources>
+
+        <ContentPage.ToolbarItems>
+            <ToolbarItem Text="Reset App" Command="{Binding ResetCommand}" />
+        </ContentPage.ToolbarItems>
+  <ScrollView>
+      <VerticalStackLayout
+          Spacing="{StaticResource LayoutSpacing}"
+          Padding="{StaticResource LayoutPadding}">
+          <Label Text="Settings" Style="{StaticResource Title2}"/>
+          
+          <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}">
+              <sf:SfTextInputLayout 
+                  Hint="Business Company Code">
+                  <Entry
+                      Text="{Binding CompanyCode}" />
+              </sf:SfTextInputLayout>        
+              <sf:SfTextInputLayout 
+                  Hint="Business Api Url">
+                  <Entry
+                      Text="{Binding BusinessApiUrl}" />
+              </sf:SfTextInputLayout>
+              <sf:SfTextInputLayout 
+                  Hint="Erp Api Url">
+                  <Entry
+                      Text="{Binding ErpApiUrl}" />
+              </sf:SfTextInputLayout>
+              
+              <Button 
+                  HeightRequest="{OnIdiom 44, Desktop=60}"
+                  Text="Save"
+                  Command="{Binding SaveCommand}"/>
+          </VerticalStackLayout>
+      </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             x:DataType="pageModels:ItemDetailsPageModel"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ItemDetailsPage">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+
+        </Style>
+        <Style TargetType="inputLayout:SfTextInputLayout">
+            <Setter Property="ContainerType" Value="Outlined" />
+            <Setter Property="FocusedStrokeThickness" Value="2" />
+            <Setter Property="UnfocusedStrokeThickness" Value="1" />
+
+
+        </Style>
+
+        <Style TargetType="editors:SfAutocomplete">
+            <Setter Property="HighlightedTextColor" Value="Red" />
+            <Setter Property="TextHighlightMode" Value="FirstOccurrence" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="FontSize" Value="{OnIdiom 16, Desktop=24}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+
+            <!-- <Setter Property="BackgroundColor" Value="Black" /> -->
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView Orientation="Both">
+            <VerticalStackLayout
+                Spacing="{StaticResource LayoutSpacing}"
+                Padding="{StaticResource LayoutPadding}">
+
+
+                <inputLayout:SfTextInputLayout
+                    Hint="Αναζήτηση">
+                    <editors:SfAutocomplete
+                        DisplayMemberPath="SearchText"
+                        TextSearchMode="Contains"
+                        TextMemberPath="SearchText"
+                        MaximumSuggestion="10"
+                        LoadMoreText="Φόρτωση..."
+                        Text="{Binding SearchText, Mode=TwoWay}"
+                        ItemsSource="{Binding SearchItems}">
+                        <editors:SfAutocomplete.Behaviors>
+                            <toolkit:EventToCommandBehavior EventName="SelectionChanged"
+                                                            Command="{Binding SelectionChangedCommand}"
+                                                            EventArgsConverter="{StaticResource AutoCompleteSelectionConverter}" />
+                        </editors:SfAutocomplete.Behaviors>
+                    </editors:SfAutocomplete>
+                </inputLayout:SfTextInputLayout>
+                <Button Padding="{StaticResource LayoutPadding}" Text="Scan Barcode"
+                        Command="{Binding ScanBarcodeCommand}">
+                </Button>
+                <Grid ColumnSpacing="{StaticResource LayoutSpacing}"
+                      RowSpacing="{StaticResource LayoutSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
+                    <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" />
+                    <Label Text="Περιγραφή" Grid.Column="0" Grid.Row="1" />
+                    <Label Text="{Binding SelectedItem.Name}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" />
+                    <Label Text="Απόθεμα" Grid.Column="0" Grid.Row="2" />
+                    <Label Text="{Binding SelectedItem.Apothema}" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" />
+                    <Label Text="Τιμή Αγ." Grid.Column="0" Grid.Row="3" />
+                    <Label Text="{Binding SelectedItem.TimiAgoras, StringFormat='{0:F2}€'}" Grid.Column="1"
+                           Grid.Row="3" />
+                    <Label Text="Τιμή Αγ. ΦΠΑ" Grid.Column="0" Grid.Row="4" />
+                    <Label Text="{Binding SelectedItem.TimiAgorasFpa,StringFormat='{0:F2}€' }" Grid.Column="1"
+                           Grid.Row="4" />
+                    <Label Text="Τιμή Πώλ." Grid.Column="2" Grid.Row="3" />
+                    <Label Text="{Binding SelectedItem.TimiPolisisLian, StringFormat='{0:F2}€'}" Grid.Column="3"
+                           Grid.Row="3" />
+                    <Label Text="Τιμή Πώλ. ΦΠΑ" Grid.Column="2" Grid.Row="4" />
+                    <Label Text="{Binding SelectedItem.TimiPolisisLianFpa,StringFormat='{0:F2}€' }" Grid.Column="3"
+                           Grid.Row="4" />
+                    <Label Text="Συν.Αγορών" Grid.Column="0" Grid.Row="5" />
+                    <Label Text="{Binding ItemStatistics.TotalQuantityInWarehouse, StringFormat='{0:F2}'}"
+                           Grid.Column="1" Grid.Row="5" />
+                    <Label Text="Μέση Τιμή Αγοράς" Grid.Column="0" Grid.Row="6" />
+                    <Label Text="{Binding ItemStatistics.MeanPrice,StringFormat='{0:F2}€' }" Grid.Column="1"
+                           Grid.Row="6" />
+                    <Label Text="Συν.Πωλήσεων" Grid.Column="2" Grid.Row="5" />
+                    <Label Text="{Binding ItemStatistics.TotalQuantitySold, StringFormat='{0:F2}'}"
+                           Grid.Column="3" Grid.Row="5" />
+                    <Label Text="Μέση Τιμή Πώλησης" Grid.Column="2" Grid.Row="6" />
+                    <Label Text="{Binding ItemStatistics.MeanSalesPrice,StringFormat='{0:F2}€' }" Grid.Column="3"
+                           Grid.Row="6" />
+                    <Button Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" 
+                            Padding="{StaticResource LayoutPadding}" Text="Αγορές"
+                            Command="{Binding ShowItemBuyDocsCommand }"
+                            ></Button>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

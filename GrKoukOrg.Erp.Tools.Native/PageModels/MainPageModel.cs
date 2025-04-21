@@ -1,50 +1,37 @@
+using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
+using Microsoft.Maui.Storage;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels
 {
-    public partial class MainPageModel : ObservableObject, IProjectTaskPageModel
+    public partial class MainPageModel : ObservableObject
     {
         private bool _isNavigatedTo;
         private bool _dataLoaded;
-        private readonly ProjectRepository _projectRepository;
-        private readonly TaskRepository _taskRepository;
-        private readonly CategoryRepository _categoryRepository;
+
         private readonly ModalErrorHandler _errorHandler;
+        private readonly ApiService _apiService;
+        private readonly ISettingsDataService _settingsDataService;
         private readonly SeedDataService _seedDataService;
 
-        [ObservableProperty]
-        private List<CategoryChartData> _todoCategoryData = [];
+        [ObservableProperty] bool _isBusy;
 
-        [ObservableProperty]
-        private List<Brush> _todoCategoryColors = [];
+        [ObservableProperty] bool _isRefreshing;
 
-        [ObservableProperty]
-        private List<ProjectTask> _tasks = [];
+        [ObservableProperty] private string _today = DateTime.Now.ToString("dddd, MMM d");
+        [ObservableProperty] private DateTime _lastSynced;
 
-        [ObservableProperty]
-        private List<Project> _projects = [];
-
-        [ObservableProperty]
-        bool _isBusy;
-
-        [ObservableProperty]
-        bool _isRefreshing;
-
-        [ObservableProperty]
-        private string _today = DateTime.Now.ToString("dddd, MMM d");
-
-        public bool HasCompletedTasks
-            => Tasks?.Any(t => t.IsCompleted) ?? false;
-
-        public MainPageModel(SeedDataService seedDataService, ProjectRepository projectRepository,
-            TaskRepository taskRepository, CategoryRepository categoryRepository, ModalErrorHandler errorHandler)
+        [ObservableProperty] private string _userName = string.Empty;
+        [ObservableProperty] private string _password = string.Empty;
+        [ObservableProperty] private string _statusMessage = string.Empty;
+        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService, ISettingsDataService settingsDataService)
         {
-            _projectRepository = projectRepository;
-            _taskRepository = taskRepository;
-            _categoryRepository = categoryRepository;
             _errorHandler = errorHandler;
+            _apiService = apiService;
+            _settingsDataService = settingsDataService;
             _seedDataService = seedDataService;
         }
 
@@ -53,32 +40,11 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsBusy = true;
-
-                Projects = await _projectRepository.ListAsync();
-
-                var chartData = new List<CategoryChartData>();
-                var chartColors = new List<Brush>();
-
-                var categories = await _categoryRepository.ListAsync();
-                foreach (var category in categories)
-                {
-                    chartColors.Add(category.ColorBrush);
-
-                    var ps = Projects.Where(p => p.CategoryID == category.ID).ToList();
-                    int tasksCount = ps.SelectMany(p => p.Tasks).Count();
-
-                    chartData.Add(new(category.Title, tasksCount));
-                }
-
-                TodoCategoryData = chartData;
-                TodoCategoryColors = chartColors;
-
-                Tasks = await _taskRepository.ListAsync();
+                LastSynced=Preferences.Default.Get("last_synced", DateTime.Today);
             }
             finally
             {
                 IsBusy = false;
-                OnPropertyChanged(nameof(HasCompletedTasks));
             }
         }
 
@@ -88,7 +54,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
 
             if (!isSeeded)
             {
-                await seedDataService.LoadSeedDataAsync();
+                //await seedDataService.LoadSeedDataAsync();
             }
 
             Preferences.Default.Set("is_seeded", true);
@@ -101,7 +67,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsRefreshing = true;
-                await LoadData();
+                 await LoadData();
             }
             catch (Exception e)
             {
@@ -138,37 +104,64 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         }
 
         [RelayCommand]
-        private Task TaskCompleted(ProjectTask task)
+        private async Task ShowCashDiaryList()
         {
-            OnPropertyChanged(nameof(HasCompletedTasks));
-            return _taskRepository.SaveItemAsync(task);
+            await Shell.Current.GoToAsync("erpcashdiarylist");
         }
-
         [RelayCommand]
-        private Task AddTask()
-            => Shell.Current.GoToAsync($"task");
-
-        [RelayCommand]
-        private Task NavigateToProject(Project project)
-            => Shell.Current.GoToAsync($"project?id={project.ID}");
-
-        [RelayCommand]
-        private Task NavigateToTask(ProjectTask task)
-            => Shell.Current.GoToAsync($"task?id={task.ID}");
-
-        [RelayCommand]
-        private async Task CleanTasks()
+        private async Task Test()
         {
-            var completedTasks = Tasks.Where(t => t.IsCompleted).ToList();
-            foreach (var task in completedTasks)
+            var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
+            var uri = new Uri(apiBaseUrl + "/erpapi/GetTest1");
+            try
             {
-                await _taskRepository.DeleteItemAsync(task);
-                Tasks.Remove(task);
+                var request = new HttpRequestMessage(HttpMethod.Get, uri);
+                var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                StatusMessage=result.ToString();
+                Console.WriteLine(result);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error: {ex.Message}";
+                Console.WriteLine(ex);
+            }
+        }
+        [RelayCommand]
+        private async Task Login()
+        {
+            if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Password))
+            {
+                StatusMessage = "Please enter both username and password.";
+                return;
             }
 
-            OnPropertyChanged(nameof(HasCompletedTasks));
-            Tasks = new(Tasks);
-            await AppShell.DisplayToastAsync("All cleaned up!");
+            IsBusy = true;
+            StatusMessage = string.Empty;
+
+            try
+            {
+                var tokens = await _apiService.LoginAsync(UserName, Password);
+                if (tokens != null)
+                {
+                    Preferences.Default.Set("AccessToken", tokens.AccessToken);
+                    Preferences.Default.Set("RefreshToken", tokens.RefreshToken);
+
+                    StatusMessage = "Login successful!";
+                }
+                else
+                {
+                    StatusMessage = "Invalid login credentials.";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error: {ex.Message}";
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
+
     }
 }

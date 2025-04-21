@@ -5,6 +5,9 @@
 /projectSettingsUpdater.xml
 /modules.xml
 /contentModel.xml
+/vcs.xml
+/encodings.xml
+/indexLayout.xml
 /.idea.GrKoukOrg.Erp.Tools.Native.iml
 # Editor-based HTTP Client requests
 /httpRequests/

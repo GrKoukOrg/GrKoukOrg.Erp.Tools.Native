@@ -1,0 +1,96 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:syncfusion="clr-namespace:Syncfusion.Maui.DataGrid;assembly=Syncfusion.Maui.DataGrid"
+             xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
+             xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             x:DataType="pageModels:BusBuyDocListSyncPageModel"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusBuyDocListSyncPage">
+    <ContentPage.Resources>
+        <Style x:Key="InvalidEntryStyle" TargetType="Entry">
+            <Setter Property="TextColor" Value="Red" />
+        </Style>
+
+        <Style TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="FontSize" Value="{OnIdiom Phone=16, Tablet=20, Desktop=24}" />
+            <Setter Property="PlaceholderColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+        <Style TargetType="syncfusion:DataGridCell">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+        </Style>
+        <Style TargetType="syncfusion:DataGridHeaderCell">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+    <Grid Padding="{StaticResource LayoutPadding}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.Column="0" Text="Username" />
+        <Entry Grid.Row="1" Grid.Column="0" Text="{Binding UserName}" Placeholder="Enter username" />
+
+        <Label Grid.Row="0" Grid.Column="1" Text="Password" />
+        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Password}" IsPassword="True" Placeholder="Enter password" />
+
+        <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Text="Login" Command="{Binding LoginCommand}" />
+        <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+            <Label Text="Από Ημ/νία" Padding="{StaticResource LayoutPadding}" />
+            <DatePicker Date="{Binding FromDate}" Margin="{StaticResource DatePickerMargin}">
+
+            </DatePicker>
+            <Label Text="Εως Ημ/νία" Padding="{StaticResource LayoutPadding}" />
+            <DatePicker Date="{Binding ToDate}" Margin="{StaticResource DatePickerMargin}">
+
+            </DatePicker>
+        </HorizontalStackLayout>
+        <VerticalStackLayout Grid.Row="3" Grid.Column="0" Spacing="{StaticResource LayoutSpacing}"
+                             Padding="{StaticResource LayoutPadding}">
+            <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                <Label Text="Document Count" />
+                <Label Text="{Binding BuyDocCount}" HorizontalTextAlignment="Center" HorizontalOptions="Center"/>    
+            </HorizontalStackLayout>
+            
+            <Button Text="Get Buy Docs" Command="{Binding GetBuyDocsCommand}" />
+            <Button Text="Show Documents" Command="{Binding ShowBuyDocumentsCommand}" />
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

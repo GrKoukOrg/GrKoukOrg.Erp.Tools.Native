@@ -24,14 +24,15 @@
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
 		<!-- Display name -->
-		<ApplicationTitle>GrKoukOrg.Erp.Tools.Native</ApplicationTitle>
+		<ApplicationTitle>GrKoukOrg Erp Tools</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.grkoukorg.erp.tools.native</ApplicationId>
+		<ApplicationId>com.grkoukorg.erp.tools-native</ApplicationId>
+		<PackageId>com.grkoukorg.erp.tools-native</PackageId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-		<ApplicationVersion>1</ApplicationVersion>
+<!--		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>-->
+<!--		<ApplicationVersion>1</ApplicationVersion>-->
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -42,6 +43,9 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<AssemblyVersion>1.0.1.1</AssemblyVersion>
+		<FileVersion>1.0.1.1 </FileVersion>
+		<NeutralLanguage>en</NeutralLanguage>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -63,16 +67,33 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
-		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1"/> 
+		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.2" />
 		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.10" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.1" />
+		<PackageReference Include="Syncfusion.Maui.Core" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.ListView" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.TabView" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.Inputs" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.DataGrid" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.Calendar" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.ProgressBar" Version="28.1.38"/>
+		<PackageReference Include="Syncfusion.Maui.Picker" Version="28.1.38"/>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.4.0" />
+		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0"/>
 	</ItemGroup>
-	
+<!--	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0-ios'">-->
+<!--		<OutputPath>bin\$(Configuration)\net9.0-ios\</OutputPath>-->
+<!--		<IntermediateOutputPath>obj\$(Configuration)\net9.0-ios\</IntermediateOutputPath>-->
+<!--		<CodesignEntitlements>Entitlements.plist</CodesignEntitlements>-->
+<!--	</PropertyGroup>-->
+
+
 </Project>

@@ -1,6 +1,10 @@
 ﻿using CommunityToolkit.Maui;
+using GrKoukOrg.Erp.Tools.Native.Models;
 using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
+using ZXing.Net.Maui.Controls;
+using ErpCashDiaryListPageModel = GrKoukOrg.Erp.Tools.Native.PageModels.ErpCashDiaryListPageModel;
 
 namespace GrKoukOrg.Erp.Tools.Native
 {
@@ -12,7 +16,10 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                
+                .UseBarcodeReader()
                 .ConfigureSyncfusionToolkit()
+                .ConfigureSyncfusionCore()
                 .ConfigureMauiHandlers(handlers =>
                 {
                 })
@@ -26,22 +33,47 @@ namespace GrKoukOrg.Erp.Tools.Native
 
 #if DEBUG
     		builder.Logging.AddDebug();
+            builder.Logging.SetMinimumLevel(LogLevel.Debug);
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
-
-            builder.Services.AddSingleton<ProjectRepository>();
-            builder.Services.AddSingleton<TaskRepository>();
-            builder.Services.AddSingleton<CategoryRepository>();
-            builder.Services.AddSingleton<TagRepository>();
+           
+            
+           
+            builder.Services.AddSingleton<LocalItemsRepo>();
+           
+            builder.Services.AddSingleton<LocalBuyDocumentsRepo>();
+            builder.Services.AddSingleton<LocalBuyDocLinesRepo>();
+            builder.Services.AddSingleton<LocalSuppliersRepo>();
+            builder.Services.AddSingleton<LocalSaleDocumentsRepo>();
+            builder.Services.AddSingleton<LocalSalesDocLinesRepo>();
+            builder.Services.AddSingleton<LocalCustomerRepo>();
+            builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
+            builder.Services.AddSingleton<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
+            builder.Services.AddSingleton<ILocalCashDiaryRepo<CashDiaryItemDto>, LocalCashDiaryTestRepo>();
+            builder.Services.AddSingleton<ApiService>();
             builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
             builder.Services.AddSingleton<MainPageModel>();
-            builder.Services.AddSingleton<ProjectListPageModel>();
-            builder.Services.AddSingleton<ManageMetaPageModel>();
-
-            builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
-            builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
-
+         
+            builder.Services.AddSingleton<SettingsPageModel>();
+            builder.Services.AddSingleton<INavigationParameterService, NavigationParameterService>();
+            
+            builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
+            builder.Services.AddTransientWithShellRoute<SyncItemsPage,SyncItemsPageModel>("syncitems");
+            builder.Services.AddTransientWithShellRoute<ItemDetailsPage, ItemDetailsPageModel>("itemdetails");
+            builder.Services.AddTransientWithShellRoute<ErpCashDiaryListPage, ErpCashDiaryListPageModel>("erpcashdiarylist");
+            builder.Services.AddTransientWithShellRoute<ItemBuyDocListPage, ItemBuyDocListPageModel>("itembuylist");
+            builder.Services.AddTransientWithShellRoute<BusinessBuyDocumentsListPage, BusinessBuyDocumentsListPageModel>("Businessbuydoclist");
+            builder.Services.AddTransientWithShellRoute<SyncToErpPage, SyncToErpPageModel>("synctoerp");
+            builder.Services.AddTransientWithShellRoute<BusBuyDocListSyncPage, BusBuyDocListSyncPageModel>("busbuydoclistsync");
+            builder.Services.AddTransientWithShellRoute<SyncSuppliersPage, SyncSuppliersPageModel>("syncSuppliers");
+            
+            builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
+            {
+                var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();
+                var apiUrl = settingsDataService.GetBusinessApiUrl();
+                client.BaseAddress = new Uri(apiUrl);
+            });
             return builder.Build();
         }
     }
