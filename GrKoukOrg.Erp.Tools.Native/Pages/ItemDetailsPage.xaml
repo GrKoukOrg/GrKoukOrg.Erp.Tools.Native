@@ -35,7 +35,7 @@
             <Setter Property="MinimumWidthRequest" Value="44" />
 
             <!-- <Setter Property="BackgroundColor" Value="Black" /> -->
-            <Setter Property="TextColor" Value="Black" />
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
         </Style>
 
     </ContentPage.Resources>
