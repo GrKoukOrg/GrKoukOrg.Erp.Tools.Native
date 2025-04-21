@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using Font = Microsoft.Maui.Font;
+using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
 
 namespace GrKoukOrg.Erp.Tools.Native
 {
@@ -44,9 +45,9 @@ namespace GrKoukOrg.Erp.Tools.Native
             await toast.Show(cts.Token);
         }
 
-        private void SfSegmentedControl_SelectionChanged(object sender, Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
+        private void SfSegmentedControl_SelectionChanged(object? sender, SelectionChangedEventArgs selectionChangedEventArgs)
         {
-            Application.Current!.UserAppTheme = e.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark;
+            Application.Current!.UserAppTheme = selectionChangedEventArgs.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark;
         }
     }
 }
