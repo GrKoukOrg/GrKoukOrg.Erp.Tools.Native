@@ -29,8 +29,11 @@ public class ErpSynchronizationResponse<T>
 }
 public class ErpCheckDocumentResponse
 {
-    [JsonPropertyName("canInsert")] 
-    public bool CanInsert { get; set; } = false;
+    [JsonPropertyName("isSynced")] 
+    public bool IsSynced { get; set; } = false;
+
+    [JsonPropertyName("canSync")] 
+    public bool CanSync { get; set; } = false;
     [JsonPropertyName("message")]
     public string Message { get; set; }=string.Empty;
     [JsonPropertyName("documentId")]

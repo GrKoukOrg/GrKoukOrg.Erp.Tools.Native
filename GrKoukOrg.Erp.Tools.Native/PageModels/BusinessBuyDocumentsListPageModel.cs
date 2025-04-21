@@ -64,6 +64,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     SupplierId = doc.SupplierId,
                     SupplierName = doc.SupplierName,
                     TransDate = doc.TransDate,
+                    IsSynced = false,
+                    CanSync = false,
                     BuyDocLines = doc.BuyDocLines.Select(line => new BuyDocLineDto
                     {
                         Id = line.Id,
@@ -163,13 +165,24 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
                 };
                 var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+                if (!result.IsSuccessStatusCode)
+                {
+                    var errorContent = await result.Content.ReadAsStringAsync();
+                    if (targetItem != null)
+                    {
+                        UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}");
+                    }
+                    return;
+                }
                 var jsonContent = await result.Content.ReadAsStringAsync();
                 var erpResponse = JsonSerializer.Deserialize<ErpCheckDocumentResponse>(jsonContent);
 
                 var stMessage = erpResponse.Message;
+                var isSynced = erpResponse.IsSynced;
+                var canSync = erpResponse.CanSync;
                 if (targetItem != null)
                 {
-                    UpdateMessageToItem(targetItem, stMessage);
+                    UpdateMessageToItem(targetItem, stMessage, isSynced, canSync);
                 }
 
             }
@@ -254,7 +267,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         }
     }
 
-    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message )
+    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message,bool isSynced =false, bool canSync=false )
     {
         var updatedDocument = new BusinessBuyDocUpdateItem
         {
@@ -271,6 +284,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             TotalAmount = item.TotalAmount,
             BuyDocLines = item.BuyDocLines,
             Message = message
+            ,IsSynced = isSynced
+            ,CanSync = canSync
         };
 
         // Find the index of the old item and replace it

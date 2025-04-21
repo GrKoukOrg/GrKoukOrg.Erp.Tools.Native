@@ -32,4 +32,8 @@ public class BusinessBuyDocUpdateItem
     public List<BuyDocLineDto> BuyDocLines { get; set; } = new List<BuyDocLineDto>();
     [JsonPropertyName("message")]
     public string Message { get; set; } = "";
+    [JsonPropertyName("isSynced")]
+    public bool IsSynced { get; set; }
+    [JsonPropertyName("canSync")]
+    public bool CanSync { get; set; }
 }
