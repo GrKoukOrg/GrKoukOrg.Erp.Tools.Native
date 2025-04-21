@@ -16,30 +16,30 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private readonly INavigationParameterService _navParameterService;
     private readonly ISettingsDataService _settingsDataService;
     private readonly ApiService _apiService;
-    private readonly ModalErrorHandler _errorHandler;
+   // private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
-    [ObservableProperty] private bool _isBusy = false;
+    [ObservableProperty] private bool _isBusy;
     [ObservableProperty] 
     [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
-    private bool _isCheckingStatus = false;
+    private bool _isCheckingStatus;
     [ObservableProperty] 
     [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
-    private bool _canCheckDocuments = false;
-    [ObservableProperty] private int _checkedItems = 0;
-    [ObservableProperty] private int _totalItems = 0;
+    private bool _canCheckDocuments;
+    [ObservableProperty] private int _checkedItems;
+    [ObservableProperty] private int _totalItems;
     private CancellationTokenSource _cancellationTokenSource;
 
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
         , INavigationParameterService navParameterService,
         ISettingsDataService settingsDataService,
-        ApiService apiService
-        , ModalErrorHandler errorHandler)
+        ApiService apiService)
+       // , ModalErrorHandler errorHandler)
     {
         _logger = logger;
         _navParameterService = navParameterService;
         _settingsDataService = settingsDataService;
         _apiService = apiService;
-        _errorHandler = errorHandler;
+       // _errorHandler = errorHandler;
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
 
@@ -64,7 +64,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     SupplierId = doc.SupplierId,
                     SupplierName = doc.SupplierName,
                     TransDate = doc.TransDate,
-                    BuyDocLines = doc.BuyDocLines?.Select(line => new BuyDocLineDto
+                    BuyDocLines = doc.BuyDocLines.Select(line => new BuyDocLineDto
                     {
                         Id = line.Id,
                         BuyDocId = line.BuyDocId,
@@ -81,7 +81,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                         LineNetAmount = line.LineNetAmount,
                         LineVatAmount = line.LineVatAmount,
                         LineTotalAmount = line.LineTotalAmount,
-                    }).ToList() ?? new List<BuyDocLineDto>(),
+                    }).ToList() 
                 }
             ).ToList();
             
