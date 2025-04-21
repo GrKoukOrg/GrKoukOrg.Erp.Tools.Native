@@ -6,7 +6,7 @@ namespace GrKoukOrg.Erp.Tools.Native
     {
         public App()
         {
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzY2OTAwM0AzMjM4MmUzMDJlMzBpV0RjOFR3VzhPL0RFSU8xT1lIVjJFVktHR0k1Y3M1ZUYxOVNyNTZMTldFPQ==");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzgyNDk4M0AzMjM5MmUzMDJlMzAzYjMyMzkzYmJTMlEvMHNQUzVma2FMMnZrakpidFdjcFpVRlBJWVhpU2xxS2wrRUJ4Z0k9");
             InitializeComponent();
             var culture = new CultureInfo("el-GR");
             Thread.CurrentThread.CurrentCulture = culture;
