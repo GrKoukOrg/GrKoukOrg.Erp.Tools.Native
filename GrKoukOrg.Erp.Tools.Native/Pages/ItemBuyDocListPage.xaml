@@ -84,12 +84,13 @@
                         <grd:DataGridNumericColumn HeaderText="Id" MappingName="Id"  Visible="False"/>
                         <grd:DataGridDateColumn HeaderText="Ημ/νία" MappingName="TransDate"/>
                         <grd:DataGridTextColumn HeaderText="Παραστατικό" MappingName="BuyDocDefName" />
+                        <grd:DataGridTextColumn HeaderText="Ref Number" MappingName="RefNumber" />
                         <grd:DataGridTextColumn HeaderText="Προμηθευτής" MappingName="SupplierName" />
                         
                         <grd:DataGridNumericColumn HeaderText="Ποσότητα" MappingName="UnitQty"/> 
                         <grd:DataGridTextColumn HeaderText="TM" MappingName="UnitPrice" Format="C2"/>
-                        <grd:DataGridTextColumn HeaderText="TMF" MappingName="UnitFinalPrice" Format="C2"/>
-                        <grd:DataGridTextColumn HeaderText="TMF1" MappingName="UnitFinalPrice2" Format="C2"/>
+                        <grd:DataGridTextColumn HeaderText="Final Price(Net)" MappingName="UnitFinalPriceNet" Format="C2"/>
+                        <grd:DataGridTextColumn HeaderText="Final Price(Brut)" MappingName="UnitFinalPriceBrut" Format="C2"/>
                         <grd:DataGridNumericColumn HeaderText="Amount" MappingName="LineTotalAmount" Format="C2"/>
                     </grd:SfDataGrid.Columns>
                 </grd:SfDataGrid>    

@@ -46,9 +46,17 @@ public partial class ItemBuyDocListPageModel : ObservableObject, IQueryAttributa
     }
 
     [RelayCommand]
-    public async void DateSelected(DateTime selectedDate)
+    private async Task DateSelected(DateTime selectedDate)
     {
-        LoadData(_itemId).FireAndForgetSafeAsync(_errorHandler);
+        try
+        {
+            await LoadData(_itemId);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error in DateSelected");
+            await AppShell.DisplayToastAsync($"Error in DateSelected: {e.Message}");
+        }
     }
     private async Task LoadData(int itemId)
     {

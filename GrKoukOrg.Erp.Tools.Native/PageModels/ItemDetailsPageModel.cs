@@ -23,12 +23,15 @@ public partial class ItemDetailsPageModel : ObservableObject
     [ObservableProperty] private ItemListDto _selectedItem;
     [ObservableProperty] private string _searchText;
     [ObservableProperty] private ICollection<SearchItem> _searchItems;
-    [ObservableProperty] private ItemStatisticsDto _itemStatistics=new ItemStatisticsDto();
+    [ObservableProperty] private ItemStatisticsDto _itemStatistics = new ItemStatisticsDto();
+    [ObservableProperty] private decimal _markupPercentage = 0;
+    [ObservableProperty] private decimal _markupAmount = 0;
+
     public ItemDetailsPageModel(LocalItemsRepo localItemsRepo, LocalBuyDocumentsRepo localBuyDocumentsRepo,
         LocalBuyDocLinesRepo localBuyDocLinesRepo
-        ,LocalSaleDocumentsRepo localSaleDocumentsRepo
-        ,LocalSalesDocLinesRepo localSalesDocLinesRepo
-        )
+        , LocalSaleDocumentsRepo localSaleDocumentsRepo
+        , LocalSalesDocLinesRepo localSalesDocLinesRepo
+    )
     {
         _localItemsRepo = localItemsRepo;
         _localBuyDocumentsRepo = localBuyDocumentsRepo;
@@ -39,6 +42,7 @@ public partial class ItemDetailsPageModel : ObservableObject
 
     private async Task CalculateItemStatistics(int itemId)
     {
+        var item = await _localItemsRepo.GetAsync(itemId);
         var buyDocuments = await _localBuyDocumentsRepo.ListBuyDocsAsync();
         var buyDocLines = await _localBuyDocLinesRepo.ListBuyDocLinesAsync();
         var saleDocuments = await _localSaleDocumentsRepo.ListSaleDocsAsync();
@@ -49,24 +53,27 @@ public partial class ItemDetailsPageModel : ObservableObject
                 doc => doc.Id,
                 line => line.BuyDocId,
                 (doc, line) => new
-                    { doc.BuyDocDefId, line.UnitQty,
-                        UnitTotalAmount = line.LineTotalAmount,
-                        UnitDiscountAmount = line.LineDiscountAmount, line.ItemId }
+                {
+                    doc.BuyDocDefId, line.UnitQty, UnitTotalAmount = line.LineTotalAmount,
+                    UnitDiscountAmount = line.LineDiscountAmount, line.ItemId
+                }
             )
             .Where(x => x.ItemId == itemId);
-        
+
         var itemSalesData = saleDocuments
             .Join(
                 saleDocLines,
                 doc => doc.Id,
                 line => line.SaleDocId,
                 (doc, line) => new
-                    { doc.SaleDocDefId, line.UnitQty,
-                        UnitTotalAmount = line.LineTotalAmount,
-                        UnitDiscountAmount = line.LineDiscountAmount, line.ItemId }
+                {
+                    doc.SaleDocDefId, line.UnitQty,
+                    UnitTotalAmount = line.LineTotalAmount,
+                    UnitDiscountAmount = line.LineDiscountAmount, line.ItemId
+                }
             )
             .Where(x => x.ItemId == itemId);
-        
+
         var totalQuantityPurchased = itemPurchasesData
             .Sum(x =>
                 x.BuyDocDefId == 9 // Purchase
@@ -78,8 +85,8 @@ public partial class ItemDetailsPageModel : ObservableObject
             .Sum(x =>
                 x.SaleDocDefId == 54 // Sale
                     ? x.UnitQty
-                    :  0);
-        
+                    : 0);
+
         var totalPurchaseCost = itemPurchasesData
             .Sum(x =>
                 x.BuyDocDefId == 9 // Purchase
@@ -92,27 +99,31 @@ public partial class ItemDetailsPageModel : ObservableObject
                 x.SaleDocDefId == 54 // Sale
                     ? x.UnitTotalAmount
                     : 0);
-       
+
 
         var totalDiscountCost = itemPurchasesData
             .Where(x => x.BuyDocDefId == 14) // Discounts only
             .Sum(x => x.UnitDiscountAmount);
-       
+
         decimal meanPrice = totalQuantityPurchased > 0
             ? (totalPurchaseCost - totalDiscountCost) / totalQuantityPurchased
             : 0;
 
         decimal meanSalesPrice = totalQuantitySold > 0 ? totalSaleIncome / totalQuantitySold : 0;
-            
+        var salePriceBrut = item?.TimiPolisisLianFpa;
+        decimal markupPercentage = (decimal)(salePriceBrut > 0 ? (salePriceBrut - meanPrice) / meanPrice * 100 : 0);
+        decimal markupAmountBrut = (decimal)(salePriceBrut > 0 ? salePriceBrut - meanPrice : 0);
+
         ItemStatistics = new ItemStatisticsDto()
         {
             ItemId = itemId,
             MeanPrice = meanPrice,
             TotalQuantityInWarehouse = totalQuantityPurchased,
             MeanSalesPrice = meanSalesPrice,
+            MarkUpAmountNet = markupAmountBrut,
+            MarkUpPercentage = markupPercentage,
             TotalQuantitySold = totalQuantitySold,
         };
-        
     }
 
     [RelayCommand]
@@ -130,11 +141,9 @@ public partial class ItemDetailsPageModel : ObservableObject
                 }
                 catch (Exception e)
                 {
-                    await AppShell.DisplayToastAsync($"Error: {e.Message}");   
+                    await AppShell.DisplayToastAsync($"Error: {e.Message}");
                 }
-                    
             }
-            
         }
     }
 
@@ -143,10 +152,10 @@ public partial class ItemDetailsPageModel : ObservableObject
     {
         if (SelectedItem is not null)
         {
-            await Shell.Current.GoToAsync($"itembuylist?itemid={SelectedItem.Id}");    
+            await Shell.Current.GoToAsync($"itembuylist?itemid={SelectedItem.Id}");
         }
-        
     }
+
     [RelayCommand]
     private async Task ScanBarcode()
     {
