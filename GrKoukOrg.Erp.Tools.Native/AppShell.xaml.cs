@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Core.Views;
+using System.Threading.Channels;
 using Font = Microsoft.Maui.Font;
 using SelectionChangedEventArgs = Syncfusion.Maui.Buttons.SelectionChangedEventArgs;
 
@@ -36,8 +38,21 @@ namespace GrKoukOrg.Erp.Tools.Native
         {
             // Toast is currently not working in MCT on Windows
             // I commented it out for now.
-            // if (OperatingSystem.IsWindows())
-            //     return;
+            if (OperatingSystem.IsWindows())
+            {
+                var currentPage = Application.Current?.MainPage;
+
+                if (currentPage != null)
+                {
+                    await currentPage.DisplayAlert("Alert", message, "Ok");
+                }
+                else
+                {
+                    Console.WriteLine("No active page found to display the alert.");
+                }
+                return;
+            }
+                 
 
             var toast = Toast.Make(message, textSize: 18);
 

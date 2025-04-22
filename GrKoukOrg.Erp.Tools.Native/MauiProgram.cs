@@ -39,23 +39,23 @@ namespace GrKoukOrg.Erp.Tools.Native
            
             
            
-            builder.Services.AddSingleton<LocalItemsRepo>();
+            builder.Services.AddScoped<LocalItemsRepo>();
            
-            builder.Services.AddSingleton<LocalBuyDocumentsRepo>();
-            builder.Services.AddSingleton<LocalBuyDocLinesRepo>();
-            builder.Services.AddSingleton<LocalSuppliersRepo>();
-            builder.Services.AddSingleton<LocalSaleDocumentsRepo>();
-            builder.Services.AddSingleton<LocalSalesDocLinesRepo>();
-            builder.Services.AddSingleton<LocalCustomerRepo>();
-            builder.Services.AddSingleton<ISettingsDataService, SettingsMemoryDataService>();
-            builder.Services.AddSingleton<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
-            builder.Services.AddSingleton<ILocalCashDiaryRepo<CashDiaryItemDto>, LocalCashDiaryTestRepo>();
-            builder.Services.AddSingleton<ApiService>();
+            builder.Services.AddScoped<LocalBuyDocumentsRepo>();
+            builder.Services.AddScoped<LocalBuyDocLinesRepo>();
+            builder.Services.AddScoped<LocalSuppliersRepo>();
+            builder.Services.AddScoped<LocalSaleDocumentsRepo>();
+            builder.Services.AddScoped<LocalSalesDocLinesRepo>();
+            builder.Services.AddScoped<LocalCustomerRepo>();
+            builder.Services.AddScoped<ISettingsDataService, SettingsMemoryDataService>();
+            builder.Services.AddScoped<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
+            builder.Services.AddScoped<ILocalCashDiaryRepo<CashDiaryItemDto>, LocalCashDiaryTestRepo>();
+            builder.Services.AddScoped<ApiService>();
             builder.Services.AddSingleton<SeedDataService>();
-            builder.Services.AddSingleton<ModalErrorHandler>();
-            builder.Services.AddSingleton<MainPageModel>();
+            builder.Services.AddScoped<ModalErrorHandler>();
+            builder.Services.AddScoped<MainPageModel>();
          
-            builder.Services.AddSingleton<SettingsPageModel>();
+            builder.Services.AddScoped<SettingsPageModel>();
             builder.Services.AddSingleton<INavigationParameterService, NavigationParameterService>();
             
             builder.Services.AddTransientWithShellRoute<SettingsPage, SettingsPageModel>("settings");
