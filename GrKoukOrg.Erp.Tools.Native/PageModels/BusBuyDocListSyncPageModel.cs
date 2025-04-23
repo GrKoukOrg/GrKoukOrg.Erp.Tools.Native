@@ -23,8 +23,8 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
     [ObservableProperty] private string _statusMessage = string.Empty;
     [ObservableProperty] private int _buyDocCount = 0;
     [ObservableProperty] private int _saleDocCount = 0;
-    [ObservableProperty] private DateTime _fromDate = DateTime.Today;
-    [ObservableProperty] private DateTime _toDate = DateTime.Today;
+    [ObservableProperty] private DateTime _fromDate;
+    [ObservableProperty] private DateTime _toDate;
     public ObservableCollection<LogEntry> LogEntries { get; } = new();
     [ObservableProperty] private int _lastLogEntryIndex;
     
@@ -53,6 +53,9 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
     {
         IsProgressBarVisible = false;
         IsWaitingForResponse = false;
+        ToDate=DateTime.Today;
+        FromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
     }
     [RelayCommand]
     private async Task Login()

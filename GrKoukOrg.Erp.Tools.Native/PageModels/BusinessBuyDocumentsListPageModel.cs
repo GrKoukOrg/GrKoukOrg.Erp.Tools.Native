@@ -44,11 +44,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
 
-  
-    [RelayCommand]
-    private async Task Appearing()
+    private async Task LoadDocuments()
     {
-        IsBusy = true;
         Items = await Task.Run(() =>
         {
             List<BusinessBuyDocUpdateItem> ritems = _navParameterService.BuyDocuments.Select(doc =>
@@ -84,19 +81,32 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                         LineNetAmount = line.LineNetAmount,
                         LineVatAmount = line.LineVatAmount,
                         LineTotalAmount = line.LineTotalAmount,
-                    }).ToList() 
+                    }).ToList()
                 }
             ).ToList();
-            
+
             return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
         });
-        await Task.Delay(50);
-        TotalItems = Items.Count;
-        IsBusy = false;
-        
-        // await StartStatusCheck();
+    }
+  
+    [RelayCommand]
+    private async Task Appearing()
+    {
+        IsBusy = true;
+        IsCheckingStatus = true;
+
     }
 
+    [RelayCommand]
+    private async Task NavigatedTo()
+    {
+        //await Task.Delay(50);
+        await LoadDocuments();
+        TotalItems = Items.Count;
+        IsBusy = false;
+        IsCheckingStatus = false;
+
+    }
     partial void OnTotalItemsChanged(int value)
     {
         CanCheckDocuments = value > 0;
@@ -292,20 +302,20 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             ,CanSync = canSync
         };
 
-        // Find the index of the old item and replace it
-        // int index = Items.IndexOf(item);
-        // if (index >= 0)
-        // {
-        //     Items[index] = updatedDocument;
-        // }
-        MainThread.BeginInvokeOnMainThread(() =>
+        //Find the index of the old item and replace it
+         int index = Items.IndexOf(item);
+        if (index >= 0)
         {
-            int index = Items.IndexOf(item);
-            if (index >= 0)
-            {
-                Items[index] = updatedDocument;
-            }
-        });
+            Items[index] = updatedDocument;
+        }
+        //MainThread.BeginInvokeOnMainThread(() =>
+        //{
+        //    int index = Items.IndexOf(item);
+        //    if (index >= 0)
+        //    {
+        //        Items[index] = updatedDocument;
+        //    }
+        //});
        
 
     }

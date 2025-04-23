@@ -14,6 +14,9 @@
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
             Command="{Binding AppearingCommand}" />
+        <toolkit:EventToCommandBehavior
+            EventName="NavigatedTo"
+            Command="{Binding NavigatedToCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.Content>
 
@@ -101,19 +104,14 @@
                             </Border>
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
-                    <core:SfBusyIndicator Grid.Row="0" Grid.Column="2" 
-                                          IsRunning="{Binding IsBusy}"
-                                          IsVisible="{Binding IsBusy}"
-                                          VerticalOptions="Center"
-                                          HorizontalOptions="Center"
-                                          AnimationType="CircularMaterial" />
-                    <!-- <ActivityIndicator IsRunning="{Binding IsBusy}" -->
-                    <!--                    IsVisible="{Binding IsBusy}" -->
-                    <!--                    HeightRequest="150" -->
-                    <!--                    WidthRequest="150" -->
-                    <!--                    Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" -->
-                    <!--                    VerticalOptions="Center" -->
-                    <!--                    HorizontalOptions="Center" /> -->
+                   
+                    <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                      IsVisible="{Binding IsBusy}"
+                                       HeightRequest="150"
+                                       WidthRequest="150"
+                                       Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center" />
 
                 </VerticalStackLayout>
             </Grid>
