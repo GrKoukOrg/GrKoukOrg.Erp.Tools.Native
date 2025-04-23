@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
 using GrKoukOrg.Erp.Tools.Native.Shared;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
@@ -89,6 +90,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             
             return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
         });
+        await Task.Delay(50);
         TotalItems = Items.Count;
         IsBusy = false;
         
@@ -214,7 +216,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
         //Create the payload to send to Erp
-
+        IsBusy = true;
         UpdateMessageToItem(document,"Sending to Erp");
         
         var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
@@ -265,6 +267,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         {
             LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem);
         }
+
+        IsBusy = false;
     }
 
     private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message,bool isSynced =false, bool canSync=false )
@@ -289,11 +293,21 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         };
 
         // Find the index of the old item and replace it
-        int index = Items.IndexOf(item);
-        if (index >= 0)
+        // int index = Items.IndexOf(item);
+        // if (index >= 0)
+        // {
+        //     Items[index] = updatedDocument;
+        // }
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            Items[index] = updatedDocument;
-        }
+            int index = Items.IndexOf(item);
+            if (index >= 0)
+            {
+                Items[index] = updatedDocument;
+            }
+        });
+       
+
     }
     private void LogAndHandleException(Exception ex, string customMessage,BusinessBuyDocUpdateItem targetItem)
     {
