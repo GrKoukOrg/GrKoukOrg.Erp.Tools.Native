@@ -96,8 +96,6 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private async Task Appearing()
     {
         IsBusy = true;
-        IsCheckingStatus = true;
-
     }
 
     [RelayCommand]
@@ -107,8 +105,6 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         await LoadDocuments();
         TotalItems = Items.Count;
         IsBusy = false;
-        IsCheckingStatus = false;
-
     }
     partial void OnTotalItemsChanged(int value)
     {
