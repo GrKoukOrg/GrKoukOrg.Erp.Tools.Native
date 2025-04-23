@@ -92,7 +92,14 @@
                                                 IsEnabled="{Binding CanSync}"
                                                 Command="{Binding Path=SendToErpCommand, Source={RelativeSource AncestorType={x:Type pageModels:BusinessBuyDocumentsListPageModel}},x:DataType=pageModels:BusinessBuyDocumentsListPageModel}"
                                                 CommandParameter="{Binding .}" />
-                                        
+                                        <ActivityIndicator IsRunning="{Binding IsSendingToErp}"
+                                                           IsVisible="{Binding IsSendingToErp}"
+                                                           HeightRequest="50"
+                                                           WidthRequest="50"
+                                                           Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                                           
+                                                           Grid.Row="0" Grid.Column="1"
+                                                           />
                                        
                                         <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                                                Text="{Binding Message}" TextColor="Red" FontAttributes="Italic" />
@@ -107,8 +114,8 @@
                    
                     <ActivityIndicator IsRunning="{Binding IsBusy}"
                                       IsVisible="{Binding IsBusy}"
-                                       HeightRequest="150"
-                                       WidthRequest="150"
+                                       HeightRequest="100"
+                                       WidthRequest="100"
                                        Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
                                        VerticalOptions="Center"
                                        HorizontalOptions="Center" />

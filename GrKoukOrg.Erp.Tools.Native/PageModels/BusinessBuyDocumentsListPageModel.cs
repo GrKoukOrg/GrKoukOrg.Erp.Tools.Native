@@ -23,6 +23,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [ObservableProperty] 
     [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
     private bool _isCheckingStatus;
+    // [ObservableProperty]
+    // private bool _isSendingToErp;
     [ObservableProperty] 
     [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
     private bool _canCheckDocuments;
@@ -64,6 +66,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     TransDate = doc.TransDate,
                     IsSynced = false,
                     CanSync = false,
+                    IsSendingToErp = false,
                     BuyDocLines = doc.BuyDocLines.Select(line => new BuyDocLineDto
                     {
                         Id = line.Id,
@@ -226,8 +229,8 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
         //Create the payload to send to Erp
-        IsBusy = true;
-        UpdateMessageToItem(document,"Sending to Erp");
+        //IsBusy = true;
+        UpdateMessageToItem(document,"Sending to Erp",isSendingToErp:true);;
         
         var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
         var companyCode = _settingsDataService.GetBusinessCompanyCode();
@@ -259,7 +262,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 var errorContent = await result.Content.ReadAsStringAsync();
                 if (targetItem != null)
                 {
-                    UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}");
+                    UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}",isSendingToErp:false);;
                 }
                 return;
             }
@@ -269,19 +272,19 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             var stMessage = erpResponse.Message;
             if (targetItem != null)
             {
-                UpdateMessageToItem(targetItem, stMessage);
+                UpdateMessageToItem(targetItem, stMessage,isSendingToErp:false);
             }
 
         }
         catch (Exception ex)
         {
-            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem);
+            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem,false);
         }
 
-        IsBusy = false;
+        //IsBusy = false;
     }
 
-    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message,bool isSynced =false, bool canSync=false )
+    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message,bool isSynced =false, bool canSync=false,bool isSendingToErp=false )
     {
         var updatedDocument = new BusinessBuyDocUpdateItem
         {
@@ -300,6 +303,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             Message = message
             ,IsSynced = isSynced
             ,CanSync = canSync
+            ,IsSendingToErp = isSendingToErp
         };
 
         //Find the index of the old item and replace it
@@ -319,7 +323,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
        
 
     }
-    private void LogAndHandleException(Exception ex, string customMessage,BusinessBuyDocUpdateItem targetItem)
+    private void LogAndHandleException(Exception ex, string customMessage,BusinessBuyDocUpdateItem targetItem,bool isSendingToErp=false)
     {
         string errorMessage = ex switch
         {
@@ -336,7 +340,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         };
         if (targetItem is not null)
         {
-            UpdateMessageToItem(targetItem, errorMessage);
+            UpdateMessageToItem(targetItem, errorMessage,isSendingToErp:isSendingToErp);;
         }
         Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
 

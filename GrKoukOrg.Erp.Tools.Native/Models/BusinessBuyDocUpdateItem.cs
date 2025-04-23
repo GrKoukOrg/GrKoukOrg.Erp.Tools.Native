@@ -36,4 +36,6 @@ public class BusinessBuyDocUpdateItem
     public bool IsSynced { get; set; }
     [JsonPropertyName("canSync")]
     public bool CanSync { get; set; }
+    [JsonPropertyName("isSendingToErp")]
+    public bool IsSendingToErp { get; set; }
 }
