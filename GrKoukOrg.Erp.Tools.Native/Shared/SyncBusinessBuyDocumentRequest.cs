@@ -18,6 +18,9 @@ public class SyncBusinessBuyDocumentRequest
     
     [JsonPropertyName("supplierId")]
     public int SupplierId { get; set; }
+    [JsonPropertyName("supplierName")]
+    public string SupplierName { get; set; }
+    
     [JsonPropertyName("refNumber")]
     public int RefNumber { get; set; }
     [JsonPropertyName("netAmount")]

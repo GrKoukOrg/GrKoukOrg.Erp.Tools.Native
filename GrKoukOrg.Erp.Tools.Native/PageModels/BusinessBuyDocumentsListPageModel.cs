@@ -167,6 +167,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     NetAmount = item.NetAmount,
                     TransDate = item.TransDate,
                     SupplierId = item.SupplierId,
+                    SupplierName = item.SupplierName,
                     RefNumber = item.RefNumber,
                     PayedAmount = item.PayedAmount,
                     TotalAmount = item.TotalAmount
@@ -242,6 +243,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 BuyDocDefName = document.BuyDocDefName,
                 TransDate = document.TransDate,
                 SupplierId = document.SupplierId,
+                SupplierName = document.SupplierName,
                 RefNumber = document.RefNumber,
                 VatAmount = decimal.Abs(document.VatAmount),
                 NetAmount = decimal.Abs( document.NetAmount),
