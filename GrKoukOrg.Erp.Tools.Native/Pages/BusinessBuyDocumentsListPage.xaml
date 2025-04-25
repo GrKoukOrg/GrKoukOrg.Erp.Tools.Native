@@ -21,7 +21,7 @@
     <ContentPage.Content>
 
 
-        <ScrollView>
+        <ScrollView VerticalScrollBarVisibility="Always">
             <Grid Margin="{StaticResource LayoutPadding}" ColumnSpacing="5" RowSpacing="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
