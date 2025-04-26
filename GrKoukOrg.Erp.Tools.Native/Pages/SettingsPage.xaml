@@ -6,13 +6,19 @@
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              x:DataType="pageModels:SettingsPageModel"
+             x:Name="SettingsContentPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SettingsPage">
    
         <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Appearing"                
-            Command="{Binding AppearingCommand}" />
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference SettingsContentPage}
+            ,x:DataType=ContentPage}"
+            Command="{Binding AppearingCommand}"
+            />
+          
         </ContentPage.Behaviors>
+    <!-- Command="{Binding AppearingCommand}" /> -->
         <ContentPage.Resources>
             <Style x:Key="InvalidEntryStyle" TargetType="Entry">
                 <Setter Property="TextColor" Value="Red" />
