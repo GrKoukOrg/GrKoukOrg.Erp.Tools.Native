@@ -41,6 +41,7 @@ public partial class SettingsPageModel:ObservableObject
             await _settingsDataService.SetErpApiUrlAsync(ErpApiUrl);
              _settingsDataService.SetBusinessCompanyCode(CompanyCode);
             await AppShell.DisplayToastAsync("Settings saved");
+           // await AppShell.DisplaySnackbarAsync("Settings saved");
         }
         catch (Exception e)
         {
