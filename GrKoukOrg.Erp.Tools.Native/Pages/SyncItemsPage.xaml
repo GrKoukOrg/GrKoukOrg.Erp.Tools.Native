@@ -24,20 +24,23 @@
         </Style>
 
         <Style TargetType="Entry">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
             <Setter Property="BackgroundColor" Value="Transparent" />
-            <Setter Property="FontFamily" Value="OpenSansRegular"/>
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
             <Setter Property="FontSize" Value="{OnIdiom Phone=16, Tablet=20, Desktop=24}" />
-            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
-            <Setter Property="MinimumHeightRequest" Value="44"/>
-            <Setter Property="MinimumWidthRequest" Value="44"/>
+            <Setter Property="PlaceholderColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
             <Setter Property="VisualStateManager.VisualStateGroups">
                 <VisualStateGroupList>
                     <VisualStateGroup x:Name="CommonStates">
                         <VisualState x:Name="Normal" />
                         <VisualState x:Name="Disabled">
                             <VisualState.Setters>
-                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
                             </VisualState.Setters>
                         </VisualState>
                     </VisualStateGroup>
@@ -45,33 +48,31 @@
             </Setter>
         </Style>
         <Style TargetType="syncfusion:DataGridCell">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         </Style>
         <Style TargetType="syncfusion:DataGridHeaderCell">
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
             <Setter Property="FontAttributes" Value="Bold" />
         </Style>
     </ContentPage.Resources>
+    <ScrollView>
+        <Grid Padding="{StaticResource LayoutPadding}">
+            <!-- Main Content -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-    <Grid Padding="{StaticResource LayoutPadding}">
-        <!-- Main Content -->
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" x:Name="Column1" />
-                <ColumnDefinition Width="0" x:Name="Column2" />
-                <ColumnDefinition Width="0" x:Name="Column3" />
-            </Grid.ColumnDefinitions>
-
-           
-
-            <!-- Your Content -->
-            <ScrollView Grid.Row="0" Grid.ColumnSpan="3" Orientation="Both">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" x:Name="Column1" />
+                    <ColumnDefinition Width="0" x:Name="Column2" />
+                    <ColumnDefinition Width="0" x:Name="Column3" />
+                </Grid.ColumnDefinitions>
+                <!-- Your Content -->
                 <VerticalStackLayout>
                     <FlexLayout Direction="Column" Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <VerticalStackLayout>
@@ -86,22 +87,27 @@
                             <Label Text="{Binding SupplierCount}" HorizontalTextAlignment="Center" />
                             <Button Text="Get Suppliers" Command="{Binding GetSuppliersCommand}" />
                             <Button Text="Update Suppliers" Command="{Binding AddSuppliersToLocalDatabaseCommand}" />
-                            <Button Text="Delete Suppliers" Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}" />
+                            <Button Text="Delete Suppliers"
+                                    Command="{Binding DeleteAllSuppliersFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Buy Docs Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding BuyDocsCount}" HorizontalTextAlignment="Center" />
                             <Button Text="Get Buy Docs" Command="{Binding GetBuyDocsCommand}" />
                             <Button Text="Update Buy Docs" Command="{Binding AddBuyDocsToLocalDatabaseCommand}" />
-                            <Button Text="Delete Buy Docs" Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}" />
+                            <Button Text="Delete Buy Docs"
+                                    Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding BuyDocLinesCount}" HorizontalTextAlignment="Center" />
                             <Button Text="Get Buy Doc Lines" Command="{Binding GetBuyDocLinesCommand}" />
-                            <Button Text="Update Buy Doc Lines" Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}" />
-                            <Button Text="Delete Doc Lines" Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}" />
-                            <Button Text="Drop buy Doc Lines" Command="{Binding DropBuyDocLineTableFromLocalDatabaseCommand}" />
+                            <Button Text="Update Buy Doc Lines"
+                                    Command="{Binding AddBuyDocLinesToLocalDatabaseCommand}" />
+                            <Button Text="Delete Doc Lines"
+                                    Command="{Binding DeleteAllBuyDocLinesFromLocalDatabaseCommand}" />
+                            <Button Text="Drop buy Doc Lines"
+                                    Command="{Binding DropBuyDocLineTableFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                     </FlexLayout>
 
@@ -119,55 +125,61 @@
                             <Label Text="{Binding SaleDocsCount}" HorizontalTextAlignment="Center" />
                             <Button Text="Get Sale Docs" Command="{Binding GetSaleDocsCommand}" />
                             <Button Text="Update Sale Docs" Command="{Binding AddSaleDocsToLocalDatabaseCommand}" />
-                            <Button Text="Delete Sale Docs" Command="{Binding DeleteAllSaleDocumentsFromLocalDatabaseCommand}" />
+                            <Button Text="Delete Sale Docs"
+                                    Command="{Binding DeleteAllSaleDocumentsFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Sale Doc Lines Count" Padding="{StaticResource LayoutPadding}" />
                             <Label Text="{Binding SaleDocLinesCount}" HorizontalTextAlignment="Center" />
                             <Button Text="Get Sale Doc Lines" Command="{Binding GetSaleDocLinesCommand}" />
-                            <Button Text="Update Sale Doc Lines" Command="{Binding AddSaleDocLinesToLocalDatabaseCommand}" />
-                            <Button Text="Delete Sale Doc Lines" Command="{Binding DeleteAllSaleDocLinesFromLocalDatabaseCommand}" />
-                            <Button Text="Drop Doc Lines" Command="{Binding DropSaleDocLineTableFromLocalDatabaseCommand}" />
+                            <Button Text="Update Sale Doc Lines"
+                                    Command="{Binding AddSaleDocLinesToLocalDatabaseCommand}" />
+                            <Button Text="Delete Sale Doc Lines"
+                                    Command="{Binding DeleteAllSaleDocLinesFromLocalDatabaseCommand}" />
+                            <Button Text="Drop Doc Lines"
+                                    Command="{Binding DropSaleDocLineTableFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                     </FlexLayout>
                 </VerticalStackLayout>
-            </ScrollView>
 
-            <syncfusion:SfDataGrid x:Name="LogDataGrid"
-                                   Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
-                                   ItemsSource="{Binding LogEntries}"
-                                   AutoGenerateColumnsMode="None"
-                                   AllowResizingColumns="True"
-                                   VerticalScrollBarVisibility="Always">
-                <syncfusion:SfDataGrid.Columns>
-                    <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp" ColumnWidthMode="Auto" />
-                    <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message" ColumnWidthMode="Fill" />
-                </syncfusion:SfDataGrid.Columns>
-            </syncfusion:SfDataGrid>
 
-            <progressBar:SfLinearProgressBar x:Name="ProgressBar"
-                                             Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
-                                             Progress="{Binding OperationProgress}"
-                                             Minimum="0"
-                                             Maximum="{Binding ItemCount}"
-                                             IsVisible="{Binding IsProgressBarVisible}" />
+                <syncfusion:SfDataGrid x:Name="LogDataGrid"
+                                       Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
+                                       ItemsSource="{Binding LogEntries}"
+                                       AutoGenerateColumnsMode="None"
+                                       AllowResizingColumns="True"
+                                       VerticalScrollBarVisibility="Always">
+                    <syncfusion:SfDataGrid.Columns>
+                        <syncfusion:DataGridTextColumn HeaderText="Timestamp" MappingName="Timestamp"
+                                                       ColumnWidthMode="Auto" />
+                        <syncfusion:DataGridTextColumn HeaderText="Message" MappingName="Message"
+                                                       ColumnWidthMode="Fill" />
+                    </syncfusion:SfDataGrid.Columns>
+                </syncfusion:SfDataGrid>
+
+                <progressBar:SfLinearProgressBar x:Name="ProgressBar"
+                                                 Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2"
+                                                 Progress="{Binding OperationProgress}"
+                                                 Minimum="0"
+                                                 Maximum="{Binding ItemCount}"
+                                                 IsVisible="{Binding IsProgressBarVisible}" />
+            </Grid>
+
+            <!-- Busy Indicator Overlay -->
+            <Grid IsVisible="{Binding IsWaitingForResponse}" BackgroundColor="Black" Opacity="0.5">
+                <!-- Overlay -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <core:SfBusyIndicator
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    IsRunning="{Binding IsWaitingForResponse}"
+                    AnimationType="CircularMaterial"
+                    HeightRequest="100"
+                    WidthRequest="100" />
+            </Grid>
         </Grid>
-
-        <!-- Busy Indicator Overlay -->
-        <Grid IsVisible="{Binding IsWaitingForResponse}" BackgroundColor="Black" Opacity="0.5">
-            <!-- Overlay -->
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <core:SfBusyIndicator
-                HorizontalOptions="Center"
-                VerticalOptions="Center"
-                IsRunning="{Binding IsWaitingForResponse}"
-                AnimationType="CircularMaterial"
-                HeightRequest="100"
-                WidthRequest="100" />
-        </Grid>
-    </Grid>
-
+    </ScrollView>
 </ContentPage>
