@@ -5,6 +5,7 @@
              xmlns:progressBar="clr-namespace:Syncfusion.Maui.ProgressBar;assembly=Syncfusion.Maui.ProgressBar"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              x:DataType="pageModels:BusBuyDocListSyncPageModel"
+             x:Name="MyPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusBuyDocListSyncPage">
     <ContentPage.Resources>
         <Style x:Key="InvalidEntryStyle" TargetType="Entry">
@@ -47,8 +48,11 @@
     </ContentPage.Resources>
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            EventName="Appearing"
-            Command="{Binding AppearingCommand}" />
+            EventName="Appearing"                
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
+            Command="{Binding AppearingCommand}"
+        />
     </ContentPage.Behaviors>
     <Grid Padding="{StaticResource LayoutPadding}">
         <Grid.ColumnDefinitions>

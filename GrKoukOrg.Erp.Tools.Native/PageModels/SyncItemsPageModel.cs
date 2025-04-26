@@ -392,6 +392,13 @@ public partial class SyncItemsPageModel : ObservableObject
         AddLog($"Dropped table");
     }
     [RelayCommand]
+    private async Task DropBuyDocsTableFromLocalDatabase()
+    {
+        AddLog("Drop buydocuments table from local database");
+        var result = await _localBuyDocsRepo.DropBuyDocsTableAsync();
+        AddLog($"Dropped table");
+    }
+    [RelayCommand]
     private async Task DropSaleDocLineTableFromLocalDatabase()
     {
         AddLog("Drop saledoclines table from local database");

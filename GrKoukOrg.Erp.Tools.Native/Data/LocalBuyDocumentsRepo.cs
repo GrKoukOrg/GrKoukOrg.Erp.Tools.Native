@@ -36,7 +36,7 @@ public class LocalBuyDocumentsRepo
                 BuyDocDefName TEXT(200), -- Nullable (string?)
                 SupplierId INTEGER NOT NULL,
                 SupplierName TEXT(200), -- Nullable (string?)
-                RefNumber TEXT(20), -- Nullable (string?)
+                RefNumber INTEGER, 
                 NetAmount DECIMAL(18, 2) NOT NULL, -- Decimal type handled as NUMERIC or DECIMAL in SQLite.
                 VatAmount DECIMAL(18, 2) NOT NULL,
                 TotalAmount DECIMAL(18, 2) NOT NULL
@@ -92,7 +92,7 @@ public class LocalBuyDocumentsRepo
                         SupplierId = reader.GetInt32(4),
                         SupplierName =
                             reader.IsDBNull(5) ? string.Empty : reader.GetString(5), // Handle nullable string
-                        RefNumber = reader.IsDBNull(6) ? string.Empty : reader.GetString(6), // Handle nullable string
+                        RefNumber = reader.IsDBNull(6) ? 0: reader.GetInt32(6), // Handle nullable string
                         NetAmount = reader.GetDecimal(7),
                         VatAmount = reader.GetDecimal(8),
                         TotalAmount = reader.GetDecimal(9)
@@ -159,7 +159,7 @@ public class LocalBuyDocumentsRepo
                     BuyDocDefName = reader.IsDBNull(3) ? null : reader.GetString(3),
                     SupplierId = reader.GetInt32(4),
                     SupplierName = reader.IsDBNull(5) ? null : reader.GetString(5),
-                    RefNumber = reader.IsDBNull(6) ? null : reader.GetString(6),
+                    RefNumber = reader.IsDBNull(6) ? 0 : reader.GetInt32(6),
                     NetAmount = reader.GetDecimal(7),
                     VatAmount = reader.GetDecimal(8),
                     TotalAmount = reader.GetDecimal(9)
@@ -196,7 +196,7 @@ public class LocalBuyDocumentsRepo
         command.Parameters.AddWithValue("@buyDocDefName", buyDoc.BuyDocDefName ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@supplierId", buyDoc.SupplierId);
         command.Parameters.AddWithValue("@supplierName", buyDoc.SupplierName ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("@refNumber", buyDoc.RefNumber ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@refNumber", buyDoc.RefNumber );
         command.Parameters.AddWithValue("@netAmount", buyDoc.NetAmount);
         command.Parameters.AddWithValue("@vatAmount", buyDoc.VatAmount);
         command.Parameters.AddWithValue("@totalAmount", buyDoc.TotalAmount);
@@ -241,7 +241,7 @@ public class LocalBuyDocumentsRepo
         command.Parameters.AddWithValue("@buyDocDefName", buyDoc.BuyDocDefName ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@supplierId", buyDoc.SupplierId);
         command.Parameters.AddWithValue("@supplierName", buyDoc.SupplierName ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("@refNumber", buyDoc.RefNumber ?? (object)DBNull.Value);
+        command.Parameters.AddWithValue("@refNumber", buyDoc.RefNumber );
         command.Parameters.AddWithValue("@netAmount", buyDoc.NetAmount);
         command.Parameters.AddWithValue("@vatAmount", buyDoc.VatAmount);
         command.Parameters.AddWithValue("@totalAmount", buyDoc.TotalAmount);
@@ -279,6 +279,17 @@ public class LocalBuyDocumentsRepo
 
         var deleteCmd = connection.CreateCommand();
         deleteCmd.CommandText = "DELETE FROM BuyDocuments ";
+
+        return await deleteCmd.ExecuteNonQueryAsync();
+    }
+    public async Task<int> DropBuyDocsTableAsync()
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var deleteCmd = connection.CreateCommand();
+        deleteCmd.CommandText = "Drop table BuyDocuments";
 
         return await deleteCmd.ExecuteNonQueryAsync();
     }

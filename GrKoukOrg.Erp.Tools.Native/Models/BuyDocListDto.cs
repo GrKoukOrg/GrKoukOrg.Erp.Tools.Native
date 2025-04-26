@@ -20,7 +20,7 @@ namespace GrKoukOrg.Erp.Tools.Native.Models
         public string? SupplierName { get; set; }
         [JsonPropertyName("refNumber")]
 
-        public string? RefNumber { get; set; }
+        public int RefNumber { get; set; }
         [JsonPropertyName("netAmount")]
         public decimal NetAmount { get; set; }
         [JsonPropertyName("vatAmount")]

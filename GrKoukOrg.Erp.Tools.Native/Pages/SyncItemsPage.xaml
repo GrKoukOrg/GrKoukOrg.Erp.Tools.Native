@@ -10,11 +10,14 @@
              xmlns:core="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              xmlns:popup="clr-namespace:Syncfusion.Maui.Popup;assembly=Syncfusion.Maui.Popup"
              x:DataType="pageModels:SyncItemsPageModel"
+             x:Name="MyPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncItemsPage">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
 
@@ -97,6 +100,8 @@
                             <Button Text="Update Buy Docs" Command="{Binding AddBuyDocsToLocalDatabaseCommand}" />
                             <Button Text="Delete Buy Docs"
                                     Command="{Binding DeleteAllBuyDocumentsFromLocalDatabaseCommand}" />
+                            <Button Text="Drop buy Docs "
+                                    Command="{Binding DropBuyDocsTableFromLocalDatabaseCommand}" />
                         </VerticalStackLayout>
                         <VerticalStackLayout>
                             <Label Text="Buy Doc Lines Count" Padding="{StaticResource LayoutPadding}" />

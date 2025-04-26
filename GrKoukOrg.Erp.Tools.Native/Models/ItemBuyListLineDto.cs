@@ -17,7 +17,7 @@ public class ItemBuyListLineDto
     public string? SupplierName { get; set; }
     
     [JsonPropertyName("refNumber")]
-    public string? RefNumber { get; set; }
+    public int RefNumber { get; set; }
     
     [JsonPropertyName("itemId")]
     public int ItemId { get; set; }

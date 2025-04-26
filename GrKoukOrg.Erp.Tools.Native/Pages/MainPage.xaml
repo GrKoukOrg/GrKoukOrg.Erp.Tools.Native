@@ -10,17 +10,24 @@
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.MainPage"
              x:DataType="pageModels:MainPageModel"
+             x:Name="MyPage"
              Title="{Binding Today}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="NavigatedTo"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding NavigatedToCommand}" />
         <toolkit:EventToCommandBehavior
             EventName="NavigatedFrom"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding NavigatedFromCommand}" />
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
 

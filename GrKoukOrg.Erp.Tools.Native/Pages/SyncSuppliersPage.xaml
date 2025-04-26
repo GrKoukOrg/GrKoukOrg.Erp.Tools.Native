@@ -9,6 +9,7 @@
              xmlns:synclist="clr-namespace:Syncfusion.Maui.ListView;assembly=Syncfusion.Maui.ListView"
              xmlns:core="http://schemas.syncfusion.com/maui"
              Title="Sync Suppliers to Erp"
+             x:Name="MyPage"
              x:DataType="pageModels:SyncSuppliersPageModel"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.SyncSuppliersPage">
     <ContentPage.Resources>
@@ -52,8 +53,11 @@
     </ContentPage.Resources>
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            EventName="Appearing"
-            Command="{Binding AppearingCommand}" />
+            EventName="Appearing"                
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
+            Command="{Binding AppearingCommand}"
+        />
     </ContentPage.Behaviors>
     <ContentPage.Content>
         <ScrollView>

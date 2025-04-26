@@ -12,10 +12,15 @@
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.BusinessBuyDocumentsListPage">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
-            EventName="Appearing"
-            Command="{Binding AppearingCommand}" />
+            EventName="Appearing"                
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference ThisPage}
+            ,x:DataType=ContentPage}"
+            Command="{Binding AppearingCommand}"
+        />
         <toolkit:EventToCommandBehavior
             EventName="NavigatedTo"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference ThisPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding NavigatedToCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.Content>

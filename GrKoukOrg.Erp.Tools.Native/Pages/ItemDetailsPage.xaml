@@ -7,10 +7,13 @@
              xmlns:inputLayout="clr-namespace:Syncfusion.Maui.Core;assembly=Syncfusion.Maui.Core"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
              x:DataType="pageModels:ItemDetailsPageModel"
+             x:Name="MyPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.ItemDetailsPage">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Appearing"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
     <ContentPage.Resources>
@@ -35,7 +38,8 @@
             <Setter Property="MinimumWidthRequest" Value="44" />
 
             <!-- <Setter Property="BackgroundColor" Value="Black" /> -->
-            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
         </Style>
 
     </ContentPage.Resources>
@@ -58,6 +62,8 @@
                         ItemsSource="{Binding SearchItems}">
                         <editors:SfAutocomplete.Behaviors>
                             <toolkit:EventToCommandBehavior EventName="SelectionChanged"
+                                                            BindingContext="{Binding Path=BindingContext, Source={x:Reference MyPage}
+            ,x:DataType=ContentPage}"
                                                             Command="{Binding SelectionChangedCommand}"
                                                             EventArgsConverter="{StaticResource AutoCompleteSelectionConverter}" />
                         </editors:SfAutocomplete.Behaviors>
@@ -114,23 +120,23 @@
                     <Label Text="{Binding ItemStatistics.TotalQuantitySold, StringFormat='{0:F2}'}"
                            Grid.Column="3" Grid.Row="5" />
                     <Label Text="Μέση Τιμή Πώλησης" Grid.Column="2" Grid.Row="6" />
-                    <Label Text="{Binding ItemStatistics.MeanSalesPrice,StringFormat='{0:F2}€' }" 
+                    <Label Text="{Binding ItemStatistics.MeanSalesPrice,StringFormat='{0:F2}€' }"
                            Grid.Column="3"
                            Grid.Row="6" />
-                    <Label Text="Markup (%)" 
+                    <Label Text="Markup (%)"
                            Grid.Column="0" Grid.Row="7" />
-                    <Label Text="{Binding ItemStatistics.MarkUpPercentage,StringFormat='{0:F2}%' }" 
+                    <Label Text="{Binding ItemStatistics.MarkUpPercentage,StringFormat='{0:F2}%' }"
                            Grid.Column="1"
                            Grid.Row="7" />
-                    <Label Text="Markup (€)" 
+                    <Label Text="Markup (€)"
                            Grid.Column="2" Grid.Row="7" />
-                    <Label Text="{Binding ItemStatistics.MarkUpAmountNet,StringFormat='{0:F2}€' }" 
+                    <Label Text="{Binding ItemStatistics.MarkUpAmountNet,StringFormat='{0:F2}€' }"
                            Grid.Column="3"
                            Grid.Row="7" />
-                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" 
+                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"
                             Padding="{StaticResource LayoutPadding}" Text="Αγορές"
-                            Command="{Binding ShowItemBuyDocsCommand }"
-                            ></Button>
+                            Command="{Binding ShowItemBuyDocsCommand }">
+                    </Button>
                 </Grid>
             </VerticalStackLayout>
         </ScrollView>
