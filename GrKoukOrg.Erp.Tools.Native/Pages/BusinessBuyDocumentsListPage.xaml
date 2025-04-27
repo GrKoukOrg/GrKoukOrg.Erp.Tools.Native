@@ -50,7 +50,7 @@
                         Command="{Binding CancelStatusCheckCommand}"
                 />
                 <Button Grid.Row="0" Grid.Column="2"
-                        Text="Clear Updated and Not Updatable"
+                        Text="Clear Updated/Not Updatable"
                         Command="{Binding ClearUpdatedAndNotUpdatableCommand}"
                 />
                 <Button Grid.Row="0" Grid.Column="3"
