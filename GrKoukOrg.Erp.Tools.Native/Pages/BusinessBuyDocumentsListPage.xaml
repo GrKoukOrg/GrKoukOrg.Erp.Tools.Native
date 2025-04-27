@@ -30,29 +30,40 @@
             <Grid Margin="{StaticResource LayoutPadding}" ColumnSpacing="5" RowSpacing="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    
                     
                 </Grid.ColumnDefinitions>
                 <Button Grid.Row="0" Grid.Column="0"
                         Text="Check Status of documents"
                         Command="{Binding CheckStatusOfDocumentsCommand}"
-                        >
-                </Button> <Button Grid.Row="0" Grid.Column="1"
-                                  Text="Cancel"
-                                  Command="{Binding CancelStatusCheckCommand}"
-                          ></Button>
-              
-                <core:SfBusyIndicator Grid.Row="0" Grid.Column="2" x:Name="BusyIndicator"
+                        /> 
+                <Button Grid.Row="0" Grid.Column="1"
+                        Text="Cancel"
+                        Command="{Binding CancelStatusCheckCommand}"
+                />
+                <Button Grid.Row="0" Grid.Column="2"
+                        Text="Clear Updated and Not Updatable"
+                        Command="{Binding ClearUpdatedAndNotUpdatableCommand}"
+                />
+                <Button Grid.Row="0" Grid.Column="3"
+                        Text="Send All Updatable"
+                        Command="{Binding SendAllUpdatableToErpCommand}"
+                />
+                <core:SfBusyIndicator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                      x:Name="BusyIndicator"
                                       HeightRequest="50" 
                                       HorizontalOptions="Fill"
                                       IsRunning="{Binding IsCheckingStatus}"
                                       AnimationType="LinearMaterial" />
-                <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
                     BindableLayout.ItemsSource="{Binding Items}"
                     
                     Spacing="{StaticResource LayoutSpacing}">

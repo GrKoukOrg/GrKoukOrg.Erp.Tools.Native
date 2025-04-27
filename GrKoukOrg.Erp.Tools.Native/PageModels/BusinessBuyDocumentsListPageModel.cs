@@ -16,33 +16,44 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     private readonly ILogger<BusinessBuyDocumentsListPageModel> _logger;
     private readonly INavigationParameterService _navParameterService;
     private readonly ISettingsDataService _settingsDataService;
+
     private readonly ApiService _apiService;
-   // private readonly ModalErrorHandler _errorHandler;
+
+    // private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
     [ObservableProperty] private bool _isBusy;
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
+
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(CancelStatusCheckCommand))]
     private bool _isCheckingStatus;
+
     // [ObservableProperty]
     // private bool _isSendingToErp;
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
     private bool _canCheckDocuments;
+
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ClearUpdatedAndNotUpdatableCommand))]
+    private bool _canClearDocuments;
+
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(SendAllUpdatableToErpCommand))]
+    private bool _canSendDocuments;
+
     [ObservableProperty] private int _checkedItems;
     [ObservableProperty] private int _totalItems;
     private CancellationTokenSource _cancellationTokenSource;
+    private bool _updateCanSendDocuments;
+    private bool _updateCanClearDocuments;
 
     public BusinessBuyDocumentsListPageModel(ILogger<BusinessBuyDocumentsListPageModel> logger
-        , INavigationParameterService navParameterService,
-        ISettingsDataService settingsDataService,
-        ApiService apiService)
-       // , ModalErrorHandler errorHandler)
+            , INavigationParameterService navParameterService,
+            ISettingsDataService settingsDataService,
+            ApiService apiService)
+        // , ModalErrorHandler errorHandler)
     {
         _logger = logger;
         _navParameterService = navParameterService;
         _settingsDataService = settingsDataService;
         _apiService = apiService;
-       // _errorHandler = errorHandler;
+        // _errorHandler = errorHandler;
         //Items = new ObservableCollection<BuyDocumentDto>(_navParameterService.BuyDocuments);
     }
 
@@ -91,7 +102,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             return new ObservableCollection<BusinessBuyDocUpdateItem>(ritems);
         });
     }
-  
+
     [RelayCommand]
     private async Task Appearing()
     {
@@ -106,31 +117,37 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         TotalItems = Items.Count;
         IsBusy = false;
     }
+
     partial void OnTotalItemsChanged(int value)
     {
         CanCheckDocuments = value > 0;
     }
+
     [RelayCommand(CanExecute = nameof(CanCheckDocuments))]
     private async Task CheckStatusOfDocuments()
     {
         await StartStatusCheck();
     }
 
-   
+
     private async Task StartStatusCheck()
     {
         IsCheckingStatus = true;
+        CanSendDocuments = false;
+        CanClearDocuments = false;
+        _updateCanSendDocuments = false;
+        _updateCanClearDocuments = false;
         CheckedItems = 0;
         TotalItems = Items.Count;
         _cancellationTokenSource = new CancellationTokenSource();
-    
+
         try
         {
             foreach (var item in _navParameterService.BuyDocuments)
             {
                 if (_cancellationTokenSource.Token.IsCancellationRequested)
                     break;
-    
+
                 await CheckDocumentStatus(item);
                 CheckedItems++;
             }
@@ -144,8 +161,11 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             IsCheckingStatus = false;
             _cancellationTokenSource = null;
         }
+
+        CanSendDocuments = _updateCanSendDocuments;
+        CanClearDocuments = _updateCanClearDocuments;
     }
-    
+
     private async Task CheckDocumentStatus(BusinessBuyDocumentDto item)
     {
         try
@@ -153,7 +173,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             //Send request to Erp
             var targetItem = Items.FirstOrDefault(x => x.Id == item.Id);
             var companyCode = _settingsDataService.GetBusinessCompanyCode();
-            var erpApiBase = _settingsDataService.GetErpApiUrl(); 
+            var erpApiBase = _settingsDataService.GetErpApiUrl();
             var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncCheckBusinessBuyDocument");
             try
             {
@@ -184,23 +204,30 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                     {
                         UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}");
                     }
+
                     return;
                 }
+
                 var jsonContent = await result.Content.ReadAsStringAsync();
                 var erpResponse = JsonSerializer.Deserialize<ErpCheckDocumentResponse>(jsonContent);
 
                 var stMessage = erpResponse.Message;
                 var isSynced = erpResponse.IsSynced;
                 var canSync = erpResponse.CanSync;
+                if (canSync)
+                {
+                    _updateCanSendDocuments = true;
+                    _updateCanClearDocuments = true;
+                }
                 if (targetItem != null)
                 {
                     UpdateMessageToItem(targetItem, stMessage, isSynced, canSync);
                 }
-
             }
             catch (Exception ex)
             {
-                LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem);
+                LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",
+                    targetItem);
             }
         }
         catch (Exception ex)
@@ -213,7 +240,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             }
         }
     }
-    
+
     [RelayCommand(CanExecute = nameof(IsCheckingStatus))]
     private void CancelStatusCheck()
     {
@@ -221,17 +248,18 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SendToErp(BusinessBuyDocUpdateItem document) 
+    private async Task SendToErp(BusinessBuyDocUpdateItem document)
     {
         Debug.WriteLine(
             $"SendToErp confirmed for document: Supplier={document.SupplierName}, Ref={document.RefNumber}");
         //Create the payload to send to Erp
         //IsBusy = true;
-        UpdateMessageToItem(document,"Sending to Erp",isSendingToErp:true);;
-        
+        UpdateMessageToItem(document, "Sending to Erp", isSendingToErp: true);
+        ;
+
         var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
         var companyCode = _settingsDataService.GetBusinessCompanyCode();
-        var erpApiBase = _settingsDataService.GetErpApiUrl(); 
+        var erpApiBase = _settingsDataService.GetErpApiUrl();
         var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocument");
         try
         {
@@ -246,9 +274,9 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 SupplierName = document.SupplierName,
                 RefNumber = document.RefNumber,
                 VatAmount = decimal.Abs(document.VatAmount),
-                NetAmount = decimal.Abs( document.NetAmount),
+                NetAmount = decimal.Abs(document.NetAmount),
                 PayedAmount = document.PayedAmount,
-                TotalAmount = decimal.Abs( document.TotalAmount)
+                TotalAmount = decimal.Abs(document.TotalAmount)
             };
             var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
             {
@@ -260,29 +288,45 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 var errorContent = await result.Content.ReadAsStringAsync();
                 if (targetItem != null)
                 {
-                    UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}",isSendingToErp:false);;
+                    UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}",
+                        isSendingToErp: false);
+                    ;
                 }
+
                 return;
             }
+
             var jsonContent = await result.Content.ReadAsStringAsync();
             var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent);
 
             var stMessage = erpResponse.Message;
             if (targetItem != null)
             {
-                UpdateMessageToItem(targetItem, stMessage,isSendingToErp:false);
+                UpdateMessageToItem(targetItem, stMessage, isSendingToErp: false);
             }
-
         }
         catch (Exception ex)
         {
-            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp",targetItem,false);
+            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp", targetItem,
+                false);
         }
 
         //IsBusy = false;
     }
 
-    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message,bool isSynced =false, bool canSync=false,bool isSendingToErp=false )
+    [RelayCommand(CanExecute = nameof(CanClearDocuments))]
+    private async Task ClearUpdatedAndNotUpdatable()
+    {
+        
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSendDocuments))]
+    private async Task SendAllUpdatableToErp()
+    {
+    }
+
+    private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message, bool isSynced = false,
+        bool canSync = false, bool isSendingToErp = false)
     {
         var updatedDocument = new BusinessBuyDocUpdateItem
         {
@@ -298,14 +342,11 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             TransDate = item.TransDate,
             TotalAmount = item.TotalAmount,
             BuyDocLines = item.BuyDocLines,
-            Message = message
-            ,IsSynced = isSynced
-            ,CanSync = canSync
-            ,IsSendingToErp = isSendingToErp
+            Message = message, IsSynced = isSynced, CanSync = canSync, IsSendingToErp = isSendingToErp
         };
 
         //Find the index of the old item and replace it
-         int index = Items.IndexOf(item);
+        int index = Items.IndexOf(item);
         if (index >= 0)
         {
             Items[index] = updatedDocument;
@@ -318,10 +359,10 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         //        Items[index] = updatedDocument;
         //    }
         //});
-       
-
     }
-    private void LogAndHandleException(Exception ex, string customMessage,BusinessBuyDocUpdateItem targetItem,bool isSendingToErp=false)
+
+    private void LogAndHandleException(Exception ex, string customMessage, BusinessBuyDocUpdateItem targetItem,
+        bool isSendingToErp = false)
     {
         string errorMessage = ex switch
         {
@@ -338,8 +379,10 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         };
         if (targetItem is not null)
         {
-            UpdateMessageToItem(targetItem, errorMessage,isSendingToErp:isSendingToErp);;
+            UpdateMessageToItem(targetItem, errorMessage, isSendingToErp: isSendingToErp);
+            ;
         }
+
         Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
 
         // Optionally, display the message using a Toast
