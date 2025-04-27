@@ -315,9 +315,13 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanClearDocuments))]
-    private async Task ClearUpdatedAndNotUpdatable()
+    private void ClearUpdatedAndNotUpdatable()
     {
-        
+        IsCheckingStatus = true;
+        var newItemsList = Items.Where(x => x.CanSync && !x.IsSynced).ToList();
+        Items.Clear();
+        Items = new ObservableCollection<BusinessBuyDocUpdateItem>(newItemsList);
+        IsCheckingStatus = false;
     }
 
     [RelayCommand(CanExecute = nameof(CanSendDocuments))]
