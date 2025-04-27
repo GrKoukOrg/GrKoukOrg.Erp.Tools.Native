@@ -36,27 +36,10 @@ namespace GrKoukOrg.Erp.Tools.Native
 
         public static async Task DisplayToastAsync(string message)
         {
-            // Toast is currently not working in MCT on Windows
-            // I commented it out for now.
-            // if (OperatingSystem.IsWindows())
-            // {
-            //     var currentPage = Application.Current?.MainPage;
-            //
-            //     if (currentPage != null)
-            //     {
-            //         await currentPage.DisplayAlert("Alert", message, "Ok");
-            //     }
-            //     else
-            //     {
-            //         Console.WriteLine("No active page found to display the alert.");
-            //     }
-            //     return;
-            // }
-                 
 
             var toast = Toast.Make(message, textSize: 18);
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await toast.Show(cts.Token);
         }
 
