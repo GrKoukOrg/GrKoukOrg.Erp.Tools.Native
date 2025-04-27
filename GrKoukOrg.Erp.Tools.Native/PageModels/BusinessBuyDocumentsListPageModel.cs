@@ -290,7 +290,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 {
                     UpdateMessageToItem(targetItem, $"Error: {result.StatusCode} - {errorContent}",
                         isSendingToErp: false);
-                    ;
+                    
                 }
 
                 return;
@@ -323,6 +323,45 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSendDocuments))]
     private async Task SendAllUpdatableToErp()
     {
+        IsCheckingStatus = true;
+        var itemsToSend = Items.Where(x => x.CanSync && !x.IsSynced).ToList();
+        var companyCode = _settingsDataService.GetBusinessCompanyCode();
+        var erpApiBase = _settingsDataService.GetErpApiUrl();
+        var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocuments");
+        try
+        {
+            var payload = new SyncBusinessEntityRequest<BusinessBuyDocUpdateItem>()
+            {
+                CompanyCode = companyCode,
+                Items = itemsToSend
+            };
+            var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json")
+            };
+            var result = await _apiService.MakeAuthenticatedRequestAsync(request);
+            if (!result.IsSuccessStatusCode)
+            {
+                var errorContent = await result.Content.ReadAsStringAsync();
+                await AppShell.DisplayToastAsync($"Error: {result.StatusCode} - {errorContent}");
+                IsCheckingStatus = false;
+                return;
+            }
+
+            var jsonContent = await result.Content.ReadAsStringAsync();
+            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent);
+
+            var stMessage = $"Send completed. Please perform CHECK STATUS to see the results " +
+                            $"Added Count: {erpResponse.AddedCount}" +
+                            $"Failed to Add Count: {erpResponse.FailedToAddCount}" ;
+            IsCheckingStatus = false;
+            await AppShell.DisplayToastAsync(stMessage);
+        }
+        catch (Exception ex)
+        {
+            IsCheckingStatus = false;
+            LogAndHandleException(ex, "An error occured while sending the suppliers sync request to Erp");
+        }
     }
 
     private void UpdateMessageToItem(BusinessBuyDocUpdateItem item, string message, bool isSynced = false,
@@ -361,7 +400,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         //});
     }
 
-    private void LogAndHandleException(Exception ex, string customMessage, BusinessBuyDocUpdateItem targetItem,
+    private void LogAndHandleException(Exception ex, string customMessage, BusinessBuyDocUpdateItem? targetItem=null,
         bool isSendingToErp = false)
     {
         string errorMessage = ex switch
