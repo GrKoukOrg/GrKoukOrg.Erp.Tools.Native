@@ -63,6 +63,7 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
         if (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Password))
         {
             StatusMessage = "Please enter both username and password.";
+            await AppShell.DisplayToastAsync(StatusMessage);
             return;
         }
 
@@ -78,15 +79,18 @@ public partial class BusBuyDocListSyncPageModel : ObservableObject
                 Preferences.Default.Set("RefreshToken", tokens.RefreshToken);
 
                 StatusMessage = "Login successful!";
+                await AppShell.DisplayToastAsync(StatusMessage);
             }
             else
             {
                 StatusMessage = "Invalid login credentials.";
+                await AppShell.DisplayToastAsync(StatusMessage);
             }
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error: {ex.Message}";
+            await AppShell.DisplayToastAsync(StatusMessage);
         }
         finally
         {

@@ -42,7 +42,8 @@ namespace GrKoukOrg.Erp.Tools.Native
             // }
             // else
             // {
-            var toast = Toast.Make(message, textSize: 18);
+            ToastDuration duration = ToastDuration.Long;
+            var toast = Toast.Make(message,duration, textSize: 18);
             
             var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
             await toast.Show(cts.Token);
