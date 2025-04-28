@@ -28,26 +28,26 @@ namespace GrKoukOrg.Erp.Tools.Native
                 Font = Font.SystemFontOfSize(18),
                 ActionButtonFont = Font.SystemFontOfSize(14)
             };
-
-            var snackbar = Snackbar.Make(message, visualOptions: snackbarOptions);
+            var snackbar = Snackbar.Make(message,visualOptions: snackbarOptions);
 
             await snackbar.Show(cancellationTokenSource.Token);
         }
 
         public static async Task DisplayToastAsync(string message)
         {
-            if (OperatingSystem.IsWindows())
-            {
-                await DisplaySnackbarAsync(message);
-            }
-            else
-            {
-                var toast = Toast.Make(message, textSize: 18);
-
-                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                await toast.Show(cts.Token);
-
-            }
+            //await DisplaySnackbarAsync(message);
+            // if (OperatingSystem.IsWindows())
+            // {
+            //     await DisplaySnackbarAsync(message);
+            // }
+            // else
+            // {
+            var toast = Toast.Make(message, textSize: 18);
+            
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            await toast.Show(cts.Token);
+            
+            // }
         }
 
         private void SfSegmentedControl_SelectionChanged(object? sender, SelectionChangedEventArgs selectionChangedEventArgs)
