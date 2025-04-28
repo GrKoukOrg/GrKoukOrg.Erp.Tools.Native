@@ -327,17 +327,33 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanSendDocuments))]
     private async Task SendAllUpdatableToErp()
     {
-        IsCheckingStatus = true;
-        var itemsToSend = Items.Where(x => x.CanSync && !x.IsSynced).ToList();
         var companyCode = _settingsDataService.GetBusinessCompanyCode();
+        IsCheckingStatus = true;
+        var itemsToSend = Items
+            .Where(x => x.CanSync && !x.IsSynced).ToList();
+        var itemsInRequest = itemsToSend.Select(document => new SyncBusinessBuyDocumentRequest()
+        {
+            Id = document.Id,
+            BuyDocDefId = document.BuyDocDefId,
+            BuyDocDefName = document.BuyDocDefName,
+            TransDate = document.TransDate,
+            SupplierId = document.SupplierId,
+            SupplierName = document.SupplierName,
+            RefNumber = document.RefNumber,
+            VatAmount = decimal.Abs(document.VatAmount),
+            NetAmount = decimal.Abs(document.NetAmount),
+            PayedAmount = document.PayedAmount,
+            TotalAmount = decimal.Abs(document.TotalAmount)
+        }).ToList();
+        
         var erpApiBase = _settingsDataService.GetErpApiUrl();
         var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocuments");
         try
         {
-            var payload = new SyncBusinessEntityRequest<BusinessBuyDocUpdateItem>()
+            var payload = new SyncBusinessEntityRequest<SyncBusinessBuyDocumentRequest>()
             {
                 CompanyCode = companyCode,
-                Items = itemsToSend
+                Items = itemsInRequest
             };
             var request = new HttpRequestMessage(HttpMethod.Post, erpApiUri)
             {
