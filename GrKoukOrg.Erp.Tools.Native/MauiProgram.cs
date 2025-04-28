@@ -15,8 +15,8 @@ namespace GrKoukOrg.Erp.Tools.Native
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseMauiCommunityToolkit()
-                
+                .UseMauiCommunityToolkit(options => { options.SetShouldEnableSnackbarOnWindows(true); })
+
                 .UseBarcodeReader()
                 .ConfigureSyncfusionToolkit()
                 .ConfigureSyncfusionCore()

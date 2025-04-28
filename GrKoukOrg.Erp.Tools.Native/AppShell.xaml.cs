@@ -36,11 +36,18 @@ namespace GrKoukOrg.Erp.Tools.Native
 
         public static async Task DisplayToastAsync(string message)
         {
+            if (OperatingSystem.IsWindows())
+            {
+                await DisplaySnackbarAsync(message);
+            }
+            else
+            {
+                var toast = Toast.Make(message, textSize: 18);
 
-            var toast = Toast.Make(message, textSize: 18);
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await toast.Show(cts.Token);
 
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await toast.Show(cts.Token);
+            }
         }
 
         private void SfSegmentedControl_SelectionChanged(object? sender, SelectionChangedEventArgs selectionChangedEventArgs)

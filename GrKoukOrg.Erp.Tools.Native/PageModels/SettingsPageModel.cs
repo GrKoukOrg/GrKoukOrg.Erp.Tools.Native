@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -40,7 +41,10 @@ public partial class SettingsPageModel:ObservableObject
             await _settingsDataService.SetBusinessApiUrlAsync(BusinessApiUrl);
             await _settingsDataService.SetErpApiUrlAsync(ErpApiUrl);
              _settingsDataService.SetBusinessCompanyCode(CompanyCode);
-            await AppShell.DisplayToastAsync("Settings saved");
+           
+             await AppShell.DisplayToastAsync("Settings saved");
+            
+               
            // await AppShell.DisplaySnackbarAsync("Settings saved");
         }
         catch (Exception e)
