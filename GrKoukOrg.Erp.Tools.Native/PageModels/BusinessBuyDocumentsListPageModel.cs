@@ -255,7 +255,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         //Create the payload to send to Erp
         //IsBusy = true;
         UpdateMessageToItem(document, "Sending to Erp", isSendingToErp: true);
-        ;
+        
 
         var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
         var companyCode = _settingsDataService.GetBusinessCompanyCode();
