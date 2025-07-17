@@ -31,7 +31,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(CheckStatusOfDocumentsCommand))]
     private bool _canCheckDocuments;
 
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ClearUpdatedAndNotUpdatableCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ClearUpdatedCommand))]
     private bool _canClearDocuments;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(SendAllUpdatableToErpCommand))]
@@ -315,7 +315,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanClearDocuments))]
-    private void ClearUpdatedAndNotUpdatable()
+    private void ClearUpdated()
     {
         IsCheckingStatus = true;
         var newItemsList = Items.Where(x => x.CanSync && !x.IsSynced).ToList();
