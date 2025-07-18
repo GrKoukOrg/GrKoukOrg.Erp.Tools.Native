@@ -439,7 +439,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         if (targetItem is not null)
         {
             UpdateMessageToItem(targetItem, errorMessage, isSendingToErp: isSendingToErp);
-            ;
+            
         }
 
         Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
