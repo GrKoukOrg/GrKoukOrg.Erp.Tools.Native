@@ -86,7 +86,15 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [RelayCommand]
         private void NavigatedFrom() =>
             _isNavigatedTo = false;
-
+        [RelayCommand]
+        private async Task DateClose()
+        {
+            await DateCloseDataAsync();
+        }
+        private async Task DateCloseDataAsync()
+        {
+            await Shell.Current.GoToAsync("dateClose");
+        }
         [RelayCommand]
         private async Task Appearing()
         {

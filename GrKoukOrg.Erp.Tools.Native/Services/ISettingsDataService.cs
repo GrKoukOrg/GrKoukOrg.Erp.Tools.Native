@@ -15,6 +15,8 @@ public interface ISettingsDataService
     int SetErpApiUrl(string url);
     string GetBusinessCompanyCode();
     int SetBusinessCompanyCode(string code);
+    int GetLastZNumber();
+    int SetLastZNumber(int code);
 }
 
 public class SettingsMemoryDataService : ISettingsDataService
@@ -77,6 +79,18 @@ public class SettingsMemoryDataService : ISettingsDataService
     public int SetBusinessCompanyCode(string code)
     {
         Preferences.Set("businessCompanyCode",code);
+        return 0;
+    }
+
+    public int GetLastZNumber()
+    {
+        int code = Preferences.Get("LastZNumber", 0);
+        return code;
+    }
+
+    public int SetLastZNumber(int code)
+    {
+        Preferences.Set("LastZNumber",code);
         return 0;
     }
 }

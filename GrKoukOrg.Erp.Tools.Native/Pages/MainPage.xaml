@@ -51,7 +51,7 @@
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Text="Τελευταίος Συγχρονισμός" />
         <Label Grid.Row="0" Grid.Column="1" Text="{Binding LastSynced, StringFormat='{0:dd/MM/yyyy}'}" />
-              
+        <Button Grid.Row="1" Grid.Column="1" Text="Κλείσιμο Ημέρας" Command="{Binding DateCloseCommand}" />
               
           
 

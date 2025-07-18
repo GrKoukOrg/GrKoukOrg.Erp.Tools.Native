@@ -67,7 +67,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddTransientWithShellRoute<SyncToErpPage, SyncToErpPageModel>("synctoerp");
             builder.Services.AddTransientWithShellRoute<BusBuyDocListSyncPage, BusBuyDocListSyncPageModel>("busbuydoclistsync");
             builder.Services.AddTransientWithShellRoute<SyncSuppliersPage, SyncSuppliersPageModel>("syncSuppliers");
-            
+            builder.Services.AddTransientWithShellRoute<DayCloseDataPage, DayCloseDataPageModel>("dateClose");
             builder.Services.AddHttpClient("BusinessServerApi", (serviceProvider, client) =>
             {
                 var settingsDataService = serviceProvider.GetRequiredService<ISettingsDataService>();

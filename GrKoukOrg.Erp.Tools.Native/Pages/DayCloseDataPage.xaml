@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="pageModels:DayCloseDataPageModel"
+             x:Name="DayCloseDataContentPage"
+             x:Class="GrKoukOrg.Erp.Tools.Native.Pages.DayCloseDataPage">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            EventName="Appearing"
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference DayCloseDataContentPage}
+            ,x:DataType=ContentPage}"
+            Command="{Binding AppearingCommand}" />
+
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <Style TargetType="editors:SfNumericEntry">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="ClearButtonColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+
+
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalOptions" Value="Center"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
+        </Style>
+        <Style TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=24}" />
+            <Setter Property="PlaceholderColor"
+                    Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
+            <Setter Property="MinimumHeightRequest" Value="44" />
+            <Setter Property="MinimumWidthRequest" Value="44" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="TextColor"
+                                        Value="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView>
+            <Grid Padding="{StaticResource LayoutPadding}"
+                  RowSpacing="{StaticResource LayoutSpacing}"
+                  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80" />
+                    <RowDefinition Height="80" />
+                    <RowDefinition Height="80" />
+                    <RowDefinition Height="80" />
+                    <RowDefinition Height="80" />
+                    <RowDefinition Height="80" />
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                    
+                       Text="Ταμείο Ημέρας" Style="{StaticResource Title2}" />
+                <Label Grid.Row="1"
+                       Grid.Column="0"
+                       
+                       Text="Ημερομηνία" />
+                <Label Grid.Row="2"
+                       Grid.Column="0"
+                   
+                       Text="Αριθμός Ζ" />
+
+                <Label Grid.Row="3"
+                       Grid.Column="0"
+                     
+                       Text="Μετρητά" />
+                <Label Grid.Row="4"
+                       Grid.Column="0"
+                     
+                       Text="Κάρτες" />
+                <Label Grid.Row="5"
+                       Grid.Column="0"
+                      
+                       Text="Star" />
+                <DatePicker Grid.Row="1"
+                    Grid.Column="1"
+                
+                    Date="{Binding ClosingDate}" Margin="{StaticResource DatePickerMargin}">
+                
+                </DatePicker>
+                <!-- <picker:SfDatePicker Grid.Row="1" Grid.Column="1" -->
+                <!--                      Mode="Dialog" -->
+                <!--                      SelectedDate="{Binding ClosingDate}"> -->
+                <!--     <picker:SfDatePicker.FooterView> -->
+                <!--         <picker:PickerFooterView ShowOkButton="True" Height="40" /> -->
+                <!--     </picker:SfDatePicker.FooterView> -->
+                <!-- </picker:SfDatePicker> -->
+                <editors:SfNumericEntry Grid.Row="2"
+                                        Grid.Column="1"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding ZNumber}"
+                                        CustomFormat="N0" />
+                <editors:SfNumericEntry Grid.Row="3"
+                                        Grid.Column="1"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalCash}"
+                                        CustomFormat="C2" />
+                <editors:SfNumericEntry Grid.Row="4"
+                                        Grid.Column="1"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalCards}"
+                                        CustomFormat="C2" /> 
+                <editors:SfNumericEntry Grid.Row="5"
+                                        Grid.Column="1"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalStar}"
+                                        CustomFormat="C2" />
+                <!-- <Entry Grid.Row="2"  -->
+                <!--        Grid.Column="1" -->
+                <!--        Text="{Binding ZNumber}" /> -->
+                <!-- <Entry Grid.Row="3" -->
+                <!--        Grid.Column="1" -->
+                <!--        Text="{Binding TotalCash}" /> -->
+                <!-- <Entry Grid.Row="4" -->
+                <!--        Grid.Column="1" -->
+                <!--        Text="{Binding TotalCards}" /> -->
+                <!-- <Entry Grid.Row="5" -->
+                <!--        Grid.Column="1" -->
+                <!--        Text="{Binding TotalStar}" /> -->
+
+            </Grid>
+
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
