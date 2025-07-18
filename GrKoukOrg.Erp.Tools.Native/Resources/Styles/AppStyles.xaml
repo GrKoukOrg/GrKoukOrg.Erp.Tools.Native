@@ -5,6 +5,7 @@
     xmlns:f="clr-namespace:Fonts"
     xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
     xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <x:Double x:Key="sizeNone">0</x:Double>
@@ -281,6 +282,7 @@
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"/> 
         <Setter Property="HintLabelStyle" Value="{AppThemeBinding Light={StaticResource lightThemeLabelStyle}, Dark={StaticResource darkThemeLabelStyle}}"/> 
     </Style>
+    
     
 
     <Style TargetType="BoxView" x:Key="ShimmerCustomViewStyle">
