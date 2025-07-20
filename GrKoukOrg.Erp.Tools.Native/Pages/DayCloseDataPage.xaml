@@ -2,8 +2,10 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:picker="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
-             xmlns:editors="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:picker1="clr-namespace:Syncfusion.Maui.Picker;assembly=Syncfusion.Maui.Picker"
+             xmlns:editors1="clr-namespace:Syncfusion.Maui.Inputs;assembly=Syncfusion.Maui.Inputs"
+             xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericEntry;assembly=Syncfusion.Maui.Toolkit"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="pageModels:DayCloseDataPageModel"
@@ -18,6 +20,10 @@
 
     </ContentPage.Behaviors>
     <ContentPage.Resources>
+        <Style  TargetType="DatePicker" >
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}"/>
+        </Style>
+                
         <Style TargetType="editors:SfNumericEntry">
             <Setter Property="TextColor"
                     Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
@@ -60,15 +66,23 @@
     </ContentPage.Resources>
     <ContentPage.Content>
         <ScrollView>
+            <VerticalStackLayout
+                Spacing="{StaticResource LayoutSpacing}"
+                Padding="{StaticResource LayoutPadding}">
+                >
+                <Label Text="Ταμείο Ημέρας" Style="{StaticResource Title2}" />
+                
+            </VerticalStackLayout>
             <Grid Padding="{StaticResource LayoutPadding}"
                   RowSpacing="{StaticResource LayoutSpacing}"
-                  >
+            >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="80" />
                     <RowDefinition Height="80" />
                     <RowDefinition Height="80" />
                     <RowDefinition Height="80" />
                     <RowDefinition Height="80" />
+                    <RowDefinition Height="80" /> 
                     <RowDefinition Height="80" />
 
                 </Grid.RowDefinitions>
@@ -85,29 +99,56 @@
                        Grid.Column="0"
                        
                        Text="Ημερομηνία" />
+                <DatePicker Grid.Row="1"
+                            Grid.Column="1"
+                
+                            Date="{Binding ClosingDate}" Margin="{StaticResource DatePickerMargin}">
+                
+                </DatePicker>
                 <Label Grid.Row="2"
                        Grid.Column="0"
                    
                        Text="Αριθμός Ζ" />
-
+                <editors:SfNumericEntry Grid.Row="2"
+                                        Grid.Column="1"
+                ValueChangeMode="OnKeyFocus"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding ZNumber}"
+                                        CustomFormat="N0" />
                 <Label Grid.Row="3"
                        Grid.Column="0"
                      
                        Text="Μετρητά" />
+                <editors:SfNumericEntry Grid.Row="3"
+                                        Grid.Column="1"
+                                        ValueChangeMode="OnKeyFocus"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalCash}"
+                                        CustomFormat="C2" />
                 <Label Grid.Row="4"
                        Grid.Column="0"
                      
                        Text="Κάρτες" />
+                <editors:SfNumericEntry Grid.Row="4"
+                                        Grid.Column="1"
+                                        ValueChangeMode="OnKeyFocus"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalCards}"
+                                        CustomFormat="C2" /> 
                 <Label Grid.Row="5"
                        Grid.Column="0"
                       
                        Text="Star" />
-                <DatePicker Grid.Row="1"
-                    Grid.Column="1"
-                
-                    Date="{Binding ClosingDate}" Margin="{StaticResource DatePickerMargin}">
-                
-                </DatePicker>
+                <editors:SfNumericEntry Grid.Row="5"
+                                        Grid.Column="1"
+                                        ValueChangeMode="OnKeyFocus"
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Value="{Binding TotalStar}"
+                                        CustomFormat="C2" />
                 <!-- <picker:SfDatePicker Grid.Row="1" Grid.Column="1" -->
                 <!--                      Mode="Dialog" -->
                 <!--                      SelectedDate="{Binding ClosingDate}"> -->
@@ -115,43 +156,16 @@
                 <!--         <picker:PickerFooterView ShowOkButton="True" Height="40" /> -->
                 <!--     </picker:SfDatePicker.FooterView> -->
                 <!-- </picker:SfDatePicker> -->
-                <editors:SfNumericEntry Grid.Row="2"
-                                        Grid.Column="1"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"
-                                        Value="{Binding ZNumber}"
-                                        CustomFormat="N0" />
-                <editors:SfNumericEntry Grid.Row="3"
-                                        Grid.Column="1"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"
-                                        Value="{Binding TotalCash}"
-                                        CustomFormat="C2" />
-                <editors:SfNumericEntry Grid.Row="4"
-                                        Grid.Column="1"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"
-                                        Value="{Binding TotalCards}"
-                                        CustomFormat="C2" /> 
-                <editors:SfNumericEntry Grid.Row="5"
-                                        Grid.Column="1"
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"
-                                        Value="{Binding TotalStar}"
-                                        CustomFormat="C2" />
-                <!-- <Entry Grid.Row="2"  -->
-                <!--        Grid.Column="1" -->
-                <!--        Text="{Binding ZNumber}" /> -->
-                <!-- <Entry Grid.Row="3" -->
-                <!--        Grid.Column="1" -->
-                <!--        Text="{Binding TotalCash}" /> -->
-                <!-- <Entry Grid.Row="4" -->
-                <!--        Grid.Column="1" -->
-                <!--        Text="{Binding TotalCards}" /> -->
-                <!-- <Entry Grid.Row="5" -->
-                <!--        Grid.Column="1" -->
-                <!--        Text="{Binding TotalStar}" /> -->
-
+                
+                   
+                
+               
+                
+                <Button Grid.Row="6" Grid.Column="1"
+                        Text="Submit"
+                        Command="{Binding SubmitCommand}"
+                />
+               
             </Grid>
 
         </ScrollView>
