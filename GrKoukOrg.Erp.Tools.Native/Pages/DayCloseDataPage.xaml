@@ -18,8 +18,12 @@
 
     </ContentPage.Behaviors>
     <ContentPage.Resources>
+        
+
         <Style  TargetType="DatePicker" >
             <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}"/>
+            <Setter Property="TextColor"
+                  Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
         </Style>
                 
         <Style TargetType="editors:SfNumericEntry">
