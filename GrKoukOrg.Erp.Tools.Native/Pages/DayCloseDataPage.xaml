@@ -90,7 +90,7 @@
                 </picker:SfDatePicker>
                 <VerticalStackLayout
                     Spacing="{StaticResource LayoutSpacing}">
-                    <Grid>
+                    <Grid ColumnSpacing="{StaticResource LayoutSpacing}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
@@ -110,7 +110,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="200"
+                            WidthRequest="150"
                             Text="Αριθμός Ζ" />
                         <Entry
                             WidthRequest="200"
@@ -123,7 +123,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="200"
+                            WidthRequest="150"
                             Text="Μετρητά" />
                         <Entry
                             WidthRequest="200"
@@ -137,7 +137,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="200"
+                            WidthRequest="150"
                             Text="Κάρτες" />
                         <Entry
                             WidthRequest="200"
@@ -151,7 +151,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="200"
+                            WidthRequest="150"
                             Text="Star" />
                         <Entry
                             WidthRequest="200"
