@@ -4,8 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:editors="clr-namespace:Syncfusion.Maui.Toolkit.NumericEntry;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
              xmlns:pageModels="clr-namespace:GrKoukOrg.Erp.Tools.Native.PageModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:behaviors="clr-namespace:GrKoukOrg.Erp.Tools.Native.Behaviors"
              x:DataType="pageModels:DayCloseDataPageModel"
              x:Name="DayCloseDataContentPage"
              x:Class="GrKoukOrg.Erp.Tools.Native.Pages.DayCloseDataPage">
@@ -18,14 +20,14 @@
 
     </ContentPage.Behaviors>
     <ContentPage.Resources>
-        
 
-        <Style  TargetType="DatePicker" >
-            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}"/>
+
+        <Style TargetType="DatePicker">
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
             <Setter Property="TextColor"
-                  Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
         </Style>
-                
+
         <Style TargetType="editors:SfNumericEntry">
             <Setter Property="TextColor"
                     Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
@@ -37,8 +39,8 @@
             <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
         </Style>
         <Style TargetType="Label">
-            <Setter Property="HorizontalOptions" Value="Center"/>
-            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="HorizontalOptions" Value="Center" />
+            <Setter Property="VerticalOptions" Value="Center" />
             <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
         </Style>
         <Style TargetType="Entry">
@@ -71,64 +73,103 @@
             <VerticalStackLayout
                 Spacing="{StaticResource LayoutSpacing}"
                 Padding="{StaticResource LayoutPadding}">
-                
+
                 <Label Text="Ταμείο Ημέρας" Style="{StaticResource Title2}" />
+                <picker:SfDatePicker Mode="Dialog"
+                                     Format="dd_MM_yyyy"
+                                     SelectedDate="{Binding ClosingDate}"
+                                     IsOpen="{Binding IsOpen}"
+                                     SelectionChangedCommand="{Binding PickerValueChangedCommand}"
+                                     AcceptCommand="{Binding  AcceptPickerCommand}"
+                                     DeclineCommand="{Binding DeclinePickerCommand}">
+                    <picker:PickerHeaderView Height="40" Text="Ημερομηνία Κλεισίματος" />
+                    <picker:SfDatePicker.FooterView>
+                        <picker:PickerFooterView Height="40" OkButtonText="Save"
+                                                 CancelButtonText="Exit" />
+                    </picker:SfDatePicker.FooterView>
+                </picker:SfDatePicker>
                 <VerticalStackLayout
-                    Spacing="{StaticResource LayoutSpacing}"
-                    >
-                    <sf:SfTextInputLayout 
-                        Hint="Ημερομηνία">
-                        <DatePicker
-                            Date="{Binding ClosingDate}" Margin="{StaticResource DatePickerMargin}">
-                
-                        </DatePicker>
-                    </sf:SfTextInputLayout>    
-                    <sf:SfTextInputLayout 
-                        Hint="Αριθμός Ζ">
-                        <editors:SfNumericEntry
-                                                ValueChangeMode="OnKeyFocus"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center"
-                                                Value="{Binding ZNumber}"
-                                                CustomFormat="N0" />
-                        <!-- <Entry -->
-                        <!--      -->
-                        <!--     Text="{Binding ZNumber}"/> -->
-                    </sf:SfTextInputLayout>    
-                    <sf:SfTextInputLayout 
-                        Hint="Μετρητά">
-                        <editors:SfNumericEntry 
-                            ValueChangeMode="OnKeyFocus"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center"
-                            Value="{Binding TotalCash}"
-                            CustomFormat="C2" /> 
-                    </sf:SfTextInputLayout>   
-                    <sf:SfTextInputLayout 
-                        Hint="Κάρτες">
-                        <editors:SfNumericEntry 
-                            ValueChangeMode="OnKeyFocus"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center"
-                            Value="{Binding TotalCards}"
-                            CustomFormat="C2" /> 
-                    </sf:SfTextInputLayout>   
-                    <sf:SfTextInputLayout 
-                        Hint="Star">
-                        <editors:SfNumericEntry 
-                            ValueChangeMode="OnKeyFocus"
-                            HorizontalOptions="Center"
-                            VerticalOptions="Center"
-                            Value="{Binding TotalStar}"
-                            CustomFormat="C2" /> 
-                    </sf:SfTextInputLayout>   
-                    <Button 
+                    Spacing="{StaticResource LayoutSpacing}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Text="Ημερομηνία" />
+                        <Entry Grid.Row="0" Grid.Column="1"
+                               Text="{Binding ClosingDate, StringFormat='{0:dd/MM/yyyy}'}" />
+                        <Button Grid.Row="0" Grid.Column="2"
+                                Text="..."
+                                Command="{Binding ShowPickerCommand}" />
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                        <Label
+                            WidthRequest="200"
+                            Text="Αριθμός Ζ" />
+                        <Entry
+                            WidthRequest="200"
+                            Text="{Binding ZNumber}">
+                            <Entry.Behaviors>
+                                <behaviors:PositiveIntegerBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                        <Label
+                            WidthRequest="200"
+                            Text="Μετρητά" />
+                        <Entry
+                            WidthRequest="200"
+                            Text="{Binding TotalCash}">
+                            <Entry.Behaviors>
+                                <behaviors:CurrencyBehavior />
+                            </Entry.Behaviors>
+
+                        </Entry>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                        <Label
+                            WidthRequest="200"
+                            Text="Κάρτες" />
+                        <Entry
+                            WidthRequest="200"
+                            Text="{Binding TotalCards}">
+                            <Entry.Behaviors>
+                                <behaviors:CurrencyBehavior />
+                            </Entry.Behaviors>
+
+                        </Entry>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                        <Label
+                            WidthRequest="200"
+                            Text="Star" />
+                        <Entry
+                            WidthRequest="200"
+                            Text="{Binding TotalStar}">
+                            <Entry.Behaviors>
+                                <behaviors:CurrencyBehavior />
+                            </Entry.Behaviors>
+
+                        </Entry>
+                    </HorizontalStackLayout>
+
+                    <Button
                         HeightRequest="{OnIdiom 44, Desktop=60}"
                         Text="Submit"
-                        Command="{Binding SubmitCommand}"/>
+                        Command="{Binding SubmitCommand}" />
                 </VerticalStackLayout>
             </VerticalStackLayout>
-           
+
 
         </ScrollView>
     </ContentPage.Content>

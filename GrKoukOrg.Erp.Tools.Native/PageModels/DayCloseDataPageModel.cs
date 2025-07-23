@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
 using GrKoukOrg.Erp.Tools.Native.Shared;
 using Microsoft.Extensions.Logging;
+using Syncfusion.Maui.Toolkit.Picker;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
@@ -22,6 +23,7 @@ public partial class DayCloseDataPageModel:ObservableObject
     [ObservableProperty] private decimal _totalCards = 0;   
     [ObservableProperty] private decimal _totalStar = 0;
     [ObservableProperty] private int _zNumber = 0;
+    [ObservableProperty] private bool _isOpen = false;
     private string _companyCode;
     private int _lastZNumber = 0;
     
@@ -39,6 +41,30 @@ public partial class DayCloseDataPageModel:ObservableObject
         IsWaitingForResponse = false;
         _companyCode = _settingsDataService.GetBusinessCompanyCode();
         _lastZNumber=_settingsDataService.GetLastZNumber();
+    }
+
+    [RelayCommand]
+    private async Task ShowPicker()
+    {
+        IsOpen=true;
+    }
+
+    [RelayCommand]
+    private async Task PickerValueChanged(DatePickerSelectionChangedEventArgs e)
+    {
+        var oldvalue = e.OldValue;
+        ClosingDate = (DateTime)e.NewValue;
+    }
+    [RelayCommand]
+    private async Task AcceptPicker()
+    {
+        
+        IsOpen=false;
+    }
+    [RelayCommand]
+    private async Task DeclinePicker()
+    {
+        IsOpen=false;
     }
 
     [RelayCommand]
