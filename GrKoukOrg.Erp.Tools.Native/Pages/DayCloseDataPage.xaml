@@ -18,13 +18,6 @@
 
     </ContentPage.Behaviors>
     <ContentPage.Resources>
-
-
-        <Style TargetType="DatePicker">
-            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
-            <Setter Property="TextColor"
-                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
-        </Style>
         <Style TargetType="Label">
             <Setter Property="HorizontalOptions" Value="Center" />
             <Setter Property="VerticalOptions" Value="Center" />
@@ -67,9 +60,11 @@
                                      SelectedDate="{Binding ClosingDate}"
                                      IsOpen="{Binding IsOpen}"
                                      SelectionChangedCommand="{Binding PickerValueChangedCommand}"
-                                     AcceptCommand="{Binding  AcceptPickerCommand}"
+                                     AcceptCommand="{Binding AcceptPickerCommand}"
                                      DeclineCommand="{Binding DeclinePickerCommand}">
-                    <picker:PickerHeaderView Height="40" Text="Ημερομηνία Κλεισίματος" />
+                    <picker:SfDatePicker.HeaderView>
+                        <picker:PickerHeaderView Height="40" Text="Ημερομηνία Κλεισίματος" />
+                    </picker:SfDatePicker.HeaderView>
                     <picker:SfDatePicker.FooterView>
                         <picker:PickerFooterView Height="40" OkButtonText="Save"
                                                  CancelButtonText="Exit" />
