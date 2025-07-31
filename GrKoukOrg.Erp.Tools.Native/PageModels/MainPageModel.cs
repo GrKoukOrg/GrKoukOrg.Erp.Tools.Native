@@ -89,11 +89,27 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [RelayCommand]
         private async Task DateClose()
         {
-            await DateCloseDataAsync();
+            try
+            {
+                await DateCloseDataAsync();
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            
         }
         private async Task DateCloseDataAsync()
         {
-            await Shell.Current.GoToAsync("dateClose");
+            try
+            {
+                await Shell.Current.GoToAsync("dateClose");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+           
         }
         [RelayCommand]
         private async Task Appearing()
