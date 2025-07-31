@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,20 +28,45 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [ObservableProperty] private string _userName = string.Empty;
         [ObservableProperty] private string _password = string.Empty;
         [ObservableProperty] private string _statusMessage = string.Empty;
-        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService, ISettingsDataService settingsDataService)
+        [ObservableProperty] private string _versionInfo = string.Empty;
+
+        public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService,
+            ISettingsDataService settingsDataService)
         {
             _errorHandler = errorHandler;
             _apiService = apiService;
             _settingsDataService = settingsDataService;
             _seedDataService = seedDataService;
+            InitializeVersionInfo();
         }
+
+        private void InitializeVersionInfo()
+        {
+            try
+            {
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                if (version != null)
+                {
+                    VersionInfo = $"Version {version.Major}.{version.Minor}.{version.Build}";
+                }
+                else
+                {
+                    VersionInfo = "Version information not available";
+                }
+            }
+            catch
+            {
+                VersionInfo = "Version information not available";
+            }
+        }
+
 
         private async Task LoadData()
         {
             try
             {
                 IsBusy = true;
-                LastSynced=Preferences.Default.Get("last_synced", DateTime.Today);
+                LastSynced = Preferences.Default.Get("last_synced", DateTime.Today);
             }
             finally
             {
@@ -67,7 +93,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             try
             {
                 IsRefreshing = true;
-                 await LoadData();
+                await LoadData();
             }
             catch (Exception e)
             {
@@ -86,6 +112,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [RelayCommand]
         private void NavigatedFrom() =>
             _isNavigatedTo = false;
+
         [RelayCommand]
         private async Task DateClose()
         {
@@ -97,8 +124,8 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             {
                 _errorHandler.HandleError(e);
             }
-            
         }
+
         private async Task DateCloseDataAsync()
         {
             try
@@ -109,8 +136,8 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             {
                 _errorHandler.HandleError(e);
             }
-           
         }
+
         [RelayCommand]
         private async Task Appearing()
         {
@@ -132,16 +159,17 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         {
             await Shell.Current.GoToAsync("erpcashdiarylist");
         }
+
         [RelayCommand]
         private async Task Test()
         {
-            var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
+            var apiBaseUrl = _settingsDataService.GetErpApiUrl();
             var uri = new Uri(apiBaseUrl + "/erpapi/GetTest1");
             try
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, uri);
                 var result = await _apiService.MakeAuthenticatedRequestAsync(request);
-                StatusMessage=result.ToString();
+                StatusMessage = result.ToString();
                 Console.WriteLine(result);
             }
             catch (Exception ex)
@@ -150,6 +178,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
                 Console.WriteLine(ex);
             }
         }
+
         [RelayCommand]
         private async Task Login()
         {
@@ -186,6 +215,5 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
                 IsBusy = false;
             }
         }
-
     }
 }
