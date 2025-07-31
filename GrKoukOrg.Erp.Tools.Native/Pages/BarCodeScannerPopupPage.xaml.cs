@@ -23,6 +23,6 @@ AutoRotate = true,
     {
         scanner.IsDetecting = false;
 
-        Close(e.Results[0].Value);
+       // Close(e.Results[0].Value);
     }
 }

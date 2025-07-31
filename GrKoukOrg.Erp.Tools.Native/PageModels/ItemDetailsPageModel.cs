@@ -164,30 +164,30 @@ public partial class ItemDetailsPageModel : ObservableObject
         if (currentPage != null)
         {
             var popup = new BarCodeScannerPopupPage();
-            var result = await currentPage.ShowPopupAsync(barcodeScannerPopupPage, CancellationToken.None);
+          //  var result = await currentPage.ShowPopupAsync(barcodeScannerPopupPage, CancellationToken.None);
 
-            if (result is not null)
-            {
-                try
-                {
-                    SearchText = result.ToString();
-
-                    var barcodeItem = Items.FirstOrDefault(item => item.Barcodes.Contains(SearchText));
-                    if (barcodeItem is not null)
-                    {
-                        SelectedItem = barcodeItem;
-                        CalculateItemStatistics(SelectedItem.Id);
-                    }
-                }
-                catch
-                {
-                    Console.WriteLine();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Null result or cancelled");
-            }
+            // if (result is not null)
+            // {
+            //     try
+            //     {
+            //         SearchText = result.ToString();
+            //
+            //         var barcodeItem = Items.FirstOrDefault(item => item.Barcodes.Contains(SearchText));
+            //         if (barcodeItem is not null)
+            //         {
+            //             SelectedItem = barcodeItem;
+            //             CalculateItemStatistics(SelectedItem.Id);
+            //         }
+            //     }
+            //     catch
+            //     {
+            //         Console.WriteLine();
+            //     }
+            // }
+            // else
+            // {
+            //     Console.WriteLine("Null result or cancelled");
+            // }
         }
     }
 
