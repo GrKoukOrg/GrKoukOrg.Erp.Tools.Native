@@ -11,7 +11,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels;
 
 public partial class DayCloseDataPageModel:ObservableObject
 {
-    private readonly ILogger<BusBuyDocListSyncPageModel> _logger;
+    private readonly ILogger<DayCloseDataPageModel> _logger;
     private readonly ApiService _apiService;
     private readonly ISettingsDataService _settingsDataService;
     private readonly INavigationParameterService _navParameterService;
@@ -27,7 +27,7 @@ public partial class DayCloseDataPageModel:ObservableObject
     private string _companyCode;
     private int _lastZNumber = 0;
     
-    public DayCloseDataPageModel(ILogger<BusBuyDocListSyncPageModel> logger, ApiService apiService,
+    public DayCloseDataPageModel(ILogger<DayCloseDataPageModel> logger, ApiService apiService,
         ISettingsDataService settingsDataService, INavigationParameterService navParameterService)
     {
         _logger = logger;
@@ -39,8 +39,26 @@ public partial class DayCloseDataPageModel:ObservableObject
     private async Task Appearing()
     {
         IsWaitingForResponse = false;
-        _companyCode = _settingsDataService.GetBusinessCompanyCode();
-        _lastZNumber=_settingsDataService.GetLastZNumber();
+        try
+        {
+            _companyCode = _settingsDataService.GetBusinessCompanyCode();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        try
+        {
+            _lastZNumber = _settingsDataService.GetLastZNumber();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+       
     }
 
     [RelayCommand]
