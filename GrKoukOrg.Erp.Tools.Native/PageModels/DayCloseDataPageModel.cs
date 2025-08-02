@@ -15,13 +15,14 @@ public partial class DayCloseDataPageModel:ObservableObject
     private readonly ApiService _apiService;
     private readonly ISettingsDataService _settingsDataService;
     private readonly INavigationParameterService _navParameterService;
-    
+    private DateTime? _oldDateValue;
     
     [ObservableProperty] private bool _isWaitingForResponse = false;
     [ObservableProperty] private DateTime _closingDate = DateTime.Today;
     [ObservableProperty] private decimal _totalCash = 0;
     [ObservableProperty] private decimal _totalCards = 0;   
     [ObservableProperty] private decimal _totalStar = 0;
+    [ObservableProperty] private decimal _totalSum = 0;
     [ObservableProperty] private int _zNumber = 0;
     [ObservableProperty] private bool _isOpen = false;
     private string _companyCode;
@@ -70,7 +71,7 @@ public partial class DayCloseDataPageModel:ObservableObject
     [RelayCommand]
     private async Task PickerValueChanged(DatePickerSelectionChangedEventArgs e)
     {
-        var oldvalue = e.OldValue;
+        _oldDateValue = e.OldValue;
         ClosingDate = (DateTime)e.NewValue;
     }
     [RelayCommand]
@@ -82,10 +83,26 @@ public partial class DayCloseDataPageModel:ObservableObject
     [RelayCommand]
     private async Task DeclinePicker()
     {
+        ClosingDate=_oldDateValue ?? DateTime.Today;
         IsOpen=false;
     }
 
     [RelayCommand]
+
+    partial void OnTotalCardsChanged(decimal value)
+    {
+        TotalSum=_totalCash+_totalCards+_totalStar;
+    }
+
+    partial void OnTotalCashChanged(decimal value)
+    {
+        TotalSum=_totalCash+_totalCards+_totalStar;
+    }
+
+    partial void OnTotalStarChanged(decimal value)
+    {
+        TotalSum=_totalCash+_totalCards+_totalStar;
+    }
     private async Task Submit()
     {
         IsWaitingForResponse = true;
@@ -123,6 +140,7 @@ public partial class DayCloseDataPageModel:ObservableObject
             var stMessage = erpResponse.Message;
             // var stMessage = 
             IsWaitingForResponse = false;
+            _settingsDataService.SetLastZNumber(_lastZNumber + 1);
             await AppShell.DisplayToastAsync(stMessage);
         }
         catch (Exception ex)

@@ -144,7 +144,15 @@
 
                         </Entry>
                     </HorizontalStackLayout>
-
+                    <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
+                        <Label
+                            WidthRequest="150"
+                            Text="Total" />
+                        <Label
+                            WidthRequest="200"
+                            Text="{Binding TotalSum, StringFormat='{0:C}'}" />
+                       
+                    </HorizontalStackLayout>
                     <Button
                         HeightRequest="{OnIdiom 44, Desktop=60}"
                         Text="Submit"
