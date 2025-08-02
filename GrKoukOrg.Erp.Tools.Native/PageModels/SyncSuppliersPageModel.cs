@@ -51,7 +51,6 @@ public partial class SyncSuppliersPageModel : ObservableObject
 
     private void AddLog(string message)
     {
-        //LogEntries.Add(new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
         LogEntries.Insert(0, new LogEntry { Timestamp = DateTime.Now.ToString("HH:mm:ss"), Message = message });
     }
 
@@ -383,9 +382,9 @@ public partial class SyncSuppliersPageModel : ObservableObject
             TaskCanceledException when ex.InnerException is TimeoutException =>
                 $"The request timed out: {ex.Message}",
             HttpRequestException =>
-                "Network error: Unable to connect to the server. Please check your connection and try again.",
+                "Network error: " +ex.Message,
             JsonException =>
-                "Data parsing error: The server returned data in an unexpected format.",
+                "Data parsing error: " + ex.Message,
             TaskCanceledException =>
                 "Request timeout: The server is taking too long to respond. Please try again later.",
             _ =>
