@@ -17,24 +17,33 @@ public class ApiService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ISettingsDataService _settingsDataService;
 
-    private readonly HttpClient _httpClient;
+   // private readonly HttpClient _httpClient;
 
     public ApiService(IHttpClientFactory httpClientFactory,ISettingsDataService settingsDataService)
     {
         _httpClientFactory = httpClientFactory;
         _settingsDataService = settingsDataService;
         var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
-        _httpClient = new HttpClient
-        {
-          //BaseAddress = new Uri(apiBaseUrl),
-          //Timeout = TimeSpan.FromSeconds(10)
-              
-        };
+        // _httpClient = new HttpClient
+        // {
+        //   //BaseAddress = new Uri(apiBaseUrl),
+        //   //Timeout = TimeSpan.FromSeconds(10)
+        //       
+        // };
+    }
+    private HttpClient CreateClient()
+    {
+        var client = _httpClientFactory.CreateClient("ErpApi");
+        var apiBaseUrl = _settingsDataService.GetErpApiUrl();
+        client.BaseAddress = new Uri(apiBaseUrl);
+        return client;
     }
 
     // Login API call
     public async Task<TokenModel> LoginAsync(string username, string password)
     {
+        using var client = CreateClient();
+
         var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
         var url = new Uri(apiBaseUrl + "/auth/login");
         
@@ -46,7 +55,7 @@ public class ApiService
 
         try
         {
-            var response = await _httpClient.PostAsync(url,
+            var response = await client.PostAsync(url,
                 new StringContent(JsonSerializer.Serialize(loginData), Encoding.UTF8, "application/json"));
 
             if (response.IsSuccessStatusCode)
@@ -88,10 +97,11 @@ public class ApiService
         };
         var apiBaseUrl = _settingsDataService.GetErpApiUrl(); 
         var url = new Uri(apiBaseUrl + "/auth/refresh");
+        using var client = CreateClient();
 
         try
         {
-            var response = await _httpClient.PostAsync(url,
+            var response = await client.PostAsync(url,
                 new StringContent(JsonSerializer.Serialize(refreshData), Encoding.UTF8, "application/json"));
 
             if (response.IsSuccessStatusCode)
@@ -121,6 +131,7 @@ public class ApiService
                     
                 }
             }
+            
         }
         catch (Exception e)
         {
@@ -160,22 +171,24 @@ public class ApiService
         var roles = await GetRolesFromAccessTokenAsync();
         return roles.Contains(roleName);
     }
-    private  async Task AddAuthorizationHeaderAsync()
+    private  async Task AddAuthorizationHeaderAsync(HttpClient client)
     {
         
         var accessToken =  Preferences.Default.Get("AccessToken",string.Empty);
 
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = 
+            client.DefaultRequestHeaders.Authorization = 
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         }
     }
     public async Task<HttpResponseMessage> MakeAuthenticatedRequestAsync(HttpRequestMessage request)
-    {
-        await AddAuthorizationHeaderAsync();
+    { 
+        using var client = CreateClient();
+
+        await AddAuthorizationHeaderAsync(client);
     
-        var response = await _httpClient.SendAsync(request);
+        var response = await client.SendAsync(request);
 
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
@@ -191,8 +204,8 @@ public class ApiService
                 // Retry the request with the new access token
                 var newRequest = CloneHttpRequestMessage(request); 
 
-                await AddAuthorizationHeaderAsync();
-                response = await _httpClient.SendAsync(newRequest);
+                await AddAuthorizationHeaderAsync(client);
+                response = await client.SendAsync(newRequest);
             }
             catch (Exception ex)
             {
