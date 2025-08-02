@@ -7,9 +7,7 @@ namespace GrKoukOrg.Erp.Tools.Native.Data
 {
     public class SeedDataService
     {
-        private readonly ProjectRepository _projectRepository;
-        private readonly TaskRepository _taskRepository;
-        private readonly TagRepository _tagRepository;
+       
         private readonly CategoryRepository _categoryRepository;
         private readonly string _seedDataFilePath = "SeedData.json";
         private readonly ILogger<SeedDataService> _logger;
