@@ -8,12 +8,16 @@ namespace GrKoukOrg.Erp.Tools.Native.Behaviors
         {
             base.OnAttachedTo(bindable);
             bindable.TextChanged += OnEntryTextChanged;
+            bindable.Focused += OnEntryFocused;
+           
         }
 
         protected override void OnDetachingFrom(Entry bindable)
         {
             base.OnDetachingFrom(bindable);
             bindable.TextChanged -= OnEntryTextChanged;
+            bindable.Focused -= OnEntryFocused;
+          
         }
 
         private void OnEntryTextChanged(object sender, TextChangedEventArgs e)
@@ -32,5 +36,21 @@ namespace GrKoukOrg.Erp.Tools.Native.Behaviors
                     entry.Text = filtered;
             }
         }
+        private void OnEntryFocused(object sender, FocusEventArgs e)
+        {
+            
+            if (sender is Entry entry && !string.IsNullOrWhiteSpace(entry.Text))
+            {
+                // Select all text (override needed on main thread)
+                Microsoft.Maui.Controls.Device.BeginInvokeOnMainThread(() =>
+                {
+                    entry.CursorPosition = 0;
+                    entry.SelectionLength = entry.Text.Length;
+                });
+               
+            }
+        }
+
+       
     }
 }
