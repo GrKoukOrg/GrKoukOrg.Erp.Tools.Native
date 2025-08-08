@@ -12,6 +12,13 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
     {
         private bool _isNavigatedTo;
         private bool _dataLoaded;
+        private readonly IStartupChecker _startupChecker;
+
+        [ObservableProperty] bool networkConnected;
+        [ObservableProperty] bool internetAccessible;
+        [ObservableProperty] bool apiConnected;
+        [ObservableProperty] bool tokenRefreshSuccess;
+        [ObservableProperty] string errorMessage;
 
         private readonly ModalErrorHandler _errorHandler;
         private readonly ApiService _apiService;
@@ -31,12 +38,15 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
         [ObservableProperty] private string _versionInfo = string.Empty;
 
         public MainPageModel(SeedDataService seedDataService, ModalErrorHandler errorHandler, ApiService apiService,
-            ISettingsDataService settingsDataService)
+            ISettingsDataService settingsDataService,IStartupChecker startupChecker
+        )
         {
             _errorHandler = errorHandler;
             _apiService = apiService;
             _settingsDataService = settingsDataService;
             _seedDataService = seedDataService;
+            _startupChecker = startupChecker;
+
             InitializeVersionInfo();
         }
 
@@ -58,6 +68,16 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             {
                 VersionInfo = "Version information not available";
             }
+        }
+        [RelayCommand]
+        public async Task PerformChecksAsync()
+        {
+            var result = await _startupChecker.PerformAllChecksAsync();
+            NetworkConnected = result.NetworkConnected;
+            InternetAccessible = result.InternetAccessible;
+            ApiConnected = result.ApiConnected;
+            TokenRefreshSuccess = result.TokenRefreshSuccess;
+            ErrorMessage = result.ErrorMessage;
         }
 
 
@@ -151,6 +171,15 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
             else if (!_isNavigatedTo)
             {
                 await Refresh();
+            }
+
+            try
+            {
+                await PerformChecksAsync();
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
             }
         }
 
