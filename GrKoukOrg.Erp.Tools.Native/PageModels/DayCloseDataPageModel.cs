@@ -103,6 +103,7 @@ public partial class DayCloseDataPageModel:ObservableObject
     {
         TotalSum=_totalCash+_totalCards+_totalStar;
     }
+    [RelayCommand]
     private async Task Submit()
     {
         IsWaitingForResponse = true;
