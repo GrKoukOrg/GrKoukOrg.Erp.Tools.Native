@@ -39,6 +39,8 @@ public class SaleDocumentDto
     public DateTime TransDate { get; set; }
     [JsonPropertyName("saleDocDefId")]
     public int SaleDocDefId { get; set; }
+    [JsonPropertyName("saleDocDefCode")]
+    public string? SaleDocDefCode { get; set; }
     [JsonPropertyName("saleDocDefName")]
     public string? SaleDocDefName { get; set; }
     [JsonPropertyName("customerId")]

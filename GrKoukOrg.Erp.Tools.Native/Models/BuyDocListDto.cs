@@ -39,6 +39,8 @@ namespace GrKoukOrg.Erp.Tools.Native.Models
         public DateTime TransDate { get; set; }
         [JsonPropertyName("buyDocDefId")]
         public int BuyDocDefId { get; set; }
+        [JsonPropertyName("buyDocDefCode")]
+        public string? BuyDocDefCode { get; set; }
         [JsonPropertyName("buyDocDefName")]
         public string? BuyDocDefName { get; set; }
         [JsonPropertyName("supplierId")]
