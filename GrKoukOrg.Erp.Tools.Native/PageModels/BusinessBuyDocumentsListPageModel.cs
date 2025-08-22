@@ -19,6 +19,10 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
 
     private readonly ApiService _apiService;
 
+    private static readonly JsonSerializerOptions JsonOptionsCaseInsensitive = new() { PropertyNameCaseInsensitive = true };
+    private const string CheckEndpoint = "/erpapi/SyncCheckBusinessBuyDocument";
+    private const string AddSingleEndpoint = "/erpapi/SyncAddBusinessBuyDocument";
+    private const string AddBatchEndpoint = "/erpapi/SyncAddBusinessBuyDocuments";
     // private readonly ModalErrorHandler _errorHandler;
     [ObservableProperty] private ObservableCollection<BusinessBuyDocUpdateItem> _items;
     [ObservableProperty] private bool _isBusy;
@@ -174,7 +178,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             var targetItem = Items.FirstOrDefault(x => x.Id == item.Id);
             var companyCode = _settingsDataService.GetBusinessCompanyCode();
             var erpApiBase = _settingsDataService.GetErpApiUrl();
-            var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncCheckBusinessBuyDocument");
+            var erpApiUri = new Uri(erpApiBase + CheckEndpoint);
             try
             {
                 var payload = new SyncBusinessBuyDocumentRequest()
@@ -209,9 +213,17 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
                 }
 
                 var jsonContent = await result.Content.ReadAsStringAsync();
-                var erpResponse = JsonSerializer.Deserialize<ErpCheckDocumentResponse>(jsonContent);
+                var erpResponse = JsonSerializer.Deserialize<ErpCheckDocumentResponse>(jsonContent, JsonOptionsCaseInsensitive);
+                if (erpResponse == null)
+                {
+                    if (targetItem != null)
+                    {
+                        UpdateMessageToItem(targetItem, "Unable to parse response from server.");
+                    }
+                    return;
+                }
 
-                var stMessage = erpResponse.Message;
+                var stMessage = erpResponse.Message ?? "";
                 var isSynced = erpResponse.IsSynced;
                 var canSync = erpResponse.CanSync;
                 if (canSync)
@@ -260,7 +272,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         var targetItem = Items.FirstOrDefault(x => x.Id == document.Id);
         var companyCode = _settingsDataService.GetBusinessCompanyCode();
         var erpApiBase = _settingsDataService.GetErpApiUrl();
-        var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocument");
+        var erpApiUri = new Uri(erpApiBase + AddSingleEndpoint);
         try
         {
             var payload = new SyncBusinessBuyDocumentRequest()
@@ -297,12 +309,21 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             }
 
             var jsonContent = await result.Content.ReadAsStringAsync();
-            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent);
-
-            var stMessage = erpResponse.Message;
-            if (targetItem != null)
+            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent, JsonOptionsCaseInsensitive);
+            if (erpResponse == null)
             {
-                UpdateMessageToItem(targetItem, stMessage, isSendingToErp: false);
+                if (targetItem != null)
+                {
+                    UpdateMessageToItem(targetItem, "Unable to parse response from server.", isSendingToErp: false);
+                }
+            }
+            else
+            {
+                var stMessage = erpResponse.Message ?? "Operation completed.";
+                if (targetItem != null)
+                {
+                    UpdateMessageToItem(targetItem, stMessage, isSendingToErp: false);
+                }
             }
         }
         catch (Exception ex)
@@ -347,7 +368,7 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
         }).ToList();
         
         var erpApiBase = _settingsDataService.GetErpApiUrl();
-        var erpApiUri = new Uri(erpApiBase + "/erpapi/SyncAddBusinessBuyDocuments");
+        var erpApiUri = new Uri(erpApiBase + AddBatchEndpoint);
         try
         {
             var payload = new SyncBusinessEntityRequest<SyncBusinessBuyDocumentRequest>()
@@ -369,11 +390,17 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             }
 
             var jsonContent = await result.Content.ReadAsStringAsync();
-            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent);
+            var erpResponse = JsonSerializer.Deserialize<ErpSynchronizationResponse<BuyDocumentDto>>(jsonContent, JsonOptionsCaseInsensitive);
 
-            var stMessage = $"Send completed. Please perform CHECK STATUS to see the results " +
-                            $"Added Count: {erpResponse.AddedCount}" +
-                            $"Failed to Add Count: {erpResponse.FailedToAddCount}" ;
+            string stMessage;
+            if (erpResponse == null)
+            {
+                stMessage = "Send completed. Please perform CHECK STATUS.";
+            }
+            else
+            {
+                stMessage = $"Send completed. Please perform CHECK STATUS to see the results. Added: {erpResponse.AddedCount} | Failed: {erpResponse.FailedToAddCount}";
+            }
             IsCheckingStatus = false;
             await AppShell.DisplayToastAsync(stMessage);
         }
@@ -436,15 +463,17 @@ public partial class BusinessBuyDocumentsListPageModel : ObservableObject
             _ =>
                 $"An unexpected error occurred: {ex.Message}"
         };
+
+        var displayMessage = string.IsNullOrWhiteSpace(customMessage) ? errorMessage : customMessage;
+
         if (targetItem is not null)
         {
             UpdateMessageToItem(targetItem, errorMessage, isSendingToErp: isSendingToErp);
-            
         }
 
-        Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+        _logger.LogError(ex, displayMessage);
 
         // Optionally, display the message using a Toast
-        AppShell.DisplayToastAsync(customMessage ?? errorMessage).FireAndForgetSafeAsync();
+        AppShell.DisplayToastAsync(displayMessage).FireAndForgetSafeAsync();
     }
 }
