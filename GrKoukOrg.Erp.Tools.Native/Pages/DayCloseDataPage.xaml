@@ -19,9 +19,13 @@
     </ContentPage.Behaviors>
     <ContentPage.Resources>
         <Style TargetType="Label">
+            <Setter Property="TextColor"
+                    Value="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+            <Setter Property="BackgroundColor" Value="Transparent" />
             <Setter Property="HorizontalOptions" Value="Center" />
             <Setter Property="VerticalOptions" Value="Center" />
-            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=27}" />
+            <Setter Property="WidthRequest" Value="150"/>
+            <Setter Property="FontSize" Value="{OnIdiom 16,Desktop=20}" />
         </Style>
         <Style TargetType="Entry">
             <Setter Property="TextColor"
@@ -92,7 +96,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="150"
+                           
                             Text="Αριθμός Ζ" />
                         <Entry
                             WidthRequest="200"
@@ -105,7 +109,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="150"
+                           
                             Text="Μετρητά" />
                         <Entry
                             WidthRequest="200"
@@ -119,7 +123,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="150"
+                           
                             Text="Κάρτες" />
                         <Entry
                             WidthRequest="200"
@@ -133,7 +137,7 @@
 
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="150"
+                           
                             Text="Star" />
                         <Entry
                             WidthRequest="200"
@@ -146,7 +150,7 @@
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="{StaticResource LayoutSpacing}">
                         <Label
-                            WidthRequest="150"
+                           
                             Text="Total" />
                         <Label
                             WidthRequest="200"
