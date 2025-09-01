@@ -47,6 +47,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddScoped<LocalSaleDocumentsRepo>();
             builder.Services.AddScoped<LocalSalesDocLinesRepo>();
             builder.Services.AddScoped<LocalCustomerRepo>();
+            builder.Services.AddScoped<LocalCostTrackingRepo>();
             builder.Services.AddScoped<ISettingsDataService, SettingsMemoryDataService>();
             builder.Services.AddScoped<IBusinessServerDataAccess, BusinessServerHttpDataAccess>();
             builder.Services.AddScoped<ILocalCashDiaryRepo<CashDiaryItemDto>, LocalCashDiaryTestRepo>();
