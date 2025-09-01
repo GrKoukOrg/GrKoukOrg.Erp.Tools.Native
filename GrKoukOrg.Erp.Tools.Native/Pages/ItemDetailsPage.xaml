@@ -91,6 +91,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Label Text="Κωδικός" Grid.Column="0" Grid.Row="0" />
                     <Label Text="{Binding SelectedItem.Code}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" />
@@ -133,7 +134,9 @@
                     <Label Text="{Binding ItemStatistics.MarkUpAmountNet,StringFormat='{0:F2}€' }"
                            Grid.Column="3"
                            Grid.Row="7" />
-                    <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4"
+                    <Label Text="Τρέχον Κόστος" Grid.Column="0" Grid.Row="8" />
+                    <Label Text="{Binding CurrentCost, StringFormat='{0:F2}€'}" Grid.Column="1" Grid.Row="8" />
+                    <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="4"
                             Padding="{StaticResource LayoutPadding}" Text="Αγορές"
                             Command="{Binding ShowItemBuyDocsCommand }">
                     </Button>

@@ -8,6 +8,7 @@ using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GrKoukOrg.Erp.Tools.Native.Models;
+using GrKoukOrg.Erp.Tools.Native.Data;
 using Microsoft.Maui.Controls;
 
 namespace GrKoukOrg.Erp.Tools.Native.PageModels;
@@ -19,6 +20,7 @@ public partial class ItemDetailsPageModel : ObservableObject
     private readonly LocalBuyDocLinesRepo _localBuyDocLinesRepo;
     private readonly LocalSaleDocumentsRepo _localSaleDocumentsRepo;
     private readonly LocalSalesDocLinesRepo _localSalesDocLinesRepo;
+    private readonly LocalCostTrackingRepo _localCostTrackingRepo;
     [ObservableProperty] private ICollection<ItemListDto> _items;
     [ObservableProperty] private ItemListDto _selectedItem;
     [ObservableProperty] private string _searchText;
@@ -26,11 +28,13 @@ public partial class ItemDetailsPageModel : ObservableObject
     [ObservableProperty] private ItemStatisticsDto _itemStatistics = new ItemStatisticsDto();
     [ObservableProperty] private decimal _markupPercentage = 0;
     [ObservableProperty] private decimal _markupAmount = 0;
+    [ObservableProperty] private decimal _currentCost = 0;
 
     public ItemDetailsPageModel(LocalItemsRepo localItemsRepo, LocalBuyDocumentsRepo localBuyDocumentsRepo,
         LocalBuyDocLinesRepo localBuyDocLinesRepo
         , LocalSaleDocumentsRepo localSaleDocumentsRepo
         , LocalSalesDocLinesRepo localSalesDocLinesRepo
+        , LocalCostTrackingRepo localCostTrackingRepo
     )
     {
         _localItemsRepo = localItemsRepo;
@@ -38,6 +42,7 @@ public partial class ItemDetailsPageModel : ObservableObject
         _localBuyDocLinesRepo = localBuyDocLinesRepo;
         _localSaleDocumentsRepo = localSaleDocumentsRepo;
         _localSalesDocLinesRepo = localSalesDocLinesRepo;
+        _localCostTrackingRepo = localCostTrackingRepo;
     }
 
     private async Task CalculateItemStatistics(int itemId)
@@ -124,6 +129,17 @@ public partial class ItemDetailsPageModel : ObservableObject
             MarkUpPercentage = markupPercentage,
             TotalQuantitySold = totalQuantitySold,
         };
+
+        try
+        {
+            // Get the last cost for the current date
+            CurrentCost = await _localCostTrackingRepo.GetAverageCostForDateAsync(itemId, DateTime.Today);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error getting current cost: {ex.Message}");
+            CurrentCost = 0m;
+        }
     }
 
     [RelayCommand]
@@ -137,7 +153,7 @@ public partial class ItemDetailsPageModel : ObservableObject
             {
                 try
                 {
-                    CalculateItemStatistics(SelectedItem.Id);
+                    await CalculateItemStatistics(SelectedItem.Id);
                 }
                 catch (Exception e)
                 {
