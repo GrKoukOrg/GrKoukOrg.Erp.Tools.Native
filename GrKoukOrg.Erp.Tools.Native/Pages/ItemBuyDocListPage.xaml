@@ -30,7 +30,7 @@
     </ContentPage.Behaviors>
     <ContentPage.Content>
         <ScrollView>
-            <Grid>
+            <Grid Padding="{StaticResource LayoutPadding}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
