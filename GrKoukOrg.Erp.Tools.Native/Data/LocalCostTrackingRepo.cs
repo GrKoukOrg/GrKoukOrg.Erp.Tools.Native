@@ -372,6 +372,39 @@ public class LocalCostTrackingRepo
         return 0m;
     }
 
+    public async Task<decimal> GetAverageCostForDateAsync(int itemId, DateTime date)
+    {
+        await Init();
+        var start = date.Date;
+        var end = start.AddDays(1).AddTicks(-1);
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT AvgCostAfter FROM CostTrackingEntries WHERE ItemId=@itemId AND TransDate>=@start AND TransDate<=@end ORDER BY TransDate DESC, Id DESC LIMIT 1";
+        cmd.Parameters.AddWithValue("@itemId", itemId);
+        cmd.Parameters.AddWithValue("@start", start);
+        cmd.Parameters.AddWithValue("@end", end);
+        await using (var reader = await cmd.ExecuteReaderAsync())
+        {
+            if (await reader.ReadAsync())
+            {
+                return reader.GetDecimal(0);
+            }
+        }
+        // Fallback: return the latest available average cost if none found for the specified date
+        cmd.Parameters.Clear();
+        cmd.CommandText = @"SELECT AvgCostAfter FROM CostTrackingEntries WHERE ItemId=@itemId ORDER BY TransDate DESC, Id DESC LIMIT 1";
+        cmd.Parameters.AddWithValue("@itemId", itemId);
+        await using (var fallbackReader = await cmd.ExecuteReaderAsync())
+        {
+            if (await fallbackReader.ReadAsync())
+            {
+                return fallbackReader.GetDecimal(0);
+            }
+        }
+        return 0m;
+    }
+
     public async Task<int> AddPurchaseInvoiceAsync(int itemId, DateTime transDate, decimal quantity, decimal unitPrice, int? sourceDocId = null, string? notes = null)
     {
         var valueDelta = quantity * unitPrice; // net value
