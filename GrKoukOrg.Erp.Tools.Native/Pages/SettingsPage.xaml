@@ -77,6 +77,7 @@
                   HeightRequest="{OnIdiom 44, Desktop=60}"
                   Text="Save"
                   Command="{Binding SaveCommand}"/>
+              <Label Text="{Binding DatabasePath}"/>
           </VerticalStackLayout>
       </VerticalStackLayout>
   </ScrollView>
