@@ -24,6 +24,112 @@ public class LocalCostTrackingRepo
         _logger = logger;
     }
 
+    public async Task<int> UpsertAndRecalculateAsync(Models.CostTrackingEntryDto entry)
+    {
+        await Init();
+        var existing = await GetAsync(entry.Id);
+        DateTime fromDate;
+        int itemId;
+
+        if (existing == null)
+        {
+            // Insert using existing AddAsync to populate initial QtyAfter/AvgCostAfter
+            await AddAsync(entry);
+            fromDate = entry.TransDate;
+            itemId = entry.ItemId;
+        }
+        else
+        {
+            // Update the row first with provided deltas and metadata; keep current QtyAfter/AvgCostAfter (to be recalculated)
+            var temp = new Models.CostTrackingEntryDto
+            {
+                Id = entry.Id,
+                TransDate = entry.TransDate,
+                ItemId = entry.ItemId,
+                DocType = entry.DocType,
+                QtyDelta = entry.QtyDelta,
+                ValueDelta = entry.ValueDelta,
+                QtyAfter = existing.QtyAfter,
+                AvgCostAfter = existing.AvgCostAfter,
+                SourceDocId = entry.SourceDocId,
+                Notes = entry.Notes
+            };
+            await UpdateAsync(temp);
+            fromDate = entry.TransDate <= existing.TransDate ? entry.TransDate : existing.TransDate;
+            itemId = entry.ItemId;
+        }
+
+        // Recalculate downstream running averages and quantities for this item
+        await RecalculateFromAsync(itemId, fromDate);
+        return 1;
+    }
+
+    public async Task RecalculateFromAsync(int itemId, DateTime fromDate)
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        // Get the state immediately before fromDate
+        decimal qtyBefore = 0m;
+        decimal avgCostBefore = 0m;
+        {
+            var cmdState = connection.CreateCommand();
+            cmdState.CommandText = @"SELECT QtyAfter, AvgCostAfter FROM CostTrackingEntries WHERE ItemId=@itemId AND TransDate<@fromDate ORDER BY TransDate DESC, Id DESC LIMIT 1";
+            cmdState.Parameters.AddWithValue("@itemId", itemId);
+            cmdState.Parameters.AddWithValue("@fromDate", fromDate);
+            await using var readerState = await cmdState.ExecuteReaderAsync();
+            if (await readerState.ReadAsync())
+            {
+                qtyBefore = readerState.GetDecimal(0);
+                avgCostBefore = readerState.GetDecimal(1);
+            }
+        }
+
+        // Fetch entries to recalc
+        var selectCmd = connection.CreateCommand();
+        selectCmd.CommandText = @"SELECT Id, TransDate, QtyDelta, ValueDelta FROM CostTrackingEntries WHERE ItemId=@itemId AND TransDate>=@fromDate ORDER BY TransDate, Id";
+        selectCmd.Parameters.AddWithValue("@itemId", itemId);
+        selectCmd.Parameters.AddWithValue("@fromDate", fromDate);
+
+        var entries = new List<(int Id, DateTime TransDate, decimal QtyDelta, decimal ValueDelta)>();
+        await using (var reader = await selectCmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                entries.Add((reader.GetInt32(0), reader.GetDateTime(1), reader.GetDecimal(2), reader.GetDecimal(3)));
+            }
+        }
+
+        decimal runningQty = qtyBefore;
+        decimal runningAvg = avgCostBefore;
+        foreach (var e in entries)
+        {
+            var valueBefore = runningQty * runningAvg;
+            var qtyAfter = runningQty + e.QtyDelta;
+            decimal avgAfter;
+            if (qtyAfter == 0m)
+            {
+                avgAfter = 0m;
+            }
+            else
+            {
+                var valueAfter = valueBefore + e.ValueDelta;
+                avgAfter = valueAfter / qtyAfter;
+            }
+
+            var updateCmd = connection.CreateCommand();
+            updateCmd.CommandText = @"UPDATE CostTrackingEntries SET QtyAfter=@qtyAfter, AvgCostAfter=@avgAfter WHERE Id=@id";
+            updateCmd.Parameters.AddWithValue("@qtyAfter", qtyAfter);
+            updateCmd.Parameters.AddWithValue("@avgAfter", avgAfter);
+            updateCmd.Parameters.AddWithValue("@id", e.Id);
+            await updateCmd.ExecuteNonQueryAsync();
+
+            runningQty = qtyAfter;
+            runningAvg = avgAfter;
+        }
+    }
+
     private async Task Init()
     {
         if (_hasBeenInitialized)

@@ -766,7 +766,8 @@ public partial class SyncItemsPageModel : ObservableObject
         int updatedCount = 0;
         int addedCount = 0;
         int costInserted = 0;
-        int costSkipped = 0;
+        int costUpdated = 0;
+        int costFailed = 0;
         //var currentPage = Application.Current?.MainPage;
         foreach (var item in BuyDocLines)
         {
@@ -787,15 +788,17 @@ public partial class SyncItemsPageModel : ObservableObject
                 }
 
                 // Update cost tracking for this line
-                var (inserted, skipped) = await UpdateCostTrackingForLineAsync(item);
+                var (inserted, updated, failed) = await UpdateCostTrackingForLineAsync(item);
                 costInserted += inserted;
-                costSkipped += skipped;
+                costUpdated += updated;
+                costFailed += failed;
 
                 ((IProgress<int>)progress).Report(++index);
                 // Allow time for UI to update after each iteration
                 if (index % 20 == 0)
                 {
                     LastLogEntryIndex = index;
+                    AddLog($"CostTrack progress: {index}/{totalCount} processed, inserted: {costInserted}, updated: {costUpdated}, failed: {costFailed}");
                     await Task.Delay(50); // Introduce a small delay for smoother progress visualization    
                 }
             }
@@ -808,13 +811,13 @@ public partial class SyncItemsPageModel : ObservableObject
 
         AddLog("All Buy Doc Lines have been processed.");
         AddLog("Added: " + addedCount + ", Updated: " + updatedCount + "");
-        AddLog($"Cost tracking entries inserted: {costInserted}, skipped(existing): {costSkipped}");
+        AddLog($"Cost tracking entries inserted: {costInserted}, updated: {costUpdated}, failed: {costFailed}");
         IsProgressBarVisible = false; // Hide the progress bar after completing the operation
         Preferences.Default.Set("last_synced", DateTime.Now);
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 
-    private async Task<(int inserted, int skipped)> UpdateCostTrackingForLineAsync(BuyDocLineListDto line)
+    private async Task<(int inserted, int updated, int failed)> UpdateCostTrackingForLineAsync(BuyDocLineListDto line)
     {
         try
         {
@@ -822,33 +825,39 @@ public partial class SyncItemsPageModel : ObservableObject
             if (buyDoc == null)
             {
                 AddLog($"CostTrack skip: BuyDoc {line.BuyDocId} not found for line {line.Id}");
-                return (0, 1);
+                return (0, 0, 1);
             }
 
             // Map BuyDocDefId to cost doc type and qty/value sign
             CostDocType? docType = null;
             decimal qtyDelta = 0m;
+            decimal valueDelta;
 
             switch (buyDoc.BuyDocDefId)
             {
                 case 9: // purchase
                     docType = CostDocType.PurchaseInvoice;
                     qtyDelta = line.UnitQty;
+                    // Effective unit net price: prefer LineNetAmount / UnitQty when possible
+                    var unitPricePurchase = line.UnitQty != 0m ? (line.LineNetAmount / line.UnitQty) : line.UnitPrice;
+                    valueDelta = qtyDelta * unitPricePurchase;
                     break;
                 case 17: // return of stock
-                case 14: // return credit invoice
                     docType = CostDocType.ReturnCreditInvoice;
                     qtyDelta = -line.UnitQty;
+                    var unitPriceReturn = line.UnitQty != 0m ? (line.LineNetAmount / line.UnitQty) : line.UnitPrice;
+                    valueDelta = qtyDelta * unitPriceReturn; // negative value
+                    break;
+                case 14: // discount credit invoice (value only)
+                    docType = CostDocType.DiscountCreditInvoice;
+                    qtyDelta = 0m;
+                    valueDelta = -Math.Abs(line.LineNetAmount);
                     break;
                 default:
                     // Unknown doc type: skip
                     AddLog($"CostTrack skip: Unsupported BuyDocDefId {buyDoc.BuyDocDefId} for line {line.Id}");
-                    return (0, 1);
+                    return (0, 0, 1);
             }
-
-            // Effective unit net price: prefer LineNetAmount / UnitQty when possible
-            decimal unitNetPrice = line.UnitQty != 0m ? (line.LineNetAmount / line.UnitQty) : line.UnitPrice;
-            var valueDelta = qtyDelta * unitNetPrice;
 
             var entry = new CostTrackingEntryDto
             {
@@ -862,24 +871,19 @@ public partial class SyncItemsPageModel : ObservableObject
                 Notes = $"BuyDocDefId={buyDoc.BuyDocDefId}"
             };
 
-            if (await _localCostTrackingRepo.EntryExists(entry.Id))
+            var exists = await _localCostTrackingRepo.EntryExists(entry.Id);
+            await _localCostTrackingRepo.UpsertAndRecalculateAsync(entry);
+            if (exists)
             {
-                // For simplicity and safety, skip updating existing entries to avoid miscalculating AvgCostAfter
-                return (0, 1);
+                return (0, 1, 0);
             }
-
-            var res = await _localCostTrackingRepo.AddAsync(entry);
-            if (res > 0)
-            {
-                return (1, 0);
-            }
-            return (0, 0);
+            return (1, 0, 0);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error updating cost tracking for line {line.Id}");
             AddLog($"CostTrack error line {line.Id}: {ex.Message}");
-            return (0, 1);
+            return (0, 0, 1);
         }
     }
 
