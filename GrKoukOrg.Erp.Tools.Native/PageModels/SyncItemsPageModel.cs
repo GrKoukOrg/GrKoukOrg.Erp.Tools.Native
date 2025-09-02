@@ -788,7 +788,7 @@ public partial class SyncItemsPageModel : ObservableObject
                 }
 
                 // Update cost tracking for this line
-                var (inserted, updated, failed) = await UpdateCostTrackingForLineAsync(item);
+                var (inserted, updated, failed) = await UpdateCostTrackingForBuyDocLineAsync(item);
                 costInserted += inserted;
                 costUpdated += updated;
                 costFailed += failed;
@@ -817,7 +817,7 @@ public partial class SyncItemsPageModel : ObservableObject
         await AppShell.DisplayToastAsync("Finished updating local database");
     }
 
-    private async Task<(int inserted, int updated, int failed)> UpdateCostTrackingForLineAsync(BuyDocLineListDto line)
+    private async Task<(int inserted, int updated, int failed)> UpdateCostTrackingForBuyDocLineAsync(BuyDocLineListDto line)
     {
         try
         {
@@ -832,26 +832,26 @@ public partial class SyncItemsPageModel : ObservableObject
             CostDocType? docType = null;
             decimal qtyDelta = 0m;
             decimal valueDelta;
-
+            decimal unitFinalPrice = line.LineNetAmount - line.LineDiscountAmount;
             switch (buyDoc.BuyDocDefId)
             {
                 case 9: // purchase
                     docType = CostDocType.PurchaseInvoice;
                     qtyDelta = line.UnitQty;
                     // Effective unit net price: prefer LineNetAmount / UnitQty when possible
-                    var unitPricePurchase = line.UnitQty != 0m ? (line.LineNetAmount / line.UnitQty) : line.UnitPrice;
+                    var unitPricePurchase = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;;
                     valueDelta = qtyDelta * unitPricePurchase;
                     break;
                 case 17: // return of stock
                     docType = CostDocType.ReturnCreditInvoice;
                     qtyDelta = -line.UnitQty;
-                    var unitPriceReturn = line.UnitQty != 0m ? (line.LineNetAmount / line.UnitQty) : line.UnitPrice;
+                    var unitPriceReturn = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;;
                     valueDelta = qtyDelta * unitPriceReturn; // negative value
                     break;
                 case 14: // discount credit invoice (value only)
                     docType = CostDocType.DiscountCreditInvoice;
                     qtyDelta = 0m;
-                    valueDelta = -Math.Abs(line.LineNetAmount);
+                    valueDelta = -Math.Abs(line.LineNetAmount-line.LineDiscountAmount);;
                     break;
                 default:
                     // Unknown doc type: skip
