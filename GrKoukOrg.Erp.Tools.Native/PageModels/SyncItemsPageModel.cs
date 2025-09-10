@@ -300,8 +300,9 @@ public partial class SyncItemsPageModel : ObservableObject
         try
         {
             IsWaitingForResponse = true;
-            BuyDocLines = await _businessServerDataAccess.GetBusinessServerBuyDocLineListAsync();
-            BuyDocLinesCount = BuyDocLines.Count;
+            var t = await _businessServerDataAccess.GetBusinessServerBuyDocLineListAsync();
+            BuyDocLinesCount = t.Count;
+            BuyDocLines = t.OrderBy(p => p.TransDate).ToList();
             AddLog($"Connected and retrieved {BuyDocLinesCount} Buy Documents");
         }
         catch (Exception e)
@@ -839,20 +840,28 @@ public partial class SyncItemsPageModel : ObservableObject
                     docType = CostDocType.PurchaseInvoice;
                     qtyDelta = line.UnitQty;
                     // Effective unit net price: prefer LineNetAmount / UnitQty when possible
-                    var unitPricePurchase = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;;
+                    var unitPricePurchase = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;
                     valueDelta = qtyDelta * unitPricePurchase;
                     break;
                 case 17: // return of stock
                     docType = CostDocType.ReturnCreditInvoice;
                     qtyDelta = -line.UnitQty;
-                    var unitPriceReturn = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;;
+                    var unitPriceReturn = line.UnitQty != 0m ? (unitFinalPrice / line.UnitQty) : unitFinalPrice;
                     valueDelta = qtyDelta * unitPriceReturn; // negative value
                     break;
                 case 14: // discount credit invoice (value only)
                     docType = CostDocType.DiscountCreditInvoice;
                     qtyDelta = 0m;
-                    valueDelta = -Math.Abs(line.LineNetAmount-line.LineDiscountAmount);;
+                    valueDelta = -Math.Abs(line.LineNetAmount - line.LineDiscountAmount);
                     break;
+                case 99: // write-off (broken/expired)
+                {
+                    docType = CostDocType.WriteOff;
+                    qtyDelta = -Math.Abs(line.UnitQty);
+                    var avgBefore = await _localCostTrackingRepo.GetAverageCostForDateAsync(line.ItemId, line.TransDate);
+                    valueDelta = -Math.Abs(line.UnitQty) * avgBefore; // reduce inventory value at average cost
+                    break;
+                }
                 default:
                     // Unknown doc type: skip
                     AddLog($"CostTrack skip: Unsupported BuyDocDefId {buyDoc.BuyDocDefId} for line {line.Id}");
@@ -861,17 +870,19 @@ public partial class SyncItemsPageModel : ObservableObject
 
             var entry = new CostTrackingEntryDto
             {
-                Id = line.Id, // ensure one cost entry per line id
+                Id = 0, // surrogate key will be generated
                 TransDate = line.TransDate,
                 ItemId = line.ItemId,
                 DocType = docType.Value,
                 QtyDelta = qtyDelta,
                 ValueDelta = valueDelta,
                 SourceDocId = line.BuyDocId,
-                Notes = $"BuyDocDefId={buyDoc.BuyDocDefId}"
+                Notes = $"BuyDocDefId={buyDoc.BuyDocDefId}",
+                SourceType = 1,
+                SourceLineId = line.Id
             };
 
-            var exists = await _localCostTrackingRepo.EntryExists(entry.Id);
+            var exists = await _localCostTrackingRepo.EntryExistsBySourceAsync(entry.SourceType, entry.SourceLineId);
             await _localCostTrackingRepo.UpsertAndRecalculateAsync(entry);
             if (exists)
             {

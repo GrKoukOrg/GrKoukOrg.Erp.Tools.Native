@@ -27,7 +27,8 @@ public class LocalCostTrackingRepo
     public async Task<int> UpsertAndRecalculateAsync(Models.CostTrackingEntryDto entry)
     {
         await Init();
-        var existing = await GetAsync(entry.Id);
+        // Find existing by composite natural key
+        var existing = await GetBySourceAsync(entry.SourceType, entry.SourceLineId);
         DateTime fromDate;
         int itemId;
 
@@ -43,7 +44,7 @@ public class LocalCostTrackingRepo
             // Update the row first with provided deltas and metadata; keep current QtyAfter/AvgCostAfter (to be recalculated)
             var temp = new Models.CostTrackingEntryDto
             {
-                Id = entry.Id,
+                Id = existing.Id, // entry Id is the surrogate PK
                 TransDate = entry.TransDate,
                 ItemId = entry.ItemId,
                 DocType = entry.DocType,
@@ -52,7 +53,9 @@ public class LocalCostTrackingRepo
                 QtyAfter = existing.QtyAfter,
                 AvgCostAfter = existing.AvgCostAfter,
                 SourceDocId = entry.SourceDocId,
-                Notes = entry.Notes
+                Notes = entry.Notes,
+                SourceType = existing.SourceType,
+                SourceLineId = existing.SourceLineId
             };
             await UpdateAsync(temp);
             fromDate = entry.TransDate <= existing.TransDate ? entry.TransDate : existing.TransDate;
@@ -140,26 +143,107 @@ public class LocalCostTrackingRepo
 
         try
         {
-            var createTableCmd = connection.CreateCommand();
-            createTableCmd.CommandText = @"
-            CREATE TABLE IF NOT EXISTS CostTrackingEntries (
-                Id INTEGER PRIMARY KEY,
-                TransDate TEXT NOT NULL,
-                ItemId INTEGER NOT NULL,
-                DocType INTEGER NOT NULL, -- 1=PurchaseInvoice, 2=ReturnCreditInvoice, 3=DiscountCreditInvoice
-                QtyDelta DECIMAL(18,4) NOT NULL,
-                ValueDelta DECIMAL(18,4) NOT NULL, -- signed value change (net of tax)
-                QtyAfter DECIMAL(18,4) NOT NULL,
-                AvgCostAfter DECIMAL(18,6) NOT NULL,
-                SourceDocId INTEGER,
-                Notes TEXT
-            );
-            ";
-            await createTableCmd.ExecuteNonQueryAsync();
+            // Detect existing schema
+            var pragmaCmd = connection.CreateCommand();
+            pragmaCmd.CommandText = "PRAGMA table_info('CostTrackingEntries')";
+            var existingColumns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            await using (var reader = await pragmaCmd.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    existingColumns.Add(reader.GetString(1)); // column name
+                }
+            }
+
+            var needsMigration = existingColumns.Count > 0 && (!existingColumns.Contains("SourceType") || !existingColumns.Contains("SourceLineId"));
+            var tableMissing = existingColumns.Count == 0;
+
+            if (needsMigration)
+            {
+                // Rename old table
+                var renameCmd = connection.CreateCommand();
+                renameCmd.CommandText = "ALTER TABLE CostTrackingEntries RENAME TO CostTrackingEntries_old";
+                await renameCmd.ExecuteNonQueryAsync();
+
+                // Create new table with the updated schema
+                var createNewCmd = connection.CreateCommand();
+                createNewCmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS CostTrackingEntries (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    TransDate TEXT NOT NULL,
+                    ItemId INTEGER NOT NULL,
+                    DocType INTEGER NOT NULL,
+                    QtyDelta DECIMAL(18,4) NOT NULL,
+                    ValueDelta DECIMAL(18,4) NOT NULL,
+                    QtyAfter DECIMAL(18,4) NOT NULL,
+                    AvgCostAfter DECIMAL(18,6) NOT NULL,
+                    SourceDocId INTEGER,
+                    Notes TEXT,
+                    SourceType INTEGER NOT NULL,
+                    SourceLineId INTEGER NOT NULL,
+                    UNIQUE(SourceType, SourceLineId)
+                );
+                ";
+                await createNewCmd.ExecuteNonQueryAsync();
+
+                // Copy data from old to new, mapping Id -> SourceLineId, SourceType=1 (Buy)
+                var copyCmd = connection.CreateCommand();
+                copyCmd.CommandText = @"
+                INSERT INTO CostTrackingEntries
+                    (TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId)
+                SELECT TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, 1 as SourceType, Id as SourceLineId
+                FROM CostTrackingEntries_old;
+                ";
+                await copyCmd.ExecuteNonQueryAsync();
+
+                // Drop old table
+                var dropCmd = connection.CreateCommand();
+                dropCmd.CommandText = "DROP TABLE IF EXISTS CostTrackingEntries_old";
+                await dropCmd.ExecuteNonQueryAsync();
+
+                // Create helpful index
+                var indexCmd = connection.CreateCommand();
+                indexCmd.CommandText = "CREATE INDEX IF NOT EXISTS IX_Cost_ItemDate ON CostTrackingEntries(ItemId, TransDate)";
+                await indexCmd.ExecuteNonQueryAsync();
+            }
+            else if (tableMissing)
+            {
+                // Fresh create with new schema
+                var createCmd = connection.CreateCommand();
+                createCmd.CommandText = @"
+                CREATE TABLE IF NOT EXISTS CostTrackingEntries (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    TransDate TEXT NOT NULL,
+                    ItemId INTEGER NOT NULL,
+                    DocType INTEGER NOT NULL,
+                    QtyDelta DECIMAL(18,4) NOT NULL,
+                    ValueDelta DECIMAL(18,4) NOT NULL,
+                    QtyAfter DECIMAL(18,4) NOT NULL,
+                    AvgCostAfter DECIMAL(18,6) NOT NULL,
+                    SourceDocId INTEGER,
+                    Notes TEXT,
+                    SourceType INTEGER NOT NULL,
+                    SourceLineId INTEGER NOT NULL,
+                    UNIQUE(SourceType, SourceLineId)
+                );
+                ";
+                await createCmd.ExecuteNonQueryAsync();
+
+                var indexCmd = connection.CreateCommand();
+                indexCmd.CommandText = "CREATE INDEX IF NOT EXISTS IX_Cost_ItemDate ON CostTrackingEntries(ItemId, TransDate)";
+                await indexCmd.ExecuteNonQueryAsync();
+            }
+            else
+            {
+                // Table exists with new schema; ensure index exists
+                var indexCmd = connection.CreateCommand();
+                indexCmd.CommandText = "CREATE INDEX IF NOT EXISTS IX_Cost_ItemDate ON CostTrackingEntries(ItemId, TransDate)";
+                await indexCmd.ExecuteNonQueryAsync();
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Error creating CostTrackingEntries table");
+            _logger.LogError(e, "Error initializing/migrating CostTrackingEntries table");
             throw;
         }
 
@@ -173,7 +257,7 @@ public class LocalCostTrackingRepo
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes FROM CostTrackingEntries ORDER BY TransDate, Id";
+        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId FROM CostTrackingEntries ORDER BY TransDate, Id";
         await using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
@@ -189,7 +273,7 @@ public class LocalCostTrackingRepo
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes FROM CostTrackingEntries WHERE ItemId=@itemId AND TransDate>=@fromDate AND TransDate<=@toDate ORDER BY TransDate, Id";
+        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId FROM CostTrackingEntries WHERE ItemId=@itemId AND TransDate>=@fromDate AND TransDate<=@toDate ORDER BY TransDate, Id";
         cmd.Parameters.AddWithValue("@itemId", itemId);
         cmd.Parameters.AddWithValue("@fromDate", fromDate);
         cmd.Parameters.AddWithValue("@toDate", toDate);
@@ -201,16 +285,46 @@ public class LocalCostTrackingRepo
         return list;
     }
 
-    public async Task<bool> EntryExists(int id)
+    // public async Task<bool> EntryExists(int id)
+    // {
+    //     await Init();
+    //     await using var connection = new SqliteConnection(Constants.DatabasePath);
+    //     await connection.OpenAsync();
+    //     var cmd = connection.CreateCommand();
+    //     cmd.CommandText = "SELECT Id FROM CostTrackingEntries WHERE Id=@id";
+    //     cmd.Parameters.AddWithValue("@id", id);
+    //     await using var reader = await cmd.ExecuteReaderAsync();
+    //     return await reader.ReadAsync();
+    // }
+
+    public async Task<bool> EntryExistsBySourceAsync(int sourceType, int sourceLineId)
     {
         await Init();
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id FROM CostTrackingEntries WHERE Id=@id";
-        cmd.Parameters.AddWithValue("@id", id);
+        cmd.CommandText = "SELECT Id FROM CostTrackingEntries WHERE SourceType=@sourceType AND SourceLineId=@sourceLineId";
+        cmd.Parameters.AddWithValue("@sourceType", sourceType);
+        cmd.Parameters.AddWithValue("@sourceLineId", sourceLineId);
         await using var reader = await cmd.ExecuteReaderAsync();
         return await reader.ReadAsync();
+    }
+
+    public async Task<Models.CostTrackingEntryDto?> GetBySourceAsync(int sourceType, int sourceLineId)
+    {
+        await Init();
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId FROM CostTrackingEntries WHERE SourceType=@sourceType AND SourceLineId=@sourceLineId";
+        cmd.Parameters.AddWithValue("@sourceType", sourceType);
+        cmd.Parameters.AddWithValue("@sourceLineId", sourceLineId);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync())
+        {
+            return ReadDto(reader);
+        }
+        return null;
     }
 
     public async Task<Models.CostTrackingEntryDto?> GetAsync(int id)
@@ -219,7 +333,7 @@ public class LocalCostTrackingRepo
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes FROM CostTrackingEntries WHERE Id=@id";
+        cmd.CommandText = @"SELECT Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId FROM CostTrackingEntries WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", id);
         await using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync())
@@ -251,8 +365,7 @@ public class LocalCostTrackingRepo
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = @"INSERT INTO CostTrackingEntries (Id, TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes) VALUES (@id, @transDate, @itemId, @docType, @qtyDelta, @valueDelta, @qtyAfter, @avgCostAfter, @sourceDocId, @notes)";
-        cmd.Parameters.AddWithValue("@id", entry.Id);
+        cmd.CommandText = @"INSERT INTO CostTrackingEntries (TransDate, ItemId, DocType, QtyDelta, ValueDelta, QtyAfter, AvgCostAfter, SourceDocId, Notes, SourceType, SourceLineId) VALUES (@transDate, @itemId, @docType, @qtyDelta, @valueDelta, @qtyAfter, @avgCostAfter, @sourceDocId, @notes, @sourceType, @sourceLineId)";
         cmd.Parameters.AddWithValue("@transDate", entry.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
         cmd.Parameters.AddWithValue("@itemId", entry.ItemId);
         cmd.Parameters.AddWithValue("@docType", (int)entry.DocType);
@@ -262,6 +375,8 @@ public class LocalCostTrackingRepo
         cmd.Parameters.AddWithValue("@avgCostAfter", avgCostAfter);
         cmd.Parameters.AddWithValue("@sourceDocId", entry.SourceDocId.HasValue ? entry.SourceDocId.Value : (object)DBNull.Value);
         cmd.Parameters.AddWithValue("@notes", entry.Notes ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@sourceType", entry.SourceType);
+        cmd.Parameters.AddWithValue("@sourceLineId", entry.SourceLineId);
         try
         {
             return await cmd.ExecuteNonQueryAsync();
@@ -279,7 +394,7 @@ public class LocalCostTrackingRepo
         await using var connection = new SqliteConnection(Constants.DatabasePath);
         await connection.OpenAsync();
         var cmd = connection.CreateCommand();
-        cmd.CommandText = @"UPDATE CostTrackingEntries SET TransDate=@transDate, ItemId=@itemId, DocType=@docType, QtyDelta=@qtyDelta, ValueDelta=@valueDelta, QtyAfter=@qtyAfter, AvgCostAfter=@avgCostAfter, SourceDocId=@sourceDocId, Notes=@notes WHERE Id=@id";
+        cmd.CommandText = @"UPDATE CostTrackingEntries SET TransDate=@transDate, ItemId=@itemId, DocType=@docType, QtyDelta=@qtyDelta, ValueDelta=@valueDelta, QtyAfter=@qtyAfter, AvgCostAfter=@avgCostAfter, SourceDocId=@sourceDocId, Notes=@notes, SourceType=@sourceType, SourceLineId=@sourceLineId WHERE Id=@id";
         cmd.Parameters.AddWithValue("@id", entry.Id);
         cmd.Parameters.AddWithValue("@transDate", entry.TransDate.ToString("yyyy-MM-ddTHH:mm:ss"));
         cmd.Parameters.AddWithValue("@itemId", entry.ItemId);
@@ -290,6 +405,8 @@ public class LocalCostTrackingRepo
         cmd.Parameters.AddWithValue("@avgCostAfter", entry.AvgCostAfter);
         cmd.Parameters.AddWithValue("@sourceDocId", entry.SourceDocId.HasValue ? entry.SourceDocId.Value : (object)DBNull.Value);
         cmd.Parameters.AddWithValue("@notes", entry.Notes ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@sourceType", entry.SourceType);
+        cmd.Parameters.AddWithValue("@sourceLineId", entry.SourceLineId);
         try
         {
             return await cmd.ExecuteNonQueryAsync();
@@ -410,14 +527,16 @@ public class LocalCostTrackingRepo
         var valueDelta = quantity * unitPrice; // net value
         var entry = new Models.CostTrackingEntryDto
         {
-            Id = 0, // caller can supply explicit id if needed; 0 by default
+            Id = 0,
             TransDate = transDate,
             ItemId = itemId,
             DocType = Models.CostDocType.PurchaseInvoice,
             QtyDelta = quantity,
             ValueDelta = valueDelta,
             SourceDocId = sourceDocId,
-            Notes = notes
+            Notes = notes,
+            SourceType = 0,
+            SourceLineId = Guid.NewGuid().GetHashCode()
         };
         return await AddAsync(entry);
     }
@@ -434,7 +553,9 @@ public class LocalCostTrackingRepo
             QtyDelta = -quantity, // reduce stock
             ValueDelta = valueDelta,
             SourceDocId = sourceDocId,
-            Notes = notes
+            Notes = notes,
+            SourceType = 0,
+            SourceLineId = Guid.NewGuid().GetHashCode()
         };
         return await AddAsync(entry);
     }
@@ -469,7 +590,9 @@ public class LocalCostTrackingRepo
             QtyAfter = reader.GetDecimal(6),
             AvgCostAfter = reader.GetDecimal(7),
             SourceDocId = reader.IsDBNull(8) ? (int?)null : reader.GetInt32(8),
-            Notes = reader.IsDBNull(9) ? null : reader.GetString(9)
+            Notes = reader.IsDBNull(9) ? null : reader.GetString(9),
+            SourceType = reader.FieldCount > 10 ? reader.GetInt32(10) : 1,
+            SourceLineId = reader.FieldCount > 11 ? reader.GetInt32(11) : reader.GetInt32(0)
         };
     }
 
