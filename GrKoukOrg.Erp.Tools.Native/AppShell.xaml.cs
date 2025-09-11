@@ -17,38 +17,42 @@ namespace GrKoukOrg.Erp.Tools.Native
         }
         public static async Task DisplaySnackbarAsync(string message)
         {
-            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
             var snackbarOptions = new SnackbarOptions
             {
-                BackgroundColor = Color.FromArgb("#FF3300"),
+                BackgroundColor = Colors.DarkGray,
                 TextColor = Colors.White,
                 ActionButtonTextColor = Colors.Yellow,
                 CornerRadius = new CornerRadius(0),
                 Font = Font.SystemFontOfSize(18),
                 ActionButtonFont = Font.SystemFontOfSize(14)
             };
-            var snackbar = Snackbar.Make(message,visualOptions: snackbarOptions);
+            
+            var snackbar = Snackbar.Make(message, visualOptions: snackbarOptions);
 
-            await snackbar.Show(cancellationTokenSource.Token);
+            // Ensure UI thread, and don’t pass a canceled token
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                await snackbar.Show(cts.Token);
+            });
         }
 
         public static async Task DisplayToastAsync(string message)
         {
-            //await DisplaySnackbarAsync(message);
-            // if (OperatingSystem.IsWindows())
-            // {
-            //     await DisplaySnackbarAsync(message);
-            // }
-            // else
-            // {
-            ToastDuration duration = ToastDuration.Long;
-            var toast = Toast.Make(message,duration, textSize: 18);
+            await DisplaySnackbarAsync(message);
+            //  if (OperatingSystem.IsWindows())
+            //  {
+            //      await DisplaySnackbarAsync(message);
+            //  }
+            //  else
+            //  {
+            // ToastDuration duration = ToastDuration.Long;
+            // var toast = Toast.Make(message,duration, textSize: 18);
+            //
+            // var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+            // await toast.Show(cts.Token);
             
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            await toast.Show(cts.Token);
-            
-            // }
+             // }
         }
 
         private void SfSegmentedControl_SelectionChanged(object? sender, SelectionChangedEventArgs selectionChangedEventArgs)
