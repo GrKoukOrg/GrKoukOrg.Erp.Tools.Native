@@ -49,7 +49,7 @@
 		    <!--Register COM CLSID LocalServer32 registry key-->
 		    <com:Extension Category="windows.comServer">
 			    <com:ComServer>
-				    <com:ExeServer Executable="GrKoukOrg.Erp.Tools.Native.exe" Arguments="-ToastActivated" DisplayName="Toast activator">
+				    <com:ExeServer Executable="GrKoukOrg.Erp.Tools.Native\GrKoukOrg.Erp.Tools.Native.exe" Arguments="----AppNotificationActivated:" >
 					    <com:Class Id="6e745059-a980-4ffd-a50d-4c8c6a3ce80b" DisplayName="Toast activator"/>
 				    </com:ExeServer>
 			    </com:ComServer>
