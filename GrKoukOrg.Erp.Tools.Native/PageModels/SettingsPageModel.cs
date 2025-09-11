@@ -83,6 +83,11 @@ public partial class SettingsPageModel:ObservableObject
         }
     }
 
+    [RelayCommand]
+    private async Task Reset()
+    {
+        
+    }
     private void UpdateStatusMessage(string prefix)
     {
         StatusMessage = $"{prefix}:\n{BuildDetails()}\nLast update: {DateTime.Now:G}";
