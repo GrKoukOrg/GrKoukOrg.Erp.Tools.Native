@@ -55,7 +55,7 @@ namespace GrKoukOrg.Erp.Tools.Native
             builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddScoped<ModalErrorHandler>();
             builder.Services.AddScoped<MainPageModel>();
-         builder.Services.AddScoped<IStartupChecker, StartupChecker>();
+            builder.Services.AddScoped<IStartupChecker, StartupChecker>();
             builder.Services.AddScoped<SettingsPageModel>();
             builder.Services.AddSingleton<INavigationParameterService, NavigationParameterService>();
             
