@@ -48,67 +48,18 @@ public partial class ItemDetailsPageModel : ObservableObject
     private async Task CalculateItemStatistics(int itemId)
     {
         var item = await _localItemsRepo.GetAsync(itemId);
-        var buyDocuments = await _localBuyDocumentsRepo.ListBuyDocsAsync();
-        var buyDocLines = await _localBuyDocLinesRepo.ListBuyDocLinesAsync();
-        var saleDocuments = await _localSaleDocumentsRepo.ListSaleDocsAsync();
-        var saleDocLines = await _localSalesDocLinesRepo.ListSaleDocLinesAsync();
-        var itemPurchasesData = buyDocuments
-            .Join(
-                buyDocLines,
-                doc => doc.Id,
-                line => line.BuyDocId,
-                (doc, line) => new
-                {
-                    doc.BuyDocDefId, line.UnitQty, UnitTotalAmount = line.LineTotalAmount,
-                    UnitDiscountAmount = line.LineDiscountAmount, line.ItemId
-                }
-            )
-            .Where(x => x.ItemId == itemId);
 
-        var itemSalesData = saleDocuments
-            .Join(
-                saleDocLines,
-                doc => doc.Id,
-                line => line.SaleDocId,
-                (doc, line) => new
-                {
-                    doc.SaleDocDefId, line.UnitQty,
-                    UnitTotalAmount = line.LineTotalAmount,
-                    UnitDiscountAmount = line.LineDiscountAmount, line.ItemId
-                }
-            )
-            .Where(x => x.ItemId == itemId);
+        // Fetch aggregate stats directly from the database using JOINs
+        var purchaseAgg = await _localBuyDocLinesRepo.GetItemPurchaseAggregatesAsync(itemId);
+        var salesAgg = await _localSalesDocLinesRepo.GetItemSalesAggregatesAsync(itemId);
 
-        var totalQuantityPurchased = itemPurchasesData
-            .Sum(x =>
-                x.BuyDocDefId == 9 // Purchase
-                    ? x.UnitQty
-                    : x.BuyDocDefId == 17 // Return
-                        ? -x.UnitQty
-                        : 0);
-        var totalQuantitySold = itemSalesData
-            .Sum(x =>
-                x.SaleDocDefId == 54 // Sale
-                    ? x.UnitQty
-                    : 0);
+        var totalQuantityPurchased = purchaseAgg.TotalQuantityPurchased;
+        var totalQuantitySold = salesAgg.TotalQuantitySold;
 
-        var totalPurchaseCost = itemPurchasesData
-            .Sum(x =>
-                x.BuyDocDefId == 9 // Purchase
-                    ? x.UnitTotalAmount
-                    : x.BuyDocDefId == 17 // Return
-                        ? -x.UnitTotalAmount
-                        : 0);
-        var totalSaleIncome = itemSalesData
-            .Sum(x =>
-                x.SaleDocDefId == 54 // Sale
-                    ? x.UnitTotalAmount
-                    : 0);
+        var totalPurchaseCost = purchaseAgg.TotalPurchaseCost;
+        var totalSaleIncome = salesAgg.TotalSaleIncome;
 
-
-        var totalDiscountCost = itemPurchasesData
-            .Where(x => x.BuyDocDefId == 14) // Discounts only
-            .Sum(x => x.UnitDiscountAmount);
+        var totalDiscountCost = purchaseAgg.TotalDiscountCost;
 
         decimal meanPrice = totalQuantityPurchased > 0
             ? (totalPurchaseCost - totalDiscountCost) / totalQuantityPurchased

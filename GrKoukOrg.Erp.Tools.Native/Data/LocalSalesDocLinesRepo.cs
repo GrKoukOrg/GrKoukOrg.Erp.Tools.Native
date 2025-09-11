@@ -111,6 +111,45 @@ public class LocalSalesDocLinesRepo
         return buyDocLines;
     }
 
+    public async Task<ItemSalesAggregatesDto> GetItemSalesAggregatesAsync(int itemId)
+    {
+        await Init();
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+SELECT 
+    CAST(COALESCE(SUM(CASE WHEN s.SaleDocDefId = 54 THEN l.UnitQty ELSE 0 END), 0) AS NUMERIC) AS TotalQtySold,
+    CAST(COALESCE(SUM(CASE WHEN s.SaleDocDefId = 54 THEN l.LineTotalAmount ELSE 0 END), 0) AS NUMERIC) AS TotalIncome
+FROM SaleDocLines l
+INNER JOIN SaleDocuments s ON s.Id = l.SaleDocId
+WHERE l.ItemId = @ItemId;";
+        cmd.Parameters.AddWithValue("@ItemId", itemId);
+
+        try
+        {
+            await using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new ItemSalesAggregatesDto
+                {
+                    ItemId = itemId,
+                    TotalQuantitySold = reader.IsDBNull(0) ? 0m : reader.GetDecimal(0),
+                    TotalSaleIncome = reader.IsDBNull(1) ? 0m : reader.GetDecimal(1)
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error aggregating sales data for item {ItemId}", itemId);
+            throw;
+        }
+
+        return new ItemSalesAggregatesDto { ItemId = itemId };
+    }
+
 
     public async Task<bool> SaleDocLineExist(int id)
     {

@@ -111,6 +111,49 @@ public class LocalBuyDocLinesRepo
         return buyDocLines;
     }
 
+    public async Task<ItemPurchaseAggregatesDto> GetItemPurchaseAggregatesAsync(int itemId)
+    {
+        await Init();
+
+        await using var connection = new SqliteConnection(Constants.DatabasePath);
+        await connection.OpenAsync();
+
+        var cmd = connection.CreateCommand();
+        cmd.CommandText = @"
+SELECT 
+    CAST(COALESCE(SUM(CASE WHEN b.BuyDocDefId = 9 THEN l.UnitQty 
+                           WHEN b.BuyDocDefId = 17 THEN -l.UnitQty ELSE 0 END), 0) AS NUMERIC) AS TotalQty,
+    CAST(COALESCE(SUM(CASE WHEN b.BuyDocDefId = 9 THEN l.LineTotalAmount 
+                           WHEN b.BuyDocDefId = 17 THEN -l.LineTotalAmount ELSE 0 END), 0) AS NUMERIC) AS TotalCost,
+    CAST(COALESCE(SUM(CASE WHEN b.BuyDocDefId = 14 THEN l.LineDiscountAmount ELSE 0 END), 0) AS NUMERIC) AS TotalDiscount
+FROM BuyDocLines l
+INNER JOIN BuyDocuments b ON b.Id = l.BuyDocId
+WHERE l.ItemId = @ItemId;";
+        cmd.Parameters.AddWithValue("@ItemId", itemId);
+
+        try
+        {
+            await using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                return new ItemPurchaseAggregatesDto
+                {
+                    ItemId = itemId,
+                    TotalQuantityPurchased = reader.IsDBNull(0) ? 0m : reader.GetDecimal(0),
+                    TotalPurchaseCost = reader.IsDBNull(1) ? 0m : reader.GetDecimal(1),
+                    TotalDiscountCost = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                };
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error aggregating purchase data for item {ItemId}", itemId);
+            throw;
+        }
+
+        return new ItemPurchaseAggregatesDto { ItemId = itemId };
+    }
+
     public async Task<List<BuyDocLineListDto>> ListBuyDocLinesByDateRangeAsync(int itemId,DateTime fromDate, DateTime toDate)
     {
         await Init(); // Ensure the database is initialized

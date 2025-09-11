@@ -447,6 +447,9 @@ public partial class SyncItemsPageModel : ObservableObject
         AddLog("Delete all Buy Doc Lines from local database");
         var result = await _localBuyDocLinesRepo.DeleteAllBuyDocLineAsync();
         AddLog($"Deleted {result.ToString()} buy doc lines");
+        // Also clear cost tracking entries as they depend on BuyDocLines
+        var ctResult = await _localCostTrackingRepo.DeleteAllAsync();
+        AddLog($"Deleted {ctResult.ToString()} cost tracking entries");
     }
 
     [RelayCommand]
