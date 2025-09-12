@@ -57,7 +57,7 @@ namespace GrKoukOrg.Erp.Tools.Native.PageModels
                 var version = Assembly.GetExecutingAssembly().GetName().Version;
                 if (version != null)
                 {
-                    VersionInfo = $"Version {version.Major}.{version.Minor}.{version.Build}";
+                    VersionInfo = $"Version {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
                 }
                 else
                 {
