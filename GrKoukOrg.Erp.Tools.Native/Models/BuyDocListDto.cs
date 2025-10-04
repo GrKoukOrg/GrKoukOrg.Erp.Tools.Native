@@ -72,6 +72,8 @@ namespace GrKoukOrg.Erp.Tools.Native.Models
         public int BuyDocDefId { get; set; }
         [JsonPropertyName("buyDocDefName")]
         public string? BuyDocDefName { get; set; }
+        [JsonPropertyName("buyDocDefCode")]
+        public string? BuyDocDefCode { get; set; }
         [JsonPropertyName("supplierId")]
 
         public int SupplierId { get; set; }
