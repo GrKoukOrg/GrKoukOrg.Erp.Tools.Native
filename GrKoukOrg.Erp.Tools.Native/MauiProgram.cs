@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using GrKoukOrg.Erp.Tools.Native.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.LifecycleEvents;
 using Syncfusion.Maui.Core.Hosting;
 using Syncfusion.Maui.Toolkit.Hosting;
 using ZXing.Net.Maui.Controls;
@@ -29,10 +30,30 @@ namespace GrKoukOrg.Erp.Tools.Native
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                     fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
                     fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
+                    
+                })
+                .ConfigureLifecycleEvents(events =>
+                {
+#if WINDOWS
+                    events.AddWindows(windows =>
+                    {
+                        windows.OnWindowCreated(window =>
+                        {
+                            // Restore previous placement when the native window is created
+                            global::Platforms.Windows.WindowPositionHelper.RestoreWindow(window);
+
+                            // Save placement when window is closed
+                            window.Closed += (s, e) =>
+                            {
+                                global::Platforms.Windows.WindowPositionHelper.SaveWindow(window);
+                            };
+                        });
+                    });
+#endif
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
             builder.Logging.SetMinimumLevel(LogLevel.Debug);
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
